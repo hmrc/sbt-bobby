@@ -1,6 +1,3 @@
-Bobby
-=====
-
 #Overview
 This is an Sbt plugin that can be used to enforce (fail compilation) or warn when libraries and dependencies need to be upgraded.
 
