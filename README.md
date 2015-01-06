@@ -11,21 +11,21 @@ It can be hard to ensure that distributed teams upgrade to the newest (mandatory
 In your "~/.sbt/0.13/plugins/build.sbt"
 
 set
-'''
+```
 addSbtPlugin("uk.gov.hmrc" % "bobby" % "0.2.1")
-'''
+```
 
 In your "~/sbt/0.13/global.sbt"
 
 set
-'''
+```
 val bobbyNexus = "https://some.nexus/service/local/lucene/"
 
 val mandatoryReleases = Seq(
    ("org.scala-lang", "scala-library", "2.11.8"),
    ("org.scala-lang", "scala-compiler", "6.9.25")
 )
-'''
+```
 
 
 
