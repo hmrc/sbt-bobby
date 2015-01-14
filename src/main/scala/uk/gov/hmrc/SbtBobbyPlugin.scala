@@ -20,7 +20,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     parallelExecution in GlobalScope := true,
     autoImport.policeDependencyVersions := {
       val dependencies: Seq[ModuleID] = libraryDependencies.value
-      //print("foobar: " + customKey1.value.length)
       val projectName = name.value
       val r: SettingKey[String] = bobbyNexus
       val x: Def.Setting[String] = r.:=("foo")
