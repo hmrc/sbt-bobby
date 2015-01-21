@@ -1,9 +1,12 @@
 package uk.gov.hmrc
 
+import java.net.URL
+
 import sbt.Keys._
 import sbt._
 
 import scala.io.Source
+import scala.util.Try
 import scala.xml.{NodeSeq, XML}
 
 object SbtBobbyPlugin extends AutoPlugin {
@@ -12,27 +15,24 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val policeDependencyVersions = taskKey[Unit]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
   }
 
-  lazy val customKey1 = SettingKey[Seq[(String, String)]]("mandatoryReleases") // TODO: This need to point to a list of mandatory versions
-  lazy val bobbyNexus = SettingKey[String]("bobbyNexus")  // TODO: this needs to point to a configured nexus
-
   override def trigger = allRequirements
+
+
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
     autoImport.policeDependencyVersions := {
       val dependencies: Seq[ModuleID] = libraryDependencies.value
       val projectName = name.value
-      val r: SettingKey[String] = bobbyNexus
-      val x: Def.Setting[String] = r.:=("foo")
-      streams.value.log.info(s"[bobby] is now interrogating the dependencies to in [$projectName] using nexus '${x.toString()}r'")
-      streams.value.log.info("--------------------------------------------------------------")
-      val nexus = None // TODO: populate with bobbyNexus config
+      streams.value.log.info(s"[bobby] is now interrogating the dependencies to in '$projectName''")
+      val nexus = findLocalNexusCreds(streams.value.log) // TODO: populate with bobbyNexus config
       nexus.fold(streams.value.log.error("Unable to run bobby, no bobbyNexus provided")) {
         nexusRepo =>
+          streams.value.log.info(s"[bobby] using nexus at '${nexusRepo.host}'")
           for ( module <- dependencies ) {
-            latestRevision(module, scalaVersion.value, "").fold(streams.value.log.info(s"Unable to get a latestRelease number for ${module.toString()}")) {
+            latestRevision(module, scalaVersion.value, nexusRepo).fold(streams.value.log.info(s"Unable to get a latestRelease number for ${module.toString()}")) {
               latest =>
                 if (versionIsNewer(latest, module.revision))
-                  streams.value.log.info(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '${latest}'")
+                  streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '${latest}'")
             }
           }
       }
@@ -67,17 +67,39 @@ object SbtBobbyPlugin extends AutoPlugin {
     s"${versionInformation.name}_$shortenedScalaVersion&&g=${versionInformation.organization}"
   }
 
-  private def latestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : String): Option[String] = {
-    val query = s"${nexus}search?a=${getSearchTerms(versionInformation, scalaVersion)}"
-    val html = Source.fromURL(query)
-    val s = html.mkString
-    val xml = XML.loadString(s)
-    val nodes: NodeSeq = xml \\ "latestRelease"
-    val first: Option[scala.xml.Node] = nodes.headOption
-    first.fold[Option[String]](None) {
-      item =>
-        Some(item.text)
+  private def latestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : NexusCredentials): Option[String] = {
+    val query = s"https://${nexus.username}:${nexus.password}@${nexus.host}/service/local/lucene/search?a=${getSearchTerms(versionInformation, scalaVersion)}"
+    Try {
+      val nodes = XML.load(new URL(query)) \\ "latestRelease"
+      nodes.headOption.map(_.text)
+    }.recover{
+      case e => e.printStackTrace(); None
     }
-  }
+  }.toOption.flatten
+
+  case class NexusCredentials(host:String, username:String, password:String)
+
+
+  private def findLocalNexusCreds(out:Logger):Option[NexusCredentials]= Try{
+    val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
+    out.info(s"[bobby] reading nexus credentials from $credsFile")
+
+    val credMap = Source.fromFile(credsFile)
+      .getLines().toSeq
+      .map(_.split("="))
+      .map { case Array(key, value) => key -> value}.toMap
+
+    Some(NexusCredentials(
+      credMap("host"),
+      credMap("user"),
+      credMap("password")))
+
+  }.recover{
+    case e => {
+      out.error("[bobby] failed to read credentials due to " + e.getMessage)
+      out.trace(e)
+      None
+    }
+  }.toOption.flatten
 
 }
