@@ -4,6 +4,7 @@ import java.net.URL
 
 import sbt.Keys._
 import sbt._
+import uk.gov.hmrc.Core.Version
 
 import scala.io.Source
 import scala.util.Try
@@ -59,8 +60,10 @@ object SbtBobbyPlugin extends AutoPlugin {
   private def latestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : NexusCredentials): Option[String] = {
     val query = s"https://${nexus.username}:${nexus.password}@${nexus.host}/service/local/lucene/search?a=${getSearchTerms(versionInformation, scalaVersion)}"
     Try {
-      val nodes = XML.load(new URL(query)) \\ "latestRelease"
-      nodes.headOption.map(_.text)
+      Core.versionsFromNexus(XML.load(new URL(query)))
+        .filterNot (Version.isEarlyRelease)
+        .sortWith (Version.comparator)
+        .headOption.map(_.toString)
     }.recover{
       case e => e.printStackTrace(); None
     }
