@@ -27,8 +27,8 @@ class SbtBobbyPluginSpec extends FlatSpec with Matchers {
   }
 
 
-  "10" should "be shortened to 10" in {
-    SbtBobbyPlugin.shortenScalaVersion("10") shouldBe "10"
+  "2.10.1" should "be shortened to 2.10" in {
+    SbtBobbyPlugin.shortenScalaVersion("2.10.1") shouldBe "2.10"
   }
 
 }

@@ -21,18 +21,18 @@ object SbtBobbyPlugin extends AutoPlugin {
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
     autoImport.policeDependencyVersions := {
-      val dependencies: Seq[ModuleID] = libraryDependencies.value
-      val projectName = name.value
-      streams.value.log.info(s"[bobby] is now interrogating the dependencies to in '$projectName''")
+      streams.value.log.info(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
       val nexus = findLocalNexusCreds(streams.value.log) // TODO: populate with bobbyNexus config
       nexus.fold(streams.value.log.error("Unable to run bobby, no bobbyNexus provided")) {
         nexusRepo =>
           streams.value.log.info(s"[bobby] using nexus at '${nexusRepo.host}'")
-          for ( module <- dependencies ) {
-            latestRevision(module, scalaVersion.value, nexusRepo).fold(streams.value.log.info(s"Unable to get a latestRelease number for ${module.toString()}")) {
-              latest =>
+          for ( module <- libraryDependencies.value) {
+            latestRevision(module, scalaVersion.value, nexusRepo) match {
+              case None => streams.value.log.info(s"Unable to get a latestRelease number for ${module.toString()}")
+              case Some(latest) => {
                 if (versionIsNewer(latest, module.revision))
-                  streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '${latest}'")
+                  streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
+              }
             }
           }
       }
@@ -45,21 +45,10 @@ object SbtBobbyPlugin extends AutoPlugin {
     isThisNewerThan > thisOne
   }
 
-  // im sure there is a built in scala trick for this, couldn't find it though, so this will get us started...
-  def shortenScalaVersion(scalaVersion : String) : String = {
-    val maxDecimalPoints = 1
-    scalaVersion.foldLeft[ShorteningState](ShorteningState()) {
-      (ss : ShorteningState, c : Char) =>
-        if (!ss.complete && ss.decimalPoints < 2) {
-          val isDecimalPoint = c.equals('.')
-          val decimalInc: Int = isDecimalPoint match { case true => 1 case false => 0 }
-          val constructionComplete = isDecimalPoint && ss.decimalPoints == maxDecimalPoints
-          val appendedVersion = constructionComplete match { case true => ss.currentVersion case false => ss.currentVersion + c }
-          ShorteningState(appendedVersion, ss.decimalPoints + decimalInc, constructionComplete)
-        } else {
-          ss
-        }
-    }.currentVersion
+  def shortenScalaVersion(scalaVersion : String):String = {
+    scalaVersion.split('.') match {
+      case Array(major, minor, _*) => major + "." + minor
+    }
   }
 
   private def getSearchTerms(versionInformation: ModuleID, scalaVersion : String) : String = {
