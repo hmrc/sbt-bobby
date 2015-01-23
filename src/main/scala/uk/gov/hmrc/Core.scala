@@ -4,6 +4,7 @@ import java.net.URL
 
 import sbt.StringUtilities
 
+import scala.io.Source
 import scala.util.Try
 import scala.xml.NodeSeq
 
@@ -34,6 +35,19 @@ object Core {
     nodes.map(n => Version(n.text))
   }
 
+  def getMandatoryVersions(url:URL):Map[OrganizationName, String]={
+    Source.fromURL(url)
+      .getLines().toSeq
+      .filterNot { line => line.startsWith("#") }
+      .map { line => removeWhiteSpace(line).split(',') match {
+        case Array(org, name, version) => OrganizationName(org, name) -> version
+      }}
+      .toMap
+  }
+
+  def removeWhiteSpace(st:String) = st.replace("\\s+","")
+
+  case class OrganizationName(module:String, revision:String)
 
   case class Version(parts:Seq[String]){
     override def toString = parts.mkString(".")

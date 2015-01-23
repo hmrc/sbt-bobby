@@ -12,39 +12,93 @@ import scala.xml.{NodeSeq, XML}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
-  object autoImport {
-    lazy val policeDependencyVersions = taskKey[Unit]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-  }
+  import Core._
+  import Version._
 
+  object autoImport {
+    lazy val checkDependencyVersions = taskKey[Unit]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
+  }
+  
   override def trigger = allRequirements
 
-
+  //TODO fail build by using SBT State object instead of horrible 'sys.error' calls
+  //TODO de-stringify and use the Version object everywhere
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
-    autoImport.policeDependencyVersions := {
+    autoImport.checkDependencyVersions := {
       streams.value.log.info(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-      val nexus = findLocalNexusCreds(streams.value.log) // TODO: populate with bobbyNexus config
-      nexus.fold(streams.value.log.error("Unable to run bobby, no bobbyNexus provided")) {
-        nexusRepo =>
+      val nexus = findLocalNexusCreds(streams.value.log)
+      val mandatories: Map[OrganizationName, String] = getMandatoryVersions(new URL("file:///Users/ck/hmrc/hmrc-development-environment/hmrc/bobby/src/test/resources/mandatory-example.txt"))
+
+      nexus.fold {
+        streams.value.log.error("Didn't find Nexus credentials, cannot continue")
+        sys.error("Didn't find Nexus credentials, cannot continue")
+      } {
+        nexusRepo => {
           streams.value.log.info(s"[bobby] using nexus at '${nexusRepo.host}'")
-          for ( module <- libraryDependencies.value) {
-            latestRevision(module, scalaVersion.value, nexusRepo) match {
-              case None => streams.value.log.info(s"Unable to get a latestRelease number for ${module.toString()}")
-              case Some(latest) => {
-                if (versionIsNewer(latest, module.revision))
-                  streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
-              }
-            }
+
+          val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module => //for ( module <- libraryDependencies.value) {
+            module -> getResult(module, latestRevision(module, scalaVersion.value, nexusRepo), mandatories)
+          }.toMap
+
+          dependencyResults.foreach { case(module, result) => result match {
+            case NotFound              => streams.value.log.info(s"Unable to get a latestRelease number for '${module.toString()}'")
+            case NexusHasNewer(latest) => streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
+            case MandatoryFail(latest) => streams.value.log.error(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
+            case _ =>
           }
+          }
+
+          dependencyResults.values.find { _.fail }.fold (
+            streams.value.log.success("No invalid dependencies")
+          ){ fail =>
+            sys.error("One or more dependency version check failed, see previous error.\nThis means you are using an out-of-date library which is not allowed in services deployed on the Tax Platfrom.")
+          }
+        }
       }
     }
   )
 
-  case class ShorteningState(currentVersion : String = "", decimalPoints : Int = 0, complete : Boolean = false)
-
-  def versionIsNewer(isThisNewerThan : String, thisOne : String) : Boolean = {
-    isThisNewerThan > thisOne
+  sealed trait DependencyCheckResult {
+    def fail:Boolean
   }
+  trait Fail extends DependencyCheckResult { val fail = true}
+  trait Pass extends DependencyCheckResult { val fail = false}
+
+  case class MandatoryFail(latest:String) extends DependencyCheckResult with Fail
+  case class NexusHasNewer(latest:String) extends DependencyCheckResult with Pass
+  object NotFound extends DependencyCheckResult with Pass
+  object OK extends DependencyCheckResult with Pass
+
+
+  // TODO fail if nexus version is 2 or more major releases behind
+  // TODO 'merge' the mandatory and nexus result more effecivley
+  def getResult(module:ModuleID, latestNexusRevision:Option[String], mandatories: Map[OrganizationName, String]): DependencyCheckResult ={
+    latestNexusRevision match {
+      case None => NotFound
+      case Some(latestNexus) => {
+        val nexusCheck = if (latestNexus > module.revision) {
+          NexusHasNewer(latestNexus)
+        } else { OK }
+
+        val mandatoryCheck = mandatories.get(OrganizationName(module.organization, module.name)).map { mandatory =>
+          if(mandatory > latestNexus){
+            MandatoryFail(mandatory)
+          } else {
+            OK
+          }
+        }.getOrElse(NotFound)
+        
+        if (mandatoryCheck.fail){
+          mandatoryCheck
+        } else {
+          nexusCheck
+        }
+      }
+    }
+  }
+
+  case class ShorteningState(currentVersion : String = "", decimalPoints : Int = 0, complete : Boolean = false)
 
   def shortenScalaVersion(scalaVersion : String):String = {
     scalaVersion.split('.') match {
@@ -60,9 +114,9 @@ object SbtBobbyPlugin extends AutoPlugin {
   private def latestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : NexusCredentials): Option[String] = {
     val query = s"https://${nexus.username}:${nexus.password}@${nexus.host}/service/local/lucene/search?a=${getSearchTerms(versionInformation, scalaVersion)}"
     Try {
-      Core.versionsFromNexus(XML.load(new URL(query)))
-        .filterNot (Version.isEarlyRelease)
-        .sortWith (Version.comparator)
+      versionsFromNexus(XML.load(new URL(query)))
+        .filterNot (isEarlyRelease)
+        .sortWith (comparator)
         .headOption.map(_.toString)
     }.recover{
       case e => e.printStackTrace(); None

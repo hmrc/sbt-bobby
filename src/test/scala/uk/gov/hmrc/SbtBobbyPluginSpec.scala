@@ -1,41 +1,30 @@
 package uk.gov.hmrc
 
 import org.scalatest.{FunSpec, Matchers, FlatSpec}
-import uk.gov.hmrc.Core.Version
+import uk.gov.hmrc.Core.{OrganizationName, Version}
 
 // I recognise that this is pretty crude checking at the moment, but should be enough to get us started
 class SbtBobbyPluginSpec extends FlatSpec with Matchers {
-
-  "1.0.0" should "be greater than 0.1.0" in {
-    SbtBobbyPlugin.versionIsNewer("1.0.0", "0.1.0") shouldBe true
-  }
-
-  "0.1.0" should "not be be greater than 1.0.0" in {
-    SbtBobbyPlugin.versionIsNewer("0.1.0", "1.0.0") shouldBe false
-  }
-
-  "0.2.1" should "be greater than 0.2.0" in {
-    SbtBobbyPlugin.versionIsNewer("1.0.0", "0.1.0") shouldBe true
-  }
-
-  "10.1.8.6.8.5" should "not be greater than 11.0" in {
-    SbtBobbyPlugin.versionIsNewer("10.1.8.6.8.5", "11.0") shouldBe false
-  }
-
 
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
     SbtBobbyPlugin.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
   }
 
-
-  "2.10.1" should "be shortened to 2.10" in {
-    SbtBobbyPlugin.shortenScalaVersion("2.10.1") shouldBe "2.10"
+  "2.10" should "be shortened to 2.10" in {
+    SbtBobbyPlugin.shortenScalaVersion("2.10") shouldBe "2.10"
   }
 }
 
 class CoreSpec extends FunSpec with Matchers{
 
-  it("should get versions from xml"){
+  it("should read mandatory versions file"){
+    val mandatoryVersions = Core.getMandatoryVersions(this.getClass.getClassLoader.getResource("mandatory-example.txt"))
+
+    mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.11.2"
+    mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.8.0"
+  }
+
+  it("should get versions from Nexus search results"){
     Core.versionsFromNexus(xml) shouldBe Seq(Version(Seq("2", "2", "3-SNAP1")), Version(Seq("2", "2", "2")))
   }
 
