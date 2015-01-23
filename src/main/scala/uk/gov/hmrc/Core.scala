@@ -2,7 +2,7 @@ package uk.gov.hmrc
 
 import java.net.URL
 
-import sbt.StringUtilities
+import sbt.{ModuleID, StringUtilities}
 
 import scala.io.Source
 import scala.util.Try
@@ -48,6 +48,9 @@ object Core {
   def removeWhiteSpace(st:String) = st.replace("\\s+","")
 
   case class OrganizationName(module:String, revision:String)
+  object OrganizationName{
+    def apply(module:ModuleID):OrganizationName = OrganizationName(module.organization, module.name)
+  }
 
   case class Version(parts:Seq[String]){
     override def toString = parts.mkString(".")

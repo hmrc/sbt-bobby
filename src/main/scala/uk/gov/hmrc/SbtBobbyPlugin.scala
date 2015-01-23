@@ -23,6 +23,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   //TODO fail build by using SBT State object instead of horrible 'sys.error' calls
   //TODO de-stringify and use the Version object everywhere
+  //TODO more more code into Core
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
     autoImport.checkDependencyVersions := {
@@ -46,8 +47,7 @@ object SbtBobbyPlugin extends AutoPlugin {
             case NexusHasNewer(latest) => streams.value.log.warn(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
             case MandatoryFail(latest) => streams.value.log.error(s"Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
             case _ =>
-          }
-          }
+          }}
 
           dependencyResults.values.find { _.fail }.fold (
             streams.value.log.success("No invalid dependencies")
@@ -74,31 +74,18 @@ object SbtBobbyPlugin extends AutoPlugin {
   // TODO fail if nexus version is 2 or more major releases behind
   // TODO 'merge' the mandatory and nexus result more effecivley
   def getResult(module:ModuleID, latestNexusRevision:Option[String], mandatories: Map[OrganizationName, String]): DependencyCheckResult ={
-    latestNexusRevision match {
-      case None => NotFound
-      case Some(latestNexus) => {
-        val nexusCheck = if (latestNexus > module.revision) {
-          NexusHasNewer(latestNexus)
-        } else { OK }
 
-        val mandatoryCheck = mandatories.get(OrganizationName(module.organization, module.name)).map { mandatory =>
-          if(mandatory > latestNexus){
-            MandatoryFail(mandatory)
-          } else {
-            OK
-          }
-        }.getOrElse(NotFound)
-        
-        if (mandatoryCheck.fail){
-          mandatoryCheck
-        } else {
-          nexusCheck
-        }
-      }
+    val nexusCheck = latestNexusRevision match {
+      case None => NotFound
+      case Some(latestNexus) if latestNexus > module.revision => NexusHasNewer(latestNexus)
+      case Some(latestNexus) => OK
+    }
+
+    mandatories.get(OrganizationName(module)) match {
+      case Some(mandatoryVersion) if mandatoryVersion > module.revision => MandatoryFail(mandatoryVersion)
+      case _ => nexusCheck
     }
   }
-
-  case class ShorteningState(currentVersion : String = "", decimalPoints : Int = 0, complete : Boolean = false)
 
   def shortenScalaVersion(scalaVersion : String):String = {
     scalaVersion.split('.') match {
@@ -125,6 +112,13 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   case class NexusCredentials(host:String, username:String, password:String)
 
+  object NexusCredentials{
+    def apply(credMap:Map[String, String]):NexusCredentials = NexusCredentials(
+      credMap("host"),
+      credMap("user"),
+      credMap("password"))
+  }
+
 
   private def findLocalNexusCreds(out:Logger):Option[NexusCredentials]= Try{
     val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
@@ -135,10 +129,7 @@ object SbtBobbyPlugin extends AutoPlugin {
       .map(_.split("="))
       .map { case Array(key, value) => key -> value}.toMap
 
-    Some(NexusCredentials(
-      credMap("host"),
-      credMap("user"),
-      credMap("password")))
+    Some(NexusCredentials(credMap))
 
   }.recover{
     case e => {
