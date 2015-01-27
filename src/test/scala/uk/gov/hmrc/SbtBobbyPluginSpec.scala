@@ -1,9 +1,23 @@
+/*
+ * Copyright 2015 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.gov.hmrc
 
 import org.scalatest.{FunSpec, Matchers, FlatSpec}
 import uk.gov.hmrc.Core.{OrganizationName, Version}
 
-// I recognise that this is pretty crude checking at the moment, but should be enough to get us started
 class SbtBobbyPluginSpec extends FlatSpec with Matchers {
 
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
@@ -17,11 +31,15 @@ class SbtBobbyPluginSpec extends FlatSpec with Matchers {
 
 class CoreSpec extends FunSpec with Matchers{
 
-  it("should read mandatory versions file"){
-    val mandatoryVersions = Core.getMandatoryVersions(this.getClass.getClassLoader.getResource("mandatory-example.txt"))
+  it("should read mandatory versions"){
+    val mandatoryVersionsString = """# this is a comment.
+                              |org.scala-lang,scala-library,2.11.2
+                              |uk.gov.hmrc,play-health,0.3.0""".stripMargin('|')
+
+    val mandatoryVersions = Core.getMandatoryVersions(mandatoryVersionsString)
 
     mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.11.2"
-    mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.8.0"
+    mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.3.0"
   }
 
   it("should get versions from Nexus search results"){

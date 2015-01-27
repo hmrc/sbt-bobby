@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 HM Revenue & Customs
+ * Copyright 2015 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,9 @@ object SonatypeBuild {
           </license>
         </licenses>
         <scm>
-          <connection>scm:git@github.com:hmrc/sbt-git-stamp.git</connection>
-          <developerConnection>scm:git@github.com:hmrc/sbt-git-stamp.git</developerConnection>
-          <url>git@github.com:hmrc/sbt-git-stamp.git</url>
+          <connection>scm:git@github.com:hmrc/bobby.git</connection>
+          <developerConnection>scm:git@github.com:hmrc/bobby.git</developerConnection>
+          <url>git@github.com:hmrc/bobby.git</url>
         </scm>
         <developers>
           <developer>
