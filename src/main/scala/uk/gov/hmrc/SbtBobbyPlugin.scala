@@ -109,6 +109,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     }
   }
 
+  //TODO format this into some nice table
   def outputResult(out:ConsoleLogger, dependencyResults: Map[ModuleID, DependencyCheckResult]) {
     dependencyResults.foreach { case(module, result) => result match {
       case MandatoryFail(latest) => out.error(s"[bobby] Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
@@ -160,26 +161,32 @@ object SbtBobbyPlugin extends AutoPlugin {
     }
   }
 
-  private def getSearchTerms(versionInformation: ModuleID, scalaVersion : String) : String = {
-    val shortenedScalaVersion = shortenScalaVersion(scalaVersion)
-    s"${versionInformation.name}_$shortenedScalaVersion&g=${versionInformation.organization}"
+  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion : Option[String]) : String = {
+    maybeScalaVersion match {
+      case Some(sv) => s"${versionInformation.name}_${shortenScalaVersion(sv)}&g=${versionInformation.organization}"
+      case None     => s"${versionInformation.name}&g=${versionInformation.organization}"
+    }
   }
 
   //TODO test nexus connection and fail if we can't connect
   private def findLatestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : NexusCredentials): Option[String] = {
-    val query = s"https://${nexus.username}:${nexus.password}@${nexus.host}/service/local/lucene/search?a=${getSearchTerms(versionInformation, scalaVersion)}"
-    println("query = " + query)
-    Try {
-      versionsFromNexus(XML.load(new URL(query)))
-        .filterNot (isEarlyRelease)
-        .sortWith (comparator)
-        .headOption.map(_.toString)
-    }.recover{
-      case e => e.printStackTrace(); None
+    queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, Some(scalaVersion)))) match {
+      case Success(Some(r)) => Some(r)
+      case Success(None) => queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, None))).toOption.flatten
+      case Failure(e) => e.printStackTrace(); None
     }
-  }.toOption.flatten
+  }
 
-  case class NexusCredentials(host:String, username:String, password:String)
+  private def queryNexus(url:String):Try[Option[String]]= Try {
+    versionsFromNexus(XML.load(new URL(url)))
+      .filterNot (isEarlyRelease)
+      .sortWith (comparator)
+      .headOption.map(_.toString)
+  }
+
+  case class NexusCredentials(host:String, username:String, password:String){
+    def buildSearchUrl(searchQuery:String) = s"https://${username}:${password}@${host}/service/local/lucene/search?a=$searchQuery"
+  }
 
   object NexusCredentials{
     def apply(credMap:Map[String, String]):NexusCredentials = NexusCredentials(
