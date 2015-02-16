@@ -18,18 +18,15 @@ package uk.gov.hmrc
 import java.net.URL
 
 import sbt.Keys._
-import sbt.Success
 import sbt._
-import uk.gov.hmrc.Core.Version
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
-import scala.xml.{NodeSeq, XML}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
-  import Core._
-  import Version._
+  import uk.gov.hmrc.bobby.domain.Core._
+  import uk.gov.hmrc.bobby.domain._
 
   object autoImport {
     lazy val checkNexusDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
@@ -39,7 +36,7 @@ object SbtBobbyPlugin extends AutoPlugin {
   
   override def trigger = allRequirements
 
-  import autoImport._
+  import uk.gov.hmrc.SbtBobbyPlugin.autoImport._
 
   //TODO de-stringify and use the Version object everywhere
   //TODO move more code into Core
@@ -66,13 +63,13 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     checkNexusDependencyVersions := {
       streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-      val nexus = findLocalNexusCreds(streams.value.log)
+      import uk.gov.hmrc.bobby.Nexus._
 
-      nexus.map { nexusRepo =>
+      findLocalNexusCreds(streams.value.log).map { nexusRepo =>
         streams.value.log.info(s"[bobby] using nexus at '${nexusRepo.host}'")
 
         val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-          module -> getNexusResult(module, findLatestRevision(module, scalaVersion.value, nexusRepo))
+          module -> checkDependency(module, findLatestRevision(module, scalaVersion.value, nexusRepo))
         }.toMap
 
         dependencyResults
@@ -127,85 +124,12 @@ object SbtBobbyPlugin extends AutoPlugin {
       }
   }
 
-  sealed trait DependencyCheckResult {
-    def fail:Boolean
-  }
-  trait Fail extends DependencyCheckResult { val fail = true}
-  trait Pass extends DependencyCheckResult { val fail = false}
-
-  case class MandatoryFail(latest:String) extends DependencyCheckResult with Fail
-  case class NexusHasNewer(latest:String) extends DependencyCheckResult with Pass
-  object NotFoundInNexus extends DependencyCheckResult with Pass
-  object OK extends DependencyCheckResult with Pass
-
 
   def getMandatoryResult(module:ModuleID, mandatories: Map[OrganizationName, String]): DependencyCheckResult ={
     mandatories.get(OrganizationName(module)) match {
       case Some(mandatoryVersion) if mandatoryVersion > module.revision => MandatoryFail(mandatoryVersion)
       case _ => OK
     }
-  }
-  // TODO fail if nexus version is 2 or more major releases behind
-  def getNexusResult(module:ModuleID, latestNexusRevision:Option[String]): DependencyCheckResult ={
-
-    latestNexusRevision match {
-      case None => NotFoundInNexus
-      case Some(latestNexus) if latestNexus > module.revision => NexusHasNewer(latestNexus)
-      case Some(latestNexus) => OK
-    }
-  }
-
-  def shortenScalaVersion(scalaVersion : String):String = {
-    scalaVersion.split('.') match {
-      case Array(major, minor, _*) => major + "." + minor
-    }
-  }
-
-  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion : Option[String]) : String = {
-    maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_${shortenScalaVersion(sv)}&g=${versionInformation.organization}"
-      case None     => s"${versionInformation.name}&g=${versionInformation.organization}"
-    }
-  }
-
-  //TODO test nexus connection and fail if we can't connect
-  private def findLatestRevision(versionInformation: ModuleID, scalaVersion : String, nexus : NexusCredentials): Option[String] = {
-    queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, Some(scalaVersion)))) match {
-      case Success(Some(r)) => Some(r)
-      case Success(None) => queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, None))).toOption.flatten
-      case Failure(e) => e.printStackTrace(); None
-    }
-  }
-
-  private def queryNexus(url:String):Try[Option[String]]= Try {
-    versionsFromNexus(XML.load(new URL(url)))
-      .filterNot (isEarlyRelease)
-      .sortWith (comparator)
-      .headOption.map(_.toString)
-  }
-
-  case class NexusCredentials(host:String, username:String, password:String){
-    def buildSearchUrl(searchQuery:String) = s"https://${username}:${password}@${host}/service/local/lucene/search?a=$searchQuery"
-  }
-
-  object NexusCredentials{
-    def apply(credMap:Map[String, String]):NexusCredentials = NexusCredentials(
-      credMap("host"),
-      credMap("user"),
-      credMap("password"))
-  }
-
-
-  private def findLocalNexusCreds(out:Logger):Try[NexusCredentials]= Try{
-    val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
-    out.info(s"[bobby] reading nexus credentials from $credsFile")
-
-    val credMap = Source.fromFile(credsFile)
-      .getLines().toSeq
-      .map(_.split("="))
-      .map { case Array(key, value) => key -> value}.toMap
-
-    NexusCredentials(credMap)
   }
 
   implicit class OptionPimp[A](o:Option[A]){
@@ -215,5 +139,6 @@ object SbtBobbyPlugin extends AutoPlugin {
   implicit class EitherPimp[L <: Throwable,R](e:Either[L,R]){
     def toTry:Try[R] = e.fold(Failure(_), Success(_))
   }
-
 }
+
+

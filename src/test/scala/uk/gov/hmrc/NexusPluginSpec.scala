@@ -15,17 +15,19 @@
  */
 package uk.gov.hmrc
 
-import org.scalatest.{FunSpec, Matchers, FlatSpec}
-import uk.gov.hmrc.Core.{OrganizationName, Version}
+import org.scalatest.{FlatSpec, FunSpec, Matchers}
+import uk.gov.hmrc.bobby.Nexus
+import uk.gov.hmrc.bobby.domain.Core.OrganizationName
+import uk.gov.hmrc.bobby.domain.{Core, Version}
 
-class SbtBobbyPluginSpec extends FlatSpec with Matchers {
+class NexusPluginSpec extends FlatSpec with Matchers {
 
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
-    SbtBobbyPlugin.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
+    Nexus.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
   }
 
   "2.10" should "be shortened to 2.10" in {
-    SbtBobbyPlugin.shortenScalaVersion("2.10") shouldBe "2.10"
+    Nexus.shortenScalaVersion("2.10") shouldBe "2.10"
   }
 }
 
@@ -43,7 +45,8 @@ class CoreSpec extends FunSpec with Matchers{
   }
 
   it("should get versions from Nexus search results"){
-    Core.versionsFromNexus(xml) shouldBe Seq(Version(Seq("2", "2", "3-SNAP1")), Version(Seq("2", "2", "2")))
+
+    Nexus.versionsFromNexus(xml) shouldBe Seq(Version(Seq("2", "2", "3-SNAP1")), Version(Seq("2", "2", "2")))
   }
 
   it("should recognise an early release"){
