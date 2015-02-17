@@ -34,11 +34,17 @@ class NexusPluginSpec extends FlatSpec with Matchers {
 class CoreSpec extends FunSpec with Matchers{
 
   it("should read mandatory versions"){
-    val mandatoryVersionsString = """# this is a comment.
-                              |org.scala-lang,scala-library,2.11.2
-                              |uk.gov.hmrc,play-health,0.3.0""".stripMargin('|')
+//    val mandatoryVersionsString = """# this is a comment.
+//                              |org.scala-lang,scala-library,2.11.2
+//                              |uk.gov.hmrc,play-health,0.3.0""".stripMargin('|')
 
-    val mandatoryVersions = Core.getMandatoryVersions(mandatoryVersionsString)
+    val mandatoryVersionsString = """
+    [{"organisation" : "org.scala-lang", "name" : "scala-library",
+      "error" : {"min-version" : "2.10.0", "message" : "minimum is  2.10" }}]
+      "warn" : {"min-version" : "2.11.0", "message" : "we are using scala 2.11.2, update soon" }}]
+    """
+
+    val mandatoryVersions = Core.getMandatoryVersionsJson(mandatoryVersionsString)
 
     mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.11.2"
     mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.3.0"

@@ -30,9 +30,21 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   object autoImport {
     lazy val checkNexusDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-    lazy val checkMandatoryDependencyVersions = taskKey[Unit]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-    lazy val mandatoryUrl = settingKey[Option[URL]]("URL for mandatory dependencies")
+    lazy val checkMandatoryDependencyVersions = inputKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
   }
+//
+//  def check = Command.args("mandatoryCheck", "<url>") { (state, args) =>
+//    args.headOption.map { head =>
+//      println("head = " + head)
+//      val mandatories: Map[OrganizationName, String] = getMandatoryVersions(Source.fromURL(head).mkString)
+//
+//      val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
+//        module -> getMandatoryResult(module, mandatories)
+//      }.toMap
+//
+//      dependencyResults
+//    }.getOrElse(state.fail)
+//  }
   
   override def trigger = allRequirements
 
@@ -42,11 +54,17 @@ object SbtBobbyPlugin extends AutoPlugin {
   //TODO move more code into Core
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
-    mandatoryUrl := Some(new File("../bobby/src/test/resources/mandatory-example.txt").toURI.toURL),
     checkMandatoryDependencyVersions := {
-      if(mandatoryUrl.value.isEmpty) streams.value.log.warn(s"[bobby] No setting for ${mandatoryUrl.key.label}, skipping mandatory check")
+      import sbt.complete.DefaultParsers._
 
-      mandatoryUrl.value.foreach { mandatoryUrl =>
+      val args: Seq[String] = spaceDelimited("<arg>").parsed
+
+      println("args = " + args)
+
+      args.headOption.map { mandatoryUrl =>
+
+        println("mandatoryUrl = " + mandatoryUrl)
+
         streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
         val mandatories: Map[OrganizationName, String] = getMandatoryVersions(Source.fromURL(mandatoryUrl).mkString)
 
@@ -54,22 +72,23 @@ object SbtBobbyPlugin extends AutoPlugin {
           module -> getMandatoryResult(module, mandatories)
         }.toMap
 
-        outputResult(null/*streams.value*/, dependencyResults)
-      }
+        dependencyResults
+      }.toTry(new Exception("URL for mandatory dependency versions not supplied"))
     },
-    onLoad in Global := {
-      runDependencyCheckTask(checkNexusDependencyVersions) _ compose (onLoad in Global).value
-    },
+//    onLoad in Global := {
+////      runDependencyCheckTask(checkNexusDependencyVersions) _ compose (onLoad in Global).value
+//      runDependencyCheckTask(checkMandatoryDependencyVersions) _ compose (onLoad in Global).value
+//    },
 
     checkNexusDependencyVersions := {
       streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
       import uk.gov.hmrc.bobby.Nexus._
 
-      findLocalNexusCreds(streams.value.log).map { nexusRepo =>
-        streams.value.log.info(s"[bobby] using nexus at '${nexusRepo.host}'")
+      findLocalNexusCreds(streams.value.log).map { nexusCreds =>
+        streams.value.log.info(s"[bobby] using nexus at '${nexusCreds.host}'")
 
         val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-          module -> checkDependency(module, findLatestRevision(module, scalaVersion.value, nexusRepo))
+          module -> checkDependency(module, findLatestRevision(module, scalaVersion.value, nexusCreds))
         }.toMap
 
         dependencyResults
