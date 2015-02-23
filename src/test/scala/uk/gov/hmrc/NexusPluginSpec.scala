@@ -15,10 +15,11 @@
  */
 package uk.gov.hmrc
 
-import org.scalatest.{FlatSpec, FunSpec, Matchers}
+import org.joda.time.LocalDate
+import org.scalatest.{FlatSpec, FunSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.Nexus
-import uk.gov.hmrc.bobby.domain.Core.{VersionInfo, OrganizationName}
-import uk.gov.hmrc.bobby.domain.{Core, Version}
+import uk.gov.hmrc.bobby.domain.Core.{Exclude, OrganizationName}
+import uk.gov.hmrc.bobby.domain.Version
 
 class NexusPluginSpec extends FlatSpec with Matchers {
 
@@ -31,29 +32,31 @@ class NexusPluginSpec extends FlatSpec with Matchers {
   }
 }
 
-class CoreSpec extends FunSpec with Matchers{
+class CoreSpec extends FunSpec with Matchers with OptionValues{
 
   it("should read mandatory versions"){
 
     val mandatoryVersionsString = """
     [
       {
-        "organisation" : "org.scala-lang",
-        "name" : "scala-library",
-        "error" : {"version" : "2.10.0", "message" : "minimum is  2.10.0" }
-      },
-      {
         "organisation" : "uk.gov.hmrc",
-        "name" : "play-health",
-        "error" : {"version" : "0.3.0", "message" : "play health" }
+        "name" : "play-frontend",
+        "excludes" : [
+          { "range" : "[,7.4.1)", "reason" : "minimum", "from": "2015-01-01" },
+          { "range" : "[8.0.0, 8.4.1]", "reason" : "reason", "from": "2015-03-01" }
+        ]
       }
     ]
     """
 
-    val mandatoryVersions: Map[OrganizationName, String] = uk.gov.hmrc.bobby.domain.Core.getMandatoryVersionsJson(mandatoryVersionsString)
+    val mandatoryVersions: Map[OrganizationName, Seq[Exclude]] = uk.gov.hmrc.bobby.domain.Core.getMandatoryVersionsJson(mandatoryVersionsString)
 
-    mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.10.0"
-    mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.3.0"
+    val parsedMandatoryVersions = mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-frontend"))
+
+    parsedMandatoryVersions.size shouldBe 2
+    parsedMandatoryVersions(1).range shouldBe "[8.0.0, 8.4.1]"
+    parsedMandatoryVersions(1).reason shouldBe "reason"
+    parsedMandatoryVersions(1).from shouldBe new LocalDate(2015, 3, 1)
   }
 
   it("should get versions from Nexus search results"){

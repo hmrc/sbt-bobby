@@ -9,19 +9,10 @@ import sbt.ModuleID
 
 object Core {
 
-  def getMandatoryVersions(fileContents:String):Map[OrganizationName, String]={
-    fileContents.split('\n')
-      .filterNot { line => line.startsWith("#") }
-      .map { line => removeWhiteSpace(line).split(',') match {
-        case Array(org, name, version) => OrganizationName(org, name) -> version
-      }}
-      .toMap
-  }
-
-  def getMandatoryVersionsJson(fileContents:String):Map[OrganizationName, String]={
+  def getMandatoryVersionsJson(fileContents:String):Map[OrganizationName, Seq[Exclude]]={
     println(Json.prettyPrint(Json.parse(fileContents)))
-    Json.parse(fileContents).as[Seq[VersionInfo]]
-      .map { vi => vi.organisationName -> vi.error.get.version }
+    Json.parse(fileContents).as[Seq[DependencyExcludes]]
+      .map { vi => vi.organisationName -> vi.excludes }
       .toMap
   }
 
@@ -30,16 +21,19 @@ object Core {
   object Threashold{
     implicit val formats = Json.format[Threashold]
   }
-  object VersionInfo{
-    implicit val r:Reads[VersionInfo] = (
+  object Exclude{
+    implicit val formats = Json.format[Exclude]
+  }
+  object DependencyExcludes{
+    implicit val r:Reads[DependencyExcludes] = (
       (JsPath \ "organisation").read[String] and
       (JsPath \ "name").read[String] and
-      (JsPath \ "error").readNullable[Threashold]
-    )((a, b, c) => VersionInfo.apply(OrganizationName(a, b), c))
+      (JsPath \ "excludes").read[Seq[Exclude]]
+    )((a, b, c) => DependencyExcludes.apply(OrganizationName(a, b), c))
   }
 
   case class Threashold(version:String, message:String)
-  case class VersionInfo(organisationName:OrganizationName,error:Option[Threashold])
+  case class DependencyExcludes(organisationName:OrganizationName, excludes:Seq[Exclude])
   case class OrganizationName(module:String, revision:String)
 
   object OrganizationName{
@@ -47,8 +41,8 @@ object Core {
   }
 
   def verify(dependencyVersion:Version, excludes:Seq[Exclude]):DependencyCheckResult={
-    ???
+    OK
   }
 
-  case class Exclude(range:String, reason:String, date:LocalDate)
+  case class Exclude(range:String, reason:String, from:LocalDate)
 }
