@@ -17,7 +17,7 @@ package uk.gov.hmrc
 
 import org.scalatest.{FlatSpec, FunSpec, Matchers}
 import uk.gov.hmrc.bobby.Nexus
-import uk.gov.hmrc.bobby.domain.Core.OrganizationName
+import uk.gov.hmrc.bobby.domain.Core.{VersionInfo, OrganizationName}
 import uk.gov.hmrc.bobby.domain.{Core, Version}
 
 class NexusPluginSpec extends FlatSpec with Matchers {
@@ -34,19 +34,25 @@ class NexusPluginSpec extends FlatSpec with Matchers {
 class CoreSpec extends FunSpec with Matchers{
 
   it("should read mandatory versions"){
-//    val mandatoryVersionsString = """# this is a comment.
-//                              |org.scala-lang,scala-library,2.11.2
-//                              |uk.gov.hmrc,play-health,0.3.0""".stripMargin('|')
 
     val mandatoryVersionsString = """
-    [{"organisation" : "org.scala-lang", "name" : "scala-library",
-      "error" : {"min-version" : "2.10.0", "message" : "minimum is  2.10" }}]
-      "warn" : {"min-version" : "2.11.0", "message" : "we are using scala 2.11.2, update soon" }}]
+    [
+      {
+        "organisation" : "org.scala-lang",
+        "name" : "scala-library",
+        "error" : {"version" : "2.10.0", "message" : "minimum is  2.10.0" }
+      },
+      {
+        "organisation" : "uk.gov.hmrc",
+        "name" : "play-health",
+        "error" : {"version" : "0.3.0", "message" : "play health" }
+      }
+    ]
     """
 
-    val mandatoryVersions = Core.getMandatoryVersionsJson(mandatoryVersionsString)
+    val mandatoryVersions: Map[OrganizationName, String] = uk.gov.hmrc.bobby.domain.Core.getMandatoryVersionsJson(mandatoryVersionsString)
 
-    mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.11.2"
+    mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.10.0"
     mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.3.0"
   }
 

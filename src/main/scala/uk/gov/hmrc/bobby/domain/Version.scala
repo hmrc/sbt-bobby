@@ -4,9 +4,7 @@ import scala.util.Try
 
 object Version{
 
-  def apply(st:String):Version={
-    Version(st.split('.').toSeq)
-  }
+  def apply(st:String):Version = Version(st.split('.').toSeq)
 
   def comparator(v1:Version, v2:Version):Boolean =
     v1.parts.zip(v2.parts).foldLeft(true){ case(result, (p1, p2)) => result match {

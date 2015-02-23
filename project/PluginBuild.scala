@@ -39,7 +39,6 @@ object PluginBuild extends Build {
     publishArtifact in Test := false
   ) ++ SonatypeBuild()
   )
-
 }
 
 

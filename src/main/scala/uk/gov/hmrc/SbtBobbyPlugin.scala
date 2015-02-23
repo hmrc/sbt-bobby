@@ -28,9 +28,13 @@ object SbtBobbyPlugin extends AutoPlugin {
   import uk.gov.hmrc.bobby.domain.Core._
   import uk.gov.hmrc.bobby.domain._
 
+  val logger = ConsoleLogger()
+
   object autoImport {
     lazy val checkNexusDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-    lazy val checkMandatoryDependencyVersions = inputKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
+    lazy val checkMandatoryDependencyVersionsInput = inputKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
+    lazy val checkMandatoryDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
+    lazy val mandatoryFileUrl = settingKey[Option[String]]("file ")
   }
 //
 //  def check = Command.args("mandatoryCheck", "<url>") { (state, args) =>
@@ -45,7 +49,9 @@ object SbtBobbyPlugin extends AutoPlugin {
 //      dependencyResults
 //    }.getOrElse(state.fail)
 //  }
-  
+
+  def bobbyNexus = autoImport.mandatoryFileUrl in Global
+
   override def trigger = allRequirements
 
   import uk.gov.hmrc.SbtBobbyPlugin.autoImport._
@@ -54,14 +60,16 @@ object SbtBobbyPlugin extends AutoPlugin {
   //TODO move more code into Core
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
+    mandatoryFileUrl := None,
     checkMandatoryDependencyVersions := {
-      import sbt.complete.DefaultParsers._
-
-      val args: Seq[String] = spaceDelimited("<arg>").parsed
-
-      println("args = " + args)
-
-      args.headOption.map { mandatoryUrl =>
+//      import sbt.complete.DefaultParsers._
+//
+//      val args: Seq[String] = spaceDelimited("<arg>").parsed
+//
+//      println("args = " + args)
+//
+//      args.headOption.map { mandatoryUrl =>
+      mandatoryFileUrl.value.map { mandatoryUrl =>
 
         println("mandatoryUrl = " + mandatoryUrl)
 
@@ -97,7 +105,6 @@ object SbtBobbyPlugin extends AutoPlugin {
   )
 
   def runDependencyCheckTask(task:TaskKey[Try[Map[ModuleID, DependencyCheckResult]]])(startState:State):State={
-    val logger = ConsoleLogger()
     logger.info(s"[bobby] starting '${task.key.label}' task")
 
     def failAndExit(reason:Throwable):State = {
