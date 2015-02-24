@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.gov.hmrc
+package uk.gov.hmrc.bobby
 
 import java.net.URL
 
 import sbt.Keys._
-import sbt.Success
 import sbt._
-import uk.gov.hmrc.Core.Version
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
-import scala.xml.{NodeSeq, XML}
+import scala.xml.XML
 
 object SbtBobbyPlugin extends AutoPlugin {
 
-  import Core._
-  import Version._
+  import uk.gov.hmrc.bobby.Core._
+  import uk.gov.hmrc.bobby.Core.Version._
 
   object autoImport {
     lazy val checkNexusDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
@@ -39,7 +37,7 @@ object SbtBobbyPlugin extends AutoPlugin {
   
   override def trigger = allRequirements
 
-  import autoImport._
+  import uk.gov.hmrc.bobby.SbtBobbyPlugin.autoImport._
 
   //TODO de-stringify and use the Version object everywhere
   //TODO move more code into Core

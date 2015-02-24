@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.gov.hmrc
+package uk.gov.hmrc.bobby
 
-import org.scalatest.{FunSpec, Matchers, FlatSpec}
-import uk.gov.hmrc.Core.{OrganizationName, Version}
+import org.scalatest.{FlatSpec, FunSpec, Matchers}
+import uk.gov.hmrc.bobby.Core.{OrganizationName, Version}
 
 class SbtBobbyPluginSpec extends FlatSpec with Matchers {
 
