@@ -19,6 +19,7 @@ import java.net.URL
 
 import sbt.Keys._
 import sbt._
+import uk.gov.hmrc.bobby.DependencyChecker
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -74,7 +75,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         println("mandatoryUrl = " + mandatoryUrl)
 
         streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-        val mandatories: Map[OrganizationName, Seq[Exclude]] = getMandatoryVersionsJson(Source.fromURL(mandatoryUrl).mkString)
+        val mandatories: Map[DependencyName, Seq[Exclude]] = getMandatoryVersionsJson(Source.fromURL(mandatoryUrl).mkString)
 
         val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
           module -> getMandatoryResult(module, mandatories)
@@ -151,9 +152,9 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
 
-  def getMandatoryResult(module:ModuleID, mandatories: Map[OrganizationName, Seq[Exclude]]): DependencyCheckResult ={
-    mandatories.get(OrganizationName(module)) match {
-      case Some(mandatoryVersion) => Core.verify(Version(module.revision), mandatoryVersion)
+  def getMandatoryResult(module:ModuleID, mandatories: Map[DependencyName, Seq[Exclude]]): DependencyCheckResult ={
+    mandatories.get(DependencyName(module)) match {
+      case Some(mandatoryVersion) => DependencyChecker(mandatoryVersion).isVersionValid(Version(module.revision))
       case _ => OK
     }
   }

@@ -1,15 +1,13 @@
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.{LocalDate, LocalTime, DateTime}
-import play.api.libs.json.{JsPath, Reads, Json}
 import play.api.libs.functional.syntax._
-
+import play.api.libs.json.{JsPath, Json, Reads}
 import sbt.ModuleID
 
 
 object Core {
 
-  def getMandatoryVersionsJson(fileContents:String):Map[OrganizationName, Seq[Exclude]]={
+  def getMandatoryVersionsJson(fileContents:String):Map[DependencyName, Seq[Exclude]]={
     println(Json.prettyPrint(Json.parse(fileContents)))
     Json.parse(fileContents).as[Seq[DependencyExcludes]]
       .map { vi => vi.organisationName -> vi.excludes }
@@ -21,28 +19,21 @@ object Core {
   object Threashold{
     implicit val formats = Json.format[Threashold]
   }
-  object Exclude{
-    implicit val formats = Json.format[Exclude]
-  }
+
   object DependencyExcludes{
+
     implicit val r:Reads[DependencyExcludes] = (
       (JsPath \ "organisation").read[String] and
       (JsPath \ "name").read[String] and
       (JsPath \ "excludes").read[Seq[Exclude]]
-    )((a, b, c) => DependencyExcludes.apply(OrganizationName(a, b), c))
+    )((a, b, c) => DependencyExcludes.apply(DependencyName(a, b), c))
   }
 
   case class Threashold(version:String, message:String)
-  case class DependencyExcludes(organisationName:OrganizationName, excludes:Seq[Exclude])
-  case class OrganizationName(module:String, revision:String)
+  case class DependencyExcludes(organisationName:DependencyName, excludes:Seq[Exclude])
+  case class DependencyName(organisation:String, name:String)
 
-  object OrganizationName{
-    def apply(module:ModuleID):OrganizationName = OrganizationName(module.organization, module.name)
+  object DependencyName{
+    def apply(module:ModuleID):DependencyName = DependencyName(module.organization, module.name)
   }
-
-  def verify(dependencyVersion:Version, excludes:Seq[Exclude]):DependencyCheckResult={
-    OK
-  }
-
-  case class Exclude(range:String, reason:String, from:LocalDate)
 }
