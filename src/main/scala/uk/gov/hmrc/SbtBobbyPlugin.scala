@@ -20,7 +20,8 @@ import sbt._
 import uk.gov.hmrc.bobby.DependencyChecker
 import uk.gov.hmrc.bobby.conf.DeprecatedDependencyConfiguration
 
-import scala.util.{Failure, Success, Try}
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -29,9 +30,6 @@ object SbtBobbyPlugin extends AutoPlugin {
   val logger = ConsoleLogger()
 
   object autoImport {
-    lazy val checkNexusDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-    lazy val checkMandatoryDependencyVersionsInput = inputKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
-    lazy val checkMandatoryDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
     lazy val mandatoryFileUrl = settingKey[Option[String]]("file ")
   }
 
@@ -44,94 +42,80 @@ object SbtBobbyPlugin extends AutoPlugin {
   //TODO de-stringify and use the Version object everywhere
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
-    mandatoryFileUrl := None,
-    checkMandatoryDependencyVersions := {
-      mandatoryFileUrl.value.map { mandatoryUrl =>
 
-        println("mandatoryUrl = " + mandatoryUrl)
+  //TODO get this from config
+    mandatoryFileUrl := Some("some-url"),
 
-        streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-        val conf = DeprecatedDependencyConfiguration(new URL(mandatoryUrl))
-        val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-          module -> DependencyChecker(conf).isDependencyValid(Dependency(module.organization, module.name), Version(module.revision))
-        }.toMap
-
-        dependencyResults
-      }.toTry(new Exception("URL for mandatory dependency versions not supplied"))
+    onLoad in Global := {
+      findDependenciesWithNewerVersions(compactDependencies(libraryDependencies.value), scalaVersion.value) _ compose (onLoad in Global).value
     },
-//    onLoad in Global := {
-////      runDependencyCheckTask(checkNexusDependencyVersions) _ compose (onLoad in Global).value
-//      runDependencyCheckTask(checkMandatoryDependencyVersions) _ compose (onLoad in Global).value
-//    },
-
-    checkNexusDependencyVersions := {
-      streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-      import uk.gov.hmrc.bobby.Nexus._
-
-      findLocalNexusCreds(streams.value.log).map { nexusCreds =>
-        streams.value.log.info(s"[bobby] using nexus at '${nexusCreds.host}'")
-
-        val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-          module -> checkDependency(module, findLatestRevision(module, scalaVersion.value, nexusCreds))
-        }.toMap
-
-        dependencyResults
-      }
+    onLoad in Global := {
+      findDeprecatedDependencies(mandatoryFileUrl.value, compactDependencies(libraryDependencies.value)) _ compose (onLoad in Global).value
     }
   )
 
-  def runDependencyCheckTask(task:TaskKey[Try[Map[ModuleID, DependencyCheckResult]]])(startState:State):State={
-    logger.info(s"[bobby] starting '${task.key.label}' task")
+  def findDeprecatedDependencies(configFileOpt: Option[String], dependencies: Seq[ModuleID])(startState: State): State = {
+    logger.info(s"[bobby] Checking for explicitly deprecated dependencies")
+    configFileOpt.fold {
+      logger.error("[bobby] Missing deprecated-dependencies configuration URL. See https://github.com/hmrc/bobby for details")
+      startState.fail
+    } { configFile =>
 
-    def failAndExit(reason:Throwable):State = {
-      logger.error("failed due to " + reason.getMessage)
-      logger.trace(reason)
-      startState.exit(false)
-    }
+      logger.info(s"[bobby] Taking configuration from $configFile")
+      val checker: DependencyChecker = DependencyChecker(DeprecatedDependencyConfiguration(new URL(configFile)))
 
-    def sensibilizeTaskResult[A](a:Option[(State, Result[Try[A]])]):Try[(State, A)]={
-      a.toTry(new Exception("problem executing task")).flatMap { case(s, r) =>
-        r.toEither.toTry.flatten.map { a => (s, a)}
+      dependencies.foldLeft(startState) {
+        case (currentState, module) => {
+          checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
+            case MandatoryFail(latest) =>
+              logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! Reason: ${latest.reason}")
+              currentState.exit(true)
+            case MandatoryWarn(latest) =>
+              logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! You will not be able to use it after ${latest.from}.  Reason: ${latest.reason}. Please consider upgrading")
+              currentState
+            case _ => currentState
+          }
+        }
       }
     }
+  }
 
-    val taskResult = sensibilizeTaskResult(Project.runTask(task, startState, false))
+  // TODO, use warn if the version is really old
+  def findDependenciesWithNewerVersions(dependencies: Seq[ModuleID], scalaVersion: String)(startState: State): State = {
+    import uk.gov.hmrc.bobby.Nexus._
+    logger.info(s"[bobby] Checking for out of date dependencies")
 
-    val result: Try[State] = taskResult.map { case(state, result) =>
-      outputResult(logger, result)
-      state
-    }
+    findLocalNexusCreds(logger).fold {
+      logger.error("[bobby] Could not find Nexus credentials in ~/.sbt/.credentials")
+      startState.fail
+    } { nexusCredentials =>
 
-    result match {
-      case Success(r) => r
-      case Failure(e) => failAndExit(e)
+      logger.info(s"[bobby] using nexus at '${nexusCredentials.host}'")
+      dependencies.foreach(module => {
+        checkDependency(module, findLatestRevision(module, scalaVersion, nexusCredentials)) match {
+          case NotFoundInNexus =>
+            logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
+          case NexusHasNewer(latest) =>
+            logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '$latest'")
+          case _ =>
+        }
+      })
+      startState
     }
   }
 
-  //TODO format this into some nice table
-  def outputResult(out:ConsoleLogger, dependencyResults: Map[ModuleID, DependencyCheckResult]) {
-    dependencyResults.foreach { case(module, result) => result match {
-      case MandatoryFail(latest) => out.error(s"[bobby] Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
-      case NotFoundInNexus       => out.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
-      case NexusHasNewer(latest) => out.warn(s"[bobby] Your version of ${module.name} is using '${module.revision}' out of date, consider upgrading to '$latest'")
-      case _ =>
-    }}
-    
-    dependencyResults.values.find {
-      _.fail
-    }.fold(
-        out.success("[bobby] No invalid dependencies")
-    ) { fail =>
-        out.warn("[bobby] One or more dependency version check failed, see previous error.\nThis means you are using an out-of-date library which is not allowed in services deployed on the Tax Platform.")
+
+  def compactDependencies(dependencies: Seq[ModuleID]) = {
+
+    val b = new ListBuffer[ModuleID]()
+    val seen = mutable.HashSet[String]()
+    for (x <- dependencies) {
+      if (!seen(s"${x.organization}.${x.name}" )) {
+        b += x
+        seen += s"${x.organization}.${x.name}"
       }
-  }
-
-  implicit class OptionPimp[A](o:Option[A]){
-    def toTry(ex:Exception):Try[A] = o.map(Success(_)).getOrElse(Failure(ex))
-  }
-
-  implicit class EitherPimp[L <: Throwable,R](e:Either[L,R]){
-    def toTry:Try[R] = e.fold(Failure(_), Success(_))
+    }
+    b.toSeq
   }
 }
 

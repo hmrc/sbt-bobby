@@ -6,7 +6,7 @@ object Version{
 
   def apply(st:String):Version = Version(st.split('.').toSeq)
 
-  def comparator(v1:Version, v2:Version):Boolean = v1.isBefore(v2)
+  def comparator(v1:Version, v2:Version):Boolean = v1.isAfter(v2)
 
   def isEarlyRelease(v:Version):Boolean={
     Try { Integer.parseInt(v.parts.last) }.isFailure
