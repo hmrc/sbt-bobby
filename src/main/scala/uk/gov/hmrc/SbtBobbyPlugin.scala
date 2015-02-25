@@ -15,18 +15,15 @@
  */
 package uk.gov.hmrc
 
-import java.net.URL
-
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.DependencyChecker
+import uk.gov.hmrc.bobby.conf.DeprecatedDependencyConfiguration
 
-import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
-  import uk.gov.hmrc.bobby.domain.Core._
   import uk.gov.hmrc.bobby.domain._
 
   val logger = ConsoleLogger()
@@ -37,19 +34,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val checkMandatoryDependencyVersions = taskKey[Try[Map[ModuleID, DependencyCheckResult]]]("Check if each dependency is the newest and warn/fail if required, configured in '~/.sbt/global.sbt'")
     lazy val mandatoryFileUrl = settingKey[Option[String]]("file ")
   }
-//
-//  def check = Command.args("mandatoryCheck", "<url>") { (state, args) =>
-//    args.headOption.map { head =>
-//      println("head = " + head)
-//      val mandatories: Map[OrganizationName, String] = getMandatoryVersions(Source.fromURL(head).mkString)
-//
-//      val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-//        module -> getMandatoryResult(module, mandatories)
-//      }.toMap
-//
-//      dependencyResults
-//    }.getOrElse(state.fail)
-//  }
 
   def bobbyNexus = autoImport.mandatoryFileUrl in Global
 
@@ -58,27 +42,18 @@ object SbtBobbyPlugin extends AutoPlugin {
   import uk.gov.hmrc.SbtBobbyPlugin.autoImport._
 
   //TODO de-stringify and use the Version object everywhere
-  //TODO move more code into Core
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
     mandatoryFileUrl := None,
     checkMandatoryDependencyVersions := {
-//      import sbt.complete.DefaultParsers._
-//
-//      val args: Seq[String] = spaceDelimited("<arg>").parsed
-//
-//      println("args = " + args)
-//
-//      args.headOption.map { mandatoryUrl =>
       mandatoryFileUrl.value.map { mandatoryUrl =>
 
         println("mandatoryUrl = " + mandatoryUrl)
 
         streams.value.log.debug(s"[bobby] is now interrogating the dependencies to in '${name.value}''")
-        val mandatories: Map[DependencyName, Seq[Exclude]] = getMandatoryVersionsJson(Source.fromURL(mandatoryUrl).mkString)
-
+        val conf = DeprecatedDependencyConfiguration(new URL(mandatoryUrl))
         val dependencyResults: Map[ModuleID, DependencyCheckResult] = libraryDependencies.value.map { module =>
-          module -> getMandatoryResult(module, mandatories)
+          module -> DependencyChecker(conf).isDependencyValid(Dependency(module.organization, module.name), Version(module.revision))
         }.toMap
 
         dependencyResults
@@ -149,14 +124,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     ) { fail =>
         out.warn("[bobby] One or more dependency version check failed, see previous error.\nThis means you are using an out-of-date library which is not allowed in services deployed on the Tax Platform.")
       }
-  }
-
-
-  def getMandatoryResult(module:ModuleID, mandatories: Map[DependencyName, Seq[Exclude]]): DependencyCheckResult ={
-    mandatories.get(DependencyName(module)) match {
-      case Some(mandatoryVersion) => DependencyChecker(mandatoryVersion).isVersionValid(Version(module.revision))
-      case _ => OK
-    }
   }
 
   implicit class OptionPimp[A](o:Option[A]){
