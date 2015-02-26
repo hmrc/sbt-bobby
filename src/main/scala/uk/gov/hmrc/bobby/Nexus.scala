@@ -3,6 +3,7 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import sbt.{Logger, ModuleID}
+import uk.gov.hmrc.bobby.conf.ConfigFile
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -19,12 +20,9 @@ object Nexus{
     val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
     out.info(s"[bobby] reading nexus credentials from $credsFile")
 
-    val credMap = Source.fromFile(credsFile)
-      .getLines().toSeq
-      .map(_.split("="))
-      .map { case Array(key, value) => key -> value}.toMap
+    val cf = new ConfigFile(credsFile)
 
-    NexusCredentials(credMap)
+    NexusCredentials(cf.getString("host"), cf.getString("user"), cf.getString("password"))
   }
 
   // TODO fail if nexus version is 2 or more major releases behind
@@ -60,13 +58,6 @@ object Nexus{
 
   case class NexusCredentials(host:String, username:String, password:String){
     def buildSearchUrl(searchQuery:String) = s"https://${username}:${password}@${host}/service/local/lucene/search?a=$searchQuery"
-  }
-
-  object NexusCredentials{
-    def apply(credMap:Map[String, String]):NexusCredentials = NexusCredentials(
-      credMap("host"),
-      credMap("user"),
-      credMap("password"))
   }
 
 
