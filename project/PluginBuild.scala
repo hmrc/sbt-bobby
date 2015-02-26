@@ -32,13 +32,13 @@ object PluginBuild extends Build {
       Opts.resolver.sonatypeSnapshots
     ),
     libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "play-json" % "2.4.0-M1",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test"
     ),
     publishArtifact := true,
     publishArtifact in Test := false
   ) ++ SonatypeBuild()
   )
-
 }
 
 

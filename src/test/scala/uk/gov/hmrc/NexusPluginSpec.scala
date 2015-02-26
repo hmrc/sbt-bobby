@@ -15,10 +15,9 @@
  */
 package uk.gov.hmrc
 
-import org.scalatest.{FlatSpec, FunSpec, Matchers}
+import org.scalatest.{FlatSpec, FunSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.Nexus
-import uk.gov.hmrc.bobby.domain.Core.OrganizationName
-import uk.gov.hmrc.bobby.domain.{Core, Version}
+import uk.gov.hmrc.bobby.domain.Version
 
 class NexusPluginSpec extends FlatSpec with Matchers {
 
@@ -31,18 +30,7 @@ class NexusPluginSpec extends FlatSpec with Matchers {
   }
 }
 
-class CoreSpec extends FunSpec with Matchers{
-
-  it("should read mandatory versions"){
-    val mandatoryVersionsString = """# this is a comment.
-                              |org.scala-lang,scala-library,2.11.2
-                              |uk.gov.hmrc,play-health,0.3.0""".stripMargin('|')
-
-    val mandatoryVersions = Core.getMandatoryVersions(mandatoryVersionsString)
-
-    mandatoryVersions(OrganizationName("org.scala-lang", "scala-library")) shouldBe "2.11.2"
-    mandatoryVersions(OrganizationName("uk.gov.hmrc", "play-health")) shouldBe "0.3.0"
-  }
+class CoreSpec extends FunSpec with Matchers with OptionValues{
 
   it("should get versions from Nexus search results"){
 
