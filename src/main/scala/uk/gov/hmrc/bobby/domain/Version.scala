@@ -23,9 +23,12 @@ case class Version(parts:Seq[String]) extends Comparable [Version] {
 
   override def compareTo(version: Version): Int =
     parts.zip(version.parts).foldLeft(0){ case(result, (p1, p2)) => result match {
-    case 0  => p1.compare(p2)
+    case 0 if isAllDigits(p1) && isAllDigits(p2)  => p1.toInt.compare(p2.toInt)
+    case 0 => p1.compare(p2)
     case _ => result
   }}
+
+  private def isAllDigits(x: String) = x forall Character.isDigit
 
   override def equals(obj: scala.Any): Boolean = obj match {
     case v: Version => compareTo(v) == 0
