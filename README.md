@@ -60,7 +60,7 @@ The format of the json is an array of rows like:
 | [1.2.0,1.3.0]  | 1.2.0 <= x <= 1.3.0  |
 | [1.0.0,2.0.0)  | 1.0.0 <= x < 2.0.0  |
 | [1.5.0,)  | x >= 1.5.0  |
-| [*-SNAPSHOT | Any version with qualifier 'SNAPSHOT' |
+| [*-SNAPSHOT] | Any version with qualifier 'SNAPSHOT' |
 
 
 
