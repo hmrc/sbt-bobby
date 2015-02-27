@@ -37,17 +37,14 @@ object PluginBuild extends Build {
     ),
     publishArtifact := true,
     publishArtifact in Test := false
-  ) ++ SonatypeBuild()
+  ) ++ ArtefactDescription()
   )
 }
 
 
-object SonatypeBuild {
+object ArtefactDescription {
 
-  import xerial.sbt.Sonatype._
-
-  def apply() = {
-    sonatypeSettings ++ Seq(
+  def apply() = Seq(
       pomExtra := (<url>https://www.gov.uk/government/organisations/hm-revenue-customs</url>
         <licenses>
           <license>
@@ -73,6 +70,5 @@ object SonatypeBuild {
           </developer>
         </developers>)
     )
-  }
 
 }
