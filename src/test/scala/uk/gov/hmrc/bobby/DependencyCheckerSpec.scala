@@ -104,4 +104,26 @@ class DependencyCheckerSpec extends FlatSpec with Matchers {
     DependencyChecker(Seq.empty).isDependencyValid(Dependency("org", "me"), Version("1.2.3")) shouldBe OK
   }
 
+  it should "return failed result if the version has snapshot and [*-SNAPSHOT] range is set" in {
+    val d = Dependency("uk.gov.hmrc", "some-service")
+    val dc = DependencyChecker(List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(d, Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+  }
+
+  it should "return ok result if the version has no snapshot and [*-SNAPSHOT] range is set" in {
+    val d = Dependency("uk.gov.hmrc", "some-service")
+    val dc = DependencyChecker(List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(d, Version("0.1.0")) shouldBe OK
+  }
+
+  it should "support '*' wildcard in organisation and name" in {
+    val dc = DependencyChecker(List(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+  }
+
+  it should "support '*' wildcard in name only" in {
+    val dc = DependencyChecker(List(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(Dependency("org.scalatest", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe OK
+  }
 }

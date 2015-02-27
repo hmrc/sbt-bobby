@@ -15,35 +15,75 @@
  */
 package uk.gov.hmrc.bobby.domain
 
-import scala.util.Try
+object Version {
 
-object Version{
+  val HasDash = "^(.*)-(.*)".r
 
-  def apply(st:String):Version = Version(st.split('.').toSeq)
+  private def isAllDigits(x: String) = x forall Character.isDigit
 
-  def comparator(v1:Version, v2:Version):Boolean = v1.isAfter(v2)
+  def apply(st: String): Version = {
 
-  def isEarlyRelease(v:Version):Boolean={
-    Try { Integer.parseInt(v.parts.last) }.isFailure
+    val split = st.split("-", 2)
+    val vv = toVer(split.lift(0).getOrElse("0"))
+    val boq = toBoq(split.lift(1))
+
+    if(vv == (0,0,0)) Version(0,0,0,Some(Right(st)))
+    else Version(vv._1, vv._2, vv._3, boq)
   }
+
+  def toVer(v: String):(Int, Int, Int) = {
+    val elem = v.split('.')
+    if (elem.forall(x => isAllDigits(x)) &&
+      elem.size <= 3 &&
+      !v.startsWith(".") &&
+      !v.endsWith(".") &&
+      !v.contains("..")
+    ) (elem.lift(0).getOrElse("0").toInt, elem.lift(1).getOrElse("0").toInt, elem.lift(2).getOrElse("0").toInt)
+    else (0,0,0)
+  }
+  def toBoq(boqStOpt: Option[String]): Option[Either[Long, String]] = boqStOpt.map(boqSt => if (isAllDigits(boqSt)) Left(boqSt.toLong) else Right(boqSt))
+
+  def comparator(v1: Version, v2: Version): Boolean = v1.isAfter(v2)
+
+  def isEarlyRelease(v: Version): Boolean = v.buildOrQualifier.isDefined
 }
 
-case class Version(parts:Seq[String]) extends Comparable [Version] {
+case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Option[Either[Long, String]] = None) extends Comparable[Version] {
 
-  def isBefore(version: Version): Boolean =  this.compareTo(version) < 0
+  def isBefore(version: Version): Boolean = this.compareTo(version) < 0
 
   def isAfter(version: Version) = this.compareTo(version) > 0
 
-  override def toString = parts.mkString(".")
+  override def toString = s"$major.$minor.$revision${buildOrQualifier.getOrElse("")}"
 
-  override def compareTo(version: Version): Int =
-    parts.zip(version.parts).foldLeft(0){ case(result, (p1, p2)) => result match {
-    case 0 if isAllDigits(p1) && isAllDigits(p2)  => p1.toInt.compare(p2.toInt)
-    case 0 => p1.compare(p2)
-    case _ => result
-  }}
+  val parts = List(major, minor, revision)
+  val QUALIFIERS = List( "snapshot", "alpha", "beta", "milestone", "rc", "sp" )
 
-  private def isAllDigits(x: String) = x forall Character.isDigit
+  override def compareTo(version: Version): Int = {
+
+    val partsComparison = parts.zip(version.parts).foldLeft(0) {
+      case (result, (p1, p2)) => result match {
+        case 0 => p1.compare(p2)
+        case _ => result
+      }
+    }
+
+    partsComparison match {
+      case 0 => buildOrQualifier -> version.buildOrQualifier match {
+        case (None, None) => 0
+        case (None, Some(Left(b))) => -1
+        case (None, Some(Right(q))) => 1
+        case (Some(Left(b)), None) => 1
+        case (Some(Right(q)), None) => -1
+        case (Some(Left(b1)), Some(Right(s2))) => 1
+        case (Some(Right(s1)), Some(Left(b2))) => -1
+        case (Some(Left(b1)), Some(Left(b2))) => b1.compareTo(b2)
+        case (Some(Right(s1)), Some(Right(s2))) => s1.compareTo(s2)
+      }
+      case _ => partsComparison
+    }
+  }
+
 
   override def equals(obj: scala.Any): Boolean = obj match {
     case v: Version => compareTo(v) == 0

@@ -97,6 +97,16 @@ class VersionRangeSpec extends FlatSpec with Matchers {
 
   }
 
+  it should "read the '[*-SNAPSHOT]' range'" in {
+    val r = VersionRange("[*-SNAPSHOT]")
+
+    r.lowerBound shouldBe None
+    r.lowerBoundInclusive shouldBe false
+    r.upperBound shouldBe None
+    r.upperBoundInclusive shouldBe false
+    r.qualifierStartsWith shouldBe Some("SNAPSHOT")
+  }
+
   it should "throw an IllegalArgumentException when incomplete version is provided" in {
     an[IllegalArgumentException] should be thrownBy VersionRange("[1.5,)")
   }
@@ -118,16 +128,28 @@ class VersionRangeSpec extends FlatSpec with Matchers {
   it should "include 1.2.5 when the expression is [1.2.0,1.3.0]" in {
     VersionRange("[1.2.0,1.3.0]").includes(Version("1.2.5")) shouldBe true
   }
+
   it should "include 0.2.0 when the expression is (,1.0.0]" in {
     VersionRange("(,1.0.0]").includes(Version("0.2.0")) shouldBe true
   }
+
   it should "include 1.2.0 when the expression is [1.0.0,)" in {
     VersionRange("[1.0.0,)").includes(Version("1.2.0")) shouldBe true
   }
+
   it should "not include the left boundary when the expression is (1.0.0,)" in {
     VersionRange("(1.0.0,)").includes(Version("1.0.0")) shouldBe false
   }
+
   it should "not include the right boundary when the expression is (,1.0.0)" in {
     VersionRange("(,1.0.0)").includes(Version("1.0.0")) shouldBe false
+  }
+
+  it should "include snapshots when the version is 1.0.0-SNAPSHOT" in {
+    VersionRange("[*-SNAPSHOT]").includes(Version("1.0.0-SNAPSHOT")) shouldBe true
+  }
+
+  it should "not include snapshots when the version is 1.0.0" in {
+    VersionRange("[*-SNAPSHOT]").includes(Version("1.0.0")) shouldBe false
   }
 }
