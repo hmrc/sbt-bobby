@@ -15,12 +15,11 @@
  */
 package uk.gov.hmrc.bobby
 
-import java.net.URL
+import java.net.{URL, URLEncoder}
 
 import sbt.{Logger, ModuleID}
 import uk.gov.hmrc.bobby.conf.ConfigFile
 
-import scala.io.Source
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
@@ -72,7 +71,8 @@ object Nexus{
   }
 
   case class NexusCredentials(host:String, username:String, password:String){
-    def buildSearchUrl(searchQuery:String) = s"https://${username}:${password}@${host}/service/local/lucene/search?a=$searchQuery"
+    import java.net.URLEncoder.encode
+    def buildSearchUrl(searchQuery:String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
   }
 
 
