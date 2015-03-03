@@ -40,12 +40,13 @@ The format of the json is an array of rows like:
 ```
 [
 { "organisation" : "uk.gov.hmrc", "name" : "my-library", "range" : "(,6.0.0)", "reason" : "Versions older than 6.0.0 have a security vulnerability", "from" : "2015-03-15" },
-{ "organisation" : "uk.gov.hmrc", "name" : "my-other-library", "range" : "[1.2.0]", "reason" : "1.2.0 has a but", "from" : "2015-03-15" }
+{ "organisation" : "uk.gov.hmrc", "name" : "my-other-library", "range" : "[1.2.0]", "reason" : "1.2.0 has a bug", "from" : "2015-03-15" }
+{ "organisation" : "*", "name" : "*", "range" : "[*-SNAPSHOT]", "reason" : "You shouldn't be deploying a snapshot to production should you?", "from" : "2000-01-01" }
 ]
 ```
 
 ###### Where:
-* _organisation_ and _name_ identify the dependency
+* _organisation_ and _name_ identify the dependency. You can use '*' as wildcard
 * _range_ is used to declare minimum, maximum allowed versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
 * _reason_ tells why the versions in range are deprecated
 * _from_ tells when the versions in range become unsupported. The builds will fail after that day. Before only a warning is shown.
@@ -59,6 +60,7 @@ The format of the json is an array of rows like:
 | [1.2.0,1.3.0]  | 1.2.0 <= x <= 1.3.0  |
 | [1.0.0,2.0.0)  | 1.0.0 <= x < 2.0.0  |
 | [1.5.0,)  | x >= 1.5.0  |
+| [*-SNAPSHOT] | Any version with qualifier 'SNAPSHOT' |
 
 
 

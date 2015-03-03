@@ -34,12 +34,12 @@ class CoreSpec extends FunSpec with Matchers with OptionValues{
 
   it("should get versions from Nexus search results"){
 
-    Nexus.versionsFromNexus(xml) shouldBe Seq(Version(Seq("2", "2", "3-SNAP1")), Version(Seq("2", "2", "2")))
+    Nexus.versionsFromNexus(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
   }
 
   it("should recognise an early release"){
-    Version.isEarlyRelease(Version(Seq("2", "2", "3-SNAP1"))) shouldBe true
-    Version.isEarlyRelease(Version(Seq("2", "2", "2"))) shouldBe false
+    Version.isEarlyRelease(Version(2,2,3, Some(Right("SNAP1")))) shouldBe true
+    Version.isEarlyRelease(Version(2,2,2)) shouldBe false
   }
 
   val xml = <searchNGResponse>
