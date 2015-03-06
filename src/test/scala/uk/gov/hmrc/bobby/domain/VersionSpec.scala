@@ -162,4 +162,13 @@ class VersionSpec extends FlatSpec with Matchers {
   it should "work for '2.0.0.v200706041905-7C78EK9E_EkMNfNOd2d8qq' < 2.0.0.v200706041906-7C78EK9E_EkMNfNOd2d8qq" in {
     Version("2.0.0.v200706041905-7C78EK9E_EkMNfNOd2d8qq").isBefore(Version("2.0.0.v200706041906-7C78EK9E_EkMNfNOd2d8qq")) shouldBe true
   }
+
+  "Version" should "recognise an early release" in {
+    Version.isEarlyRelease(Version(2,2,3, Some(Right("SNAP1")))) shouldBe true
+    Version.isEarlyRelease(Version(2,2,2)) shouldBe false
+  }
+
+  it should "recognise '*-FINAL' as a release" in {
+    Version.isEarlyRelease(Version(2,2,3, Some(Right("FINAL")))) shouldBe false
+  }
 }

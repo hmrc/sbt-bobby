@@ -45,7 +45,11 @@ object Version {
 
   def comparator(v1: Version, v2: Version): Boolean = v1.isAfter(v2)
 
-  def isEarlyRelease(v: Version): Boolean = v.buildOrQualifier.isDefined
+  def isEarlyRelease(v: Version): Boolean = v.buildOrQualifier match {
+    case None => false
+    case Some(Right("FINAL")) => false
+    case Some(_) => true
+  }
 }
 
 case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Option[Either[Long, String]] = None) extends Comparable[Version] {
@@ -57,7 +61,6 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
   override def toString = s"$major.$minor.$revision${buildOrQualifier.getOrElse("")}"
 
   val parts = List(major, minor, revision)
-  val QUALIFIERS = List( "snapshot", "alpha", "beta", "milestone", "rc", "sp" )
 
   override def compareTo(version: Version): Int = {
 

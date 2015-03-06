@@ -19,7 +19,7 @@ import org.scalatest.{FlatSpec, FunSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.Nexus
 import uk.gov.hmrc.bobby.domain.Version
 
-class NexusPluginSpec extends FlatSpec with Matchers {
+class NexusSpec extends FlatSpec with Matchers with OptionValues{
 
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
     Nexus.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
@@ -28,18 +28,9 @@ class NexusPluginSpec extends FlatSpec with Matchers {
   "2.10" should "be shortened to 2.10" in {
     Nexus.shortenScalaVersion("2.10") shouldBe "2.10"
   }
-}
 
-class CoreSpec extends FunSpec with Matchers with OptionValues{
-
-  it("should get versions from Nexus search results"){
-
+  "Nexus lucene client" should "get versions from Nexus search results" in {
     Nexus.versionsFromNexus(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
-  }
-
-  it("should recognise an early release"){
-    Version.isEarlyRelease(Version(2,2,3, Some(Right("SNAP1")))) shouldBe true
-    Version.isEarlyRelease(Version(2,2,2)) shouldBe false
   }
 
   val xml = <searchNGResponse>
