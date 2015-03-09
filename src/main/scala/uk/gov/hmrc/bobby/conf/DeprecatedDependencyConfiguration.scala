@@ -18,12 +18,32 @@ package uk.gov.hmrc.bobby.conf
 import java.net.URL
 
 import play.api.libs.json.Json
+import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain.DeprecatedDependency
 
 import scala.io.Source
 
 object DeprecatedDependencyConfiguration {
 
-  def apply(url: URL): Seq[DeprecatedDependency] = this(Source.fromURL(url).mkString)
+  val timeout = 3000
+  val logger = ConsoleLogger()
+
+  def apply(url: URL): Seq[DeprecatedDependency] = {
+    try {
+
+      val conn = url.openConnection()
+      conn.setConnectTimeout(timeout)
+      conn.setReadTimeout(timeout)
+      val inputStream = conn.getInputStream
+
+
+      this(Source.fromInputStream(inputStream).mkString)
+    } catch {
+      case e: Exception =>
+        logger.warn(s"[bobby] Unable load configuration from ${url.toString}: ${e.getMessage}")
+        Seq.empty
+    }
+  }
+
   def apply(jsonConfig: String): Seq[DeprecatedDependency] = Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
 }

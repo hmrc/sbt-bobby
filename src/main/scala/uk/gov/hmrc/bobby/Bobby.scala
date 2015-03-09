@@ -71,19 +71,18 @@ object Bobby {
 
   // TODO, use warn if the version is really old
   def findDependenciesWithNewerVersions(dependencies: Seq[ModuleID], scalaVersion: String)(startState: State): State = {
-    import uk.gov.hmrc.bobby.Nexus._
     logger.info(s"[bobby] Checking for out of date dependencies")
 
     val compacted = compactDependencies(dependencies)
 
-    findLocalNexusCreds(logger).fold {
+    Nexus.findLocalNexusCreds().fold {
       logger.error("[bobby] Could not find Nexus credentials in ~/.sbt/.credentials")
       startState.fail
     } { nexusCredentials =>
 
       logger.info(s"[bobby] using nexus at '${nexusCredentials.host}'")
       compacted.foreach(module => {
-        checkDependency(module, findLatestRevision(module, scalaVersion, nexusCredentials)) match {
+        Nexus.checkDependency(module, Nexus.findLatestRevision(module, scalaVersion, nexusCredentials)) match {
           case NotFoundInNexus =>
             logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
           case NexusHasNewer(latest) =>
