@@ -28,39 +28,41 @@ object Bobby {
 
   val logger = ConsoleLogger()
 
-  def findDeprecatedDependencies(dependencies: Seq[ModuleID])(startState: State): State = {
+  def findDeprecatedDependencies(dependencies: Seq[ModuleID], scalaVersion: String)(startState: State): State = {
     logger.info(s"[bobby] Checking for explicitly deprecated dependencies")
 
     val compacted = compactDependencies(dependencies)
 
-    val ddlfc = System.getProperty("user.home") + "/.sbt/bobby"
-    logger.info(s"[bobby] reading bobby configuration from $ddlfc")
+    val ddlfc = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
-    val configFileOpt: Option[String] = {
+    val bobbyConfig: Option[String] =  new ConfigFile(ddlfc).get("deprecated-dependencies")
+    val nexusConfig = Nexus.findLocalNexusCreds()
 
-      val cf = new ConfigFile(ddlfc)
-
-      cf.hasPath("deprecated-dependencies") match {
-        case false => None
-        case true => Some(cf.getString("deprecated-dependencies"))
-      }
-    }
-
-    configFileOpt.fold {
+    if(bobbyConfig.isEmpty) {
       logger.warn(s"deprecated-dependencies configuration not found. Continuing without checking for deprecated dependencies")
       startState
-    } { configFile =>
+    } else if( nexusConfig.isEmpty){
+      logger.error("[bobby] Could not find Nexus credentials in ~/.sbt/.credentials")
+      startState.exit(true)
+    } else {
 
-      val checker: DependencyChecker = DependencyChecker(DeprecatedDependencyConfiguration(new URL(configFile)))
+      val checker: DependencyChecker = DependencyChecker(DeprecatedDependencyConfiguration(new URL(bobbyConfig.get)))
 
       compacted.foldLeft(startState) {
         case (currentState, module) => {
           checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
             case MandatoryFail(latest) =>
-              logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! Reason: ${latest.reason}")
+              val latestRevision: Option[String] = Nexus.findLatestRevision(module, scalaVersion, nexusConfig.get)
+              logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! " +
+                s"Reason: ${latest.reason}. " +
+                s"${latestRevision.map(v => s"Please consider using '$v' instead").getOrElse("")}")
               currentState.exit(true)
             case MandatoryWarn(latest) =>
-              logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! You will not be able to use it after ${latest.from}.  Reason: ${latest.reason}. Please consider upgrading")
+              val latestRevision: Option[String] = Nexus.findLatestRevision(module, scalaVersion, nexusConfig.get)
+              logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
+                s"You will not be able to use it after ${latest.from}.  " +
+                s"Reason: ${latest.reason}. Please consider upgrading" +
+                s"${latestRevision.map(v => s"to '$v'").getOrElse("")}")
               currentState
             case _ => currentState
           }

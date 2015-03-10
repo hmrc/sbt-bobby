@@ -15,18 +15,30 @@
  */
 package uk.gov.hmrc.bobby.conf
 
+import sbt.ConsoleLogger
+
 import scala.io.Source
 
 class ConfigFile(fileName: String) {
+  val logger = ConsoleLogger()
 
-  private val kvMap = {
-    Source.fromFile(fileName)
-      .getLines().toSeq
-      .map(_.split("="))
-      .map { case Array(key, value) => key.trim -> value.trim}.toMap
+  private val kvMap: Map[String, String] = {
+    try {
+      Source.fromFile(fileName)
+        .getLines().toSeq
+        .map(_.split("="))
+        .map { case Array(key, value) => key.trim -> value.trim}.toMap
+    } catch {
+      case e: Exception =>
+        logger.warn(s"[bobby] Unable to find the configuration. ${e.getClass.getName}: ${e.getMessage}")
+        Map.empty
+    }
   }
 
   def getString(path: String) = kvMap(path)
+
+  def get(path: String) = kvMap.get(path)
+
   def hasPath(path: String) = kvMap.isDefinedAt(path)
 
 }

@@ -33,8 +33,6 @@ object Nexus {
 
   def findLocalNexusCreds(): Option[NexusCredentials] = Option {
     val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
-    logger.info(s"[bobby] reading nexus credentials from $credsFile")
-
     val cf = new ConfigFile(credsFile)
 
     NexusCredentials(cf.getString("host"), cf.getString("user"), cf.getString("password"))
