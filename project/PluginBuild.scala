@@ -19,7 +19,7 @@ import Keys._
 object PluginBuild extends Build {
 
   val pluginName = "bobby"
-  val pluginVersion = "0.4.0-SNAPSHOT"
+  val pluginVersion = "0.4.0"
 
   lazy val root = Project(pluginName, base = file("."), settings = Seq(
     version := pluginVersion,
