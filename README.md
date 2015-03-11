@@ -14,7 +14,7 @@ In your "~/.sbt/0.13/plugins/build.sbt"
 
 set
 ```
-addSbtPlugin("uk.gov.hmrc" % "bobby" % "0.4.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.4.0")
 ```
 
 
@@ -28,7 +28,7 @@ To tell Bobby where to find this file use ~/.sbt/bobby setting a 'deprecated-dep
 
 Bobby can read both local or remote files:
 ```
-deprecated-dependencies = https://some-url/bobby-config/deprecated-dependencies.json
+deprecated-dependencies = https://some-url/deprecated-dependencies.json
 ```
 or
 ```

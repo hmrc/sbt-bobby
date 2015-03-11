@@ -18,8 +18,8 @@ import Keys._
 
 object PluginBuild extends Build {
 
-  val pluginName = "bobby"
-  val pluginVersion = "0.4.0"
+  val pluginName = "sbt-bobby"
+  val pluginVersion = "0.5.0"
 
   lazy val root = Project(pluginName, base = file("."), settings = Seq(
     version := pluginVersion,
@@ -53,11 +53,16 @@ object ArtefactDescription {
           </license>
         </licenses>
         <scm>
-          <connection>scm:git@github.com:hmrc/bobby.git</connection>
-          <developerConnection>scm:git@github.com:hmrc/bobby.git</developerConnection>
-          <url>git@github.com:hmrc/bobby.git</url>
+          <connection>scm:git@github.com:hmrc/sbt-bobby.git</connection>
+          <developerConnection>scm:git@github.com:hmrc/sbt-bobby.git</developerConnection>
+          <url>git@github.com:hmrc/sbt-bobby.git</url>
         </scm>
         <developers>
+          <developer>
+            <id>jakobgrunig</id>
+            <name>Jakob Grunig</name>
+            <url>http://www.equalexperts.com</url>
+          </developer>
           <developer>
             <id>charleskubicek</id>
             <name>Charles Kubicek</name>
