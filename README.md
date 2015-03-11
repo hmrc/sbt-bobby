@@ -8,7 +8,7 @@ Currently version 0.5.0 checks your projects' dependency versions against the la
 
 Bobby will search for your nexus credentials in /.sbt/.credentials.
 
-#How To Use (currently influx)
+#How To Use
 
 In your "~/.sbt/0.13/plugins/build.sbt"
 
