@@ -1,12 +1,18 @@
 #Overview
-This is an Sbt plugin that can be used to ensure up-to-date dependencies are being used in an SBT project.
+Bobby is an Sbt plugin that prevents outdated dependencies from being used by your project.
+
 
 #Background
-It can be hard to ensure that distributed teams upgrade to the latest version of a dependency. This is a problem when there are security fixes or other reasons to require a library to be upgraded. Bobby provides the capability to fail builds which have out-of-date dependencies. Ideally communications will be in place to ensure updates happen but Bobby acts as a safety net of last resort.
+It can be hard to ensure that distributed teams upgrade to the latest version of a dependency. 
+This is a problem when there are security fixes or other reasons to require a library to be upgraded. 
 
-Currently version 0.5.0 checks your projects' dependency versions against the latest available.
+Bobby provides the capability to fail builds which have outdated dependencies. 
+Ideally communications will be in place to ensure updates happen but Bobby acts as a safety net of last resort.
 
-Bobby will search for your nexus credentials in /.sbt/.credentials.
+Bobby also checks your projects' dependency versions against the latest available.
+If a newer one is available it suggests to use it without failing the build.
+The current version looks into nexus for this, using what is defined in ~/.sbt/.credentials. 
+If undefined it skips this step
 
 #How To Use
 
@@ -18,25 +24,10 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.5.0")
 ```
 
 
-#### Deprecated Dependencies
+#### Outdated Dependencies
 
-It is possible to manually mark certain dependency versions as deprecated. The use of deprecated versions will make the build fail.
-This is done via a json file containing the list of all the deprecated libraries
-The file name is 'deprecated-dependencies.json'
-
-To tell Bobby where to find this file use ~/.sbt/bobby setting a 'deprecated-dependencies' property
-
-Bobby can read both local or remote files:
-```
-deprecated-dependencies = https://some-url/deprecated-dependencies.json
-```
-or
-```
-deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
-```
-
-
-The format of the json is an array of rows like:
+To prevent outdated dependencies from being used by your project, create a blacklist of version ranges. 
+For example
 ```
 [
 { "organisation" : "uk.gov.hmrc", "name" : "my-library", "range" : "(,6.0.0)", "reason" : "Versions older than 6.0.0 have a security vulnerability", "from" : "2015-03-15" },
@@ -44,15 +35,23 @@ The format of the json is an array of rows like:
 { "organisation" : "*", "name" : "*", "range" : "[*-SNAPSHOT]", "reason" : "You shouldn't be deploying a snapshot to production should you?", "from" : "2000-01-01" }
 ]
 ```
+Tell Bobby where to find the file containing the list by setting a 'deprecated-dependencies' property in ~/.sbt/bobby
+Bobby can read both local or remote files:
+```
+deprecated-dependencies = https://some-url/deprecated-dependencies.json
+deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
+```
 
-###### Where:
+
+###### Blacklist:
+The blacklist must be a json with a list of rows where:
 * _organisation_ and _name_ identify the dependency. You can use '*' as wildcard
 * _range_ is used to declare minimum, maximum allowed versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
 * _reason_ tells why the versions in range are deprecated
 * _from_ tells when the versions in range become unsupported. The builds will fail after that day. Before only a warning is shown.
 
 
-##### Supported Version Ranges
+###### Supported Version Ranges
 | Range  | Meaning  |
 |---|---|
 | (,1.0.0]  | x <= 1.0.0  |
