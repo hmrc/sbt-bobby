@@ -15,14 +15,15 @@
  */
 import sbt._
 import Keys._
+import com.typesafe.sbt.SbtGit._
 
 object PluginBuild extends Build {
 
   val pluginName = "sbt-bobby"
-  val pluginVersion = "0.6.0-SNAPSHOT"
 
-  lazy val root = Project(pluginName, base = file("."), settings = Seq(
-    version := pluginVersion,
+  lazy val root = Project(pluginName, base = file("."), settings =
+    versionWithGit ++
+    Seq(
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
     name := pluginName,
@@ -36,7 +37,8 @@ object PluginBuild extends Build {
       "org.scalatest" %% "scalatest" % "2.2.1" % "test"
     ),
     publishArtifact := true,
-    publishArtifact in Test := false
+    publishArtifact in Test := false,
+    git.useGitDescribe := true
   ) ++ ArtefactDescription()
   )
 }
