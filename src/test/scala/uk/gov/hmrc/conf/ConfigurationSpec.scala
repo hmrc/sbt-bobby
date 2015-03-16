@@ -17,14 +17,14 @@ package uk.gov.hmrc.conf
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.hmrc.bobby.conf.DeprecatedDependencyConfiguration
+import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.VersionRange
 
-class DeprecatedDependencyConfigurationSpec extends FlatSpec with Matchers {
+class ConfigurationSpec extends FlatSpec with Matchers {
 
   "The Configuration parser" should "read a well formatted json file with one element" in {
 
-    val c = DeprecatedDependencyConfiguration(
+    val c = Configuration(
       """
         |[
         |   { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
@@ -41,7 +41,7 @@ class DeprecatedDependencyConfigurationSpec extends FlatSpec with Matchers {
 
   it should "read a well formatted json file with multiple elements" in {
 
-    val c = DeprecatedDependencyConfiguration(
+    val c = Configuration(
       """
         |[
         |   { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" },

@@ -15,41 +15,24 @@
  */
 package uk.gov.hmrc.bobby
 
-import java.net.{URL, URLEncoder}
+import java.net.URL
 
-import sbt.{ConsoleLogger, Logger, ModuleID}
-import uk.gov.hmrc.bobby.conf.ConfigFile
+import sbt.{ConsoleLogger, ModuleID}
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
 
-object Nexus {
+trait Nexus {
 
   import uk.gov.hmrc.bobby.domain.Version._
   import uk.gov.hmrc.bobby.domain._
 
   val logger = ConsoleLogger()
 
-  def findLocalNexusCreds(): Option[NexusCredentials] = Option {
-    val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
-    val cf = new ConfigFile(credsFile)
+  val nexus: NexusCredentials
 
-    NexusCredentials(cf.getString("host"), cf.getString("user"), cf.getString("password"))
-  }
-
-  // TODO fail if nexus version is 2 or more major releases behind
-  def checkDependency(module: ModuleID, latestNexusRevision: Option[String]): DependencyCheckResult = {
-
-    latestNexusRevision match {
-      case None => NotFoundInNexus
-      case Some(latestNexus) if Version(latestNexus).isAfter(Version(module.revision)) => NexusHasNewer(latestNexus)
-      case Some(latestNexus) => OK
-    }
-  }
-
-  //TODO test nexus connection and fail if we can't connect
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: String, nexus: NexusCredentials): Option[String] = {
+  def findLatestRevision(versionInformation: ModuleID, scalaVersion: String): Option[String] = {
     queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, Some(scalaVersion)))) match {
       case Success(s) if s.isDefined => s
       case Success(s) => queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, None))).toOption.flatten
@@ -65,18 +48,10 @@ object Nexus {
   private def queryNexus(url: String): Try[Option[String]] = Try {
 
     versionsFromNexus(XML.load(new URL(url)))
-      .filterNot(isEarlyRelease)
+      .filterNot(isSnapshot)
       .sortWith(comparator)
       .headOption.map(_.toString)
   }
-
-  case class NexusCredentials(host: String, username: String, password: String) {
-
-    import java.net.URLEncoder.encode
-
-    def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
-  }
-
 
   def shortenScalaVersion(scalaVersion: String): String = {
     scalaVersion.split('.') match {
@@ -91,4 +66,17 @@ object Nexus {
     }
   }
 
+}
+
+case class NexusCredentials(host: String, username: String, password: String) {
+
+  import java.net.URLEncoder.encode
+
+  def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
+}
+
+object Nexus {
+  def apply(credentials: Option[NexusCredentials]): Option[Nexus] = credentials.map(c => new Nexus {
+    override val nexus: NexusCredentials = c
+  })
 }

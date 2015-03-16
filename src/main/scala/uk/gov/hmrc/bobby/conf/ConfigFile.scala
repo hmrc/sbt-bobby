@@ -30,7 +30,7 @@ class ConfigFile(fileName: String) {
         .map { case Array(key, value) => key.trim -> value.trim}.toMap
     } catch {
       case e: Exception =>
-        logger.warn(s"[bobby] Unable to find the configuration. ${e.getClass.getName}: ${e.getMessage}")
+        logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")
         Map.empty
     }
   }

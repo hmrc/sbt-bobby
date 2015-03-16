@@ -16,21 +16,26 @@
 package uk.gov.hmrc
 
 import org.scalatest.{FlatSpec, FunSpec, Matchers, OptionValues}
-import uk.gov.hmrc.bobby.Nexus
+import uk.gov.hmrc.bobby.{NexusCredentials, Nexus}
 import uk.gov.hmrc.bobby.domain.Version
 
 class NexusSpec extends FlatSpec with Matchers with OptionValues{
 
+  object NexusUnderTest extends Nexus {
+    override val nexus: NexusCredentials = NexusCredentials("","","")
+  }
+
+
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
-    Nexus.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
+    NexusUnderTest.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"
   }
 
   "2.10" should "be shortened to 2.10" in {
-    Nexus.shortenScalaVersion("2.10") shouldBe "2.10"
+    NexusUnderTest.shortenScalaVersion("2.10") shouldBe "2.10"
   }
 
   "Nexus lucene client" should "get versions from Nexus search results" in {
-    Nexus.versionsFromNexus(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
+    NexusUnderTest.versionsFromNexus(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
   }
 
   val xml = <searchNGResponse>

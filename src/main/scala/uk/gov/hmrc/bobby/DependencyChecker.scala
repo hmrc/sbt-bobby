@@ -15,10 +15,18 @@
  */
 package uk.gov.hmrc.bobby
 
+import java.net.URL
+
 import org.joda.time.LocalDate
+import sbt.ConsoleLogger
+import uk.gov.hmrc.bobby.conf.{Configuration, ConfigFile}
 import uk.gov.hmrc.bobby.domain._
 
-case class DependencyChecker(excludes: Seq[DeprecatedDependency]) {
+trait DependencyChecker {
+
+  val logger = ConsoleLogger()
+
+  val excludes: Seq[DeprecatedDependency]
 
   def isDependencyValid(dependency: Dependency, version: Version): DependencyCheckResult = {
     val filtered = excludes.filter(dd => {
@@ -32,5 +40,11 @@ case class DependencyChecker(excludes: Seq[DeprecatedDependency]) {
       case (result, exclude) => result
     }
   }
+}
+
+object DependencyChecker extends DependencyChecker {
+
+  override val excludes: Seq[DeprecatedDependency] = Configuration.deprecatedDependencies
+
 }
 

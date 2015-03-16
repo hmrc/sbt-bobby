@@ -27,10 +27,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     parallelExecution in GlobalScope := true,
 
     onLoad in Global := {
-      Bobby.findDependenciesWithNewerVersions(libraryDependencies.value, scalaVersion.value) _ compose (onLoad in Global).value
-    },
-    onLoad in Global := {
-      Bobby.findDeprecatedDependencies(libraryDependencies.value, scalaVersion.value) _ compose (onLoad in Global).value
+      Bobby.validateDependencies(libraryDependencies.value, scalaVersion.value) _ compose (onLoad in Global).value
     }
   )
 }

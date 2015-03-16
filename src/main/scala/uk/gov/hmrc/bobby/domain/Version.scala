@@ -17,13 +17,11 @@ package uk.gov.hmrc.bobby.domain
 
 object Version {
 
-  val HasDash = "^(.*)-(.*)".r
-
   private def isAllDigits(x: String) = x forall Character.isDigit
 
   def apply(st: String): Version = {
 
-    val split = st.split("-", 2)
+    val split = st.split("[-_]", 2)
     val vv = toVer(split.lift(0).getOrElse("0"))
     val boq = toBoq(split.lift(1))
 
@@ -45,10 +43,9 @@ object Version {
 
   def comparator(v1: Version, v2: Version): Boolean = v1.isAfter(v2)
 
-  def isEarlyRelease(v: Version): Boolean = v.buildOrQualifier match {
-    case None => false
-    case Some(Right("FINAL")) => false
-    case Some(_) => true
+  def isSnapshot(v: Version): Boolean = v.buildOrQualifier match {
+    case Some(Right("SNAPSHOT")) => true
+    case _ => false
   }
 }
 
