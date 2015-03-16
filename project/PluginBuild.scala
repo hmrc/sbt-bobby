@@ -38,7 +38,8 @@ object PluginBuild extends Build {
     ),
     publishArtifact := true,
     publishArtifact in Test := false,
-    git.useGitDescribe := true
+    git.useGitDescribe := true,
+    git.versionProperty := "NONE"
   ) ++ ArtefactDescription()
   )
 }
