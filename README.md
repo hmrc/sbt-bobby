@@ -20,7 +20,7 @@ In your "~/.sbt/0.13/plugins/build.sbt"
 
 set
 ```
-addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.7.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.8.0")
 ```
 
 
