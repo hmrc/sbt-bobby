@@ -14,7 +14,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
   "Bobby" should "fail the build if a dependency is in the exclude range" in {
 
-    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate())))
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate().minusDays(1))))
 
     bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT")), "2.11") shouldBe false
   }

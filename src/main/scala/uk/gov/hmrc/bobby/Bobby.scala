@@ -65,9 +65,9 @@ trait Bobby {
             s"Reason: ${latest.reason}. Please consider upgrading" +
             s"${latestRevision.map(v => s"to '$v'").getOrElse("")}")
         case _ =>
-          if (latestRevision.isEmpty)
+          if (nexus.isDefined && latestRevision.isEmpty)
             logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
-          else if (Version(latestRevision.get).isAfter(Version(module.revision)))
+          else if (latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
             logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
 
       }
