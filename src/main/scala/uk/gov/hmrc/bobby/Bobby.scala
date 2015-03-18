@@ -15,6 +15,8 @@
  */
 package uk.gov.hmrc.bobby
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
@@ -35,9 +37,15 @@ trait Bobby {
   val nexus: Option[Nexus]
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String)(state: State): State = {
+    if(areDependenciesValid(dependencies, scalaVersion)) state else state.exit(true)
+  }
+
+  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String): Boolean = {
 
     logger.info(s"[bobby] Checking dependencies")
     val compacted = compactDependencies(dependencies)
+
+    val result = new AtomicBoolean(true)
 
     compacted.par.foreach(module => {
 
@@ -50,7 +58,7 @@ trait Bobby {
           logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! " +
             s"Reason: ${latest.reason}. " +
             s"${latestRevision.map(v => s"Please consider using '$v' instead").getOrElse("")}")
-          state.exit(true)
+          result.set(false)
         case MandatoryWarn(latest) =>
           logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
             s"You will not be able to use it after ${latest.from}.  " +
@@ -64,7 +72,7 @@ trait Bobby {
 
       }
     })
-    state
+    result.get
   }
 
 
