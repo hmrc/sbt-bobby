@@ -1,8 +1,8 @@
+[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 #Overview
 
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Bobby is an Sbt plugin that prevents outdated dependencies from being used by your project.
-
 
 #Background
 It can be hard to ensure that distributed teams upgrade to the latest version of a dependency. 
