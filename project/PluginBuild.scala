@@ -19,6 +19,8 @@ import com.typesafe.sbt.SbtGit._
 
 object PluginBuild extends Build {
 
+  import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
+  
   val pluginName = "sbt-bobby"
 
   lazy val root = Project(pluginName, base = file("."), settings =
@@ -34,14 +36,15 @@ object PluginBuild extends Build {
     ),
     libraryDependencies ++= Seq(
       "com.typesafe.play" %% "play-json" % "2.4.0-M1",
-      "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+      "org.scalatest" %% "scalatest" % "2.2.4" % "test"
     ),
     publishArtifact := true,
     publishArtifact in Test := false,
     git.useGitDescribe := true,
-    git.versionProperty := "NONE"
+    git.versionProperty := "NONE",
+    HeaderSettings()
   ) ++ ArtefactDescription()
-  )
+  ).enablePlugins(AutomateHeaderPlugin)
 }
 
 
@@ -79,4 +82,11 @@ object ArtefactDescription {
         </developers>)
     )
 
+}
+
+object HeaderSettings {
+  import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
+  import de.heikoseeberger.sbtheader.license.Apache2_0
+
+  def apply() = headers := Map("scala" -> Apache2_0("2015", "HM Revenue & Customs"))
 }
