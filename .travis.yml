@@ -8,4 +8,4 @@ cache:
   directories:
     - '$HOME/.ivy2/cache'
 notifications:
-	email: false
+  email: false
