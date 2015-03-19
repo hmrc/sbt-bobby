@@ -53,7 +53,7 @@ trait Bobby {
         n.findLatestRevision(module, scalaVersion)
       }
 
-      DependencyChecker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
+      checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
         case MandatoryFail(latest) =>
           logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! " +
             s"Reason: ${latest.reason}. " +
