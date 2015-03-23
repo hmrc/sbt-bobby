@@ -24,6 +24,8 @@ import uk.gov.hmrc.bobby.domain._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import org.joda.time.LocalDate
+
 
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
@@ -50,15 +52,13 @@ trait Bobby {
 
     compacted.par.foreach(module => {
 
-      val latestRevision = nexus.flatMap { n =>
+      val latestRevision: Option[String] = nexus.flatMap { n =>
         n.findLatestRevision(module, scalaVersion)
       }
 
       checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
         case MandatoryFail(latest) =>
-          logger.error(s"[bobby] '${module.name} ${module.revision}' is deprecated and has to be upgraded! " +
-            s"Reason: ${latest.reason}. " +
-            s"${latestRevision.map(v => s"Please consider using '$v' instead").getOrElse("")}")
+          logger.error(buildErrorOutput(module, latest, latestRevision))
           result.set(false)
         case MandatoryWarn(latest) =>
           logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
@@ -76,6 +76,23 @@ trait Bobby {
     result.get
   }
 
+  def buildErrorOutput(module:ModuleID, dep:DeprecatedDependency, latestRevision:Option[String], prefix:String = "[bobby] "):String ={
+    s"""
+      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+      |||
+      |||    BOBBY FAILURE
+      |||
+      |||    The module '${module.name} ${module.name} ${module.revision}' is deprecated.
+      |||
+      |||    After ${dep.from} builds using it will fail.
+      |||
+      |||    ${dep.reason.replaceAll("\n", "\n|||\t")}
+      |||
+      |||    ${latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")}
+      |||
+      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    """.stripMargin.replace("\n", "\n [bobby] ")
+  }
 
   def compactDependencies(dependencies: Seq[ModuleID]) = {
 
