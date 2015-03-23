@@ -18,28 +18,27 @@ If undefined it skips this step
 
 #How To Use
 
-In your "~/.sbt/0.13/plugins/build.sbt"
-
-set
-```
+In your `~/.sbt/0.13/plugins/build.sbt`, set:
+```scala
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.8.0")
 ```
-
 
 #### Outdated Dependencies
 
 To prevent outdated dependencies from being used by your project, create a blacklist of version ranges. 
-For example
-```
+For example:
+
+```json
 [
 { "organisation" : "uk.gov.hmrc", "name" : "my-library", "range" : "(,6.0.0)", "reason" : "Versions older than 6.0.0 have a security vulnerability", "from" : "2015-03-15" },
 { "organisation" : "uk.gov.hmrc", "name" : "my-other-library", "range" : "[1.2.0]", "reason" : "1.2.0 has a bug", "from" : "2015-03-15" }
 { "organisation" : "*", "name" : "*", "range" : "[*-SNAPSHOT]", "reason" : "You shouldn't be deploying a snapshot to production should you?", "from" : "2000-01-01" }
 ]
 ```
-Tell Bobby where to find the file containing the list by setting a 'deprecated-dependencies' property in ~/.sbt/bobby
-Bobby can read both local or remote files:
-```
+
+Tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby`. Bobby can read both local or remote files:
+
+```properties
 deprecated-dependencies = https://some-url/deprecated-dependencies.json
 deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 ```
@@ -54,17 +53,11 @@ The blacklist must be a json with a list of rows where:
 
 
 ###### Supported Version Ranges
-| Range  | Meaning  |
-|---|---|
-| (,1.0.0]  | x <= 1.0.0  |
-| [1.0.0]  | Hard requirement on 1.0.0  |
-| [1.2.0,1.3.0]  | 1.2.0 <= x <= 1.3.0  |
-| [1.0.0,2.0.0)  | 1.0.0 <= x < 2.0.0  |
-| [1.5.0,)  | x >= 1.5.0  |
-| [*-SNAPSHOT] | Any version with qualifier 'SNAPSHOT' |
-
-
-
-
-
-
+| Range          | Meaning                               |
+|----------------|---------------------------------------|
+| (,1.0.0]       | x <= 1.0.0                            |
+| [1.0.0]        | Hard requirement on 1.0.0             |
+| [1.2.0,1.3.0]  | 1.2.0 <= x <= 1.3.0                   |
+| [1.0.0,2.0.0)  | 1.0.0 <= x < 2.0.0                    |
+| [1.5.0,)       | x >= 1.5.0                            |
+| [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
