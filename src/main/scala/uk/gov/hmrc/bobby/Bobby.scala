@@ -16,15 +16,12 @@
 
 package uk.gov.hmrc.bobby
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import org.joda.time.LocalDate
 
 
 object Bobby extends Bobby {
@@ -110,16 +107,11 @@ trait Bobby {
     """.stripMargin.replace("\n", "\n [bobby] ")
   }
 
-  def compactDependencies(dependencies: Seq[ModuleID]) = {
-
-    val b = new ListBuffer[ModuleID]()
-    val seen = mutable.HashSet[String]()
-    for (x <- dependencies) {
-      if (!seen(s"${x.organization}.${x.name}")) {
-        b += x
-        seen += s"${x.organization}.${x.name}"
-      }
-    }
-    b.toSeq
+  def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
+    dependencies
+      .map { d => d -> s"${d.organization}.${d.name}" }
+      .groupBy(_._2)
+      .map { group => group._2.head._1 }
+      .toSeq
   }
 }
