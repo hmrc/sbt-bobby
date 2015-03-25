@@ -28,7 +28,8 @@ object SbtBobbyPlugin extends AutoPlugin {
     parallelExecution in GlobalScope := true,
 
     onLoad in Global := {
-      Bobby.validateDependencies(libraryDependencies.value, scalaVersion.value) _ compose (onLoad in Global).value
+      val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
+      Bobby.validateDependencies(libraryDependencies.value, scalaVersion.value, isSbtProject) _ compose (onLoad in Global).value
     }
   )
 }

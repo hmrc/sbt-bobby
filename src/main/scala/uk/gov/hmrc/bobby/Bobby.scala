@@ -39,41 +39,57 @@ trait Bobby {
   val checker: DependencyChecker
   val nexus: Option[Nexus]
 
-  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String)(state: State): State = {
-    if(areDependenciesValid(dependencies, scalaVersion)) state else state.exit(true)
+  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean)(state: State): State = {
+    if(areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
   }
 
-  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String): Boolean = {
+  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean = false): Boolean = {
 
     logger.info(s"[bobby] Checking dependencies")
-    val compacted = compactDependencies(dependencies)
+    if(isSbtProject){
+      logger.info(s"[bobby] in SBT project, not checking for Nexus dependencies as Nexus search doesn't find SBT plugins")
+    }
+    val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
 
-    val result = new AtomicBoolean(true)
+    outputNexusResults(latestRevisions, isSbtProject)
 
-    compacted.par.foreach(module => {
+    val finalResult = doMandatoryCheck(latestRevisions)
 
-      val latestRevision: Option[String] = nexus.flatMap { n =>
-        n.findLatestRevision(module, scalaVersion)
-      }
+    finalResult
+  }
 
+  def doMandatoryCheck(latestRevisions: Map[ModuleID, Option[String]]): Boolean = {
+    latestRevisions.foldLeft(true) { case (result, (module, latestRevision)) => {
       checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
         case MandatoryFail(latest) =>
           logger.error(buildErrorOutput(module, latest, latestRevision))
-          result.set(false)
+          false
         case MandatoryWarn(latest) =>
           logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
             s"You will not be able to use it after ${latest.from}.  " +
             s"Reason: ${latest.reason}. Please consider upgrading" +
             s"${latestRevision.map(v => s"to '$v'").getOrElse("")}")
-        case _ =>
-          if (nexus.isDefined && latestRevision.isEmpty)
-            logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
-          else if (latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
-            logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
-
+          result
+        case _ => result //TODO unify DependencyCheckResult results
       }
-    })
-    result.get
+    }}
+  }
+
+  def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[String]] = {
+    compacted.par.map { module =>
+      module -> nexus.flatMap { n =>
+        n.findLatestRevision(module, scalaVersion)
+      }
+    }.seq.toMap
+  }
+
+  def outputNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): Unit = {
+    latestRevisions.foreach { case (module, latestRevision) =>
+      if (!isSbtProject && nexus.isDefined && latestRevision.isEmpty)
+        logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
+      else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
+        logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+    }
   }
 
   def buildErrorOutput(module:ModuleID, dep:DeprecatedDependency, latestRevision:Option[String], prefix:String = "[bobby] "):String ={
