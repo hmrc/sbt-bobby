@@ -19,13 +19,16 @@ import com.typesafe.sbt.SbtGit._
 
 object PluginBuild extends Build {
 
+  import uk.gov.hmrc._
+  import DefaultBuildSettings._
   import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
-  
+
   val pluginName = "sbt-bobby"
 
   lazy val root = Project(pluginName, base = file("."), settings =
     versionWithGit ++
     Seq(
+    //isSnapshot := true,
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
     name := pluginName,
@@ -43,7 +46,7 @@ object PluginBuild extends Build {
     git.useGitDescribe := true,
     git.versionProperty := "NONE",
     HeaderSettings()
-  ) ++ ArtefactDescription()
+  ) ++ ArtefactDescription() ++ defaultSettings()
   ).enablePlugins(AutomateHeaderPlugin)
 }
 

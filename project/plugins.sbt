@@ -1,4 +1,6 @@
-addSbtPlugin("uk.gov.hmrc" % "sbt-utils" % "2.4.0")
+resolvers += Opts.resolver.sonatypeReleases
+
+addSbtPlugin("uk.gov.hmrc" % "sbt-utils" % "2.5.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.7.1")
 
