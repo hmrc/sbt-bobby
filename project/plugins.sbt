@@ -1,4 +1,4 @@
-addSbtPlugin("uk.gov.hmrc" % "sbt-utils" % "2.2.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-utils" % "2.4.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.7.1")
 
