@@ -29,7 +29,7 @@ object PluginBuild extends Build {
     //versionWithGit ++
     Seq(
     //isSnapshot := true,
-    version := "8.1.0",
+    version := "0.8.1",
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
     name := pluginName,
