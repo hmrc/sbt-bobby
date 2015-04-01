@@ -26,9 +26,10 @@ object PluginBuild extends Build {
   val pluginName = "sbt-bobby"
 
   lazy val root = Project(pluginName, base = file("."), settings =
-    versionWithGit ++
+    //versionWithGit ++
     Seq(
     //isSnapshot := true,
+    version := "8.1.0",
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
     name := pluginName,
@@ -39,12 +40,13 @@ object PluginBuild extends Build {
     ),
     libraryDependencies ++= Seq(
       "com.typesafe.play" %% "play-json" % "2.4.0-M1",
-      "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+      "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+      "org.pegdown" % "pegdown" % "1.5.0" % "test"
     ),
     publishArtifact := true,
     publishArtifact in Test := false,
-    git.useGitDescribe := true,
-    git.versionProperty := "NONE",
+    //git.useGitDescribe := true,
+    //git.versionProperty := "NONE",
     HeaderSettings()
   ) ++ ArtefactDescription() ++ defaultSettings()
   ).enablePlugins(AutomateHeaderPlugin)
