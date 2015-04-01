@@ -15,18 +15,18 @@
  */
 import sbt._
 import Keys._
-import com.typesafe.sbt.SbtGit._
 
 object PluginBuild extends Build {
 
   import uk.gov.hmrc._
   import DefaultBuildSettings._
   import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
+  import com.typesafe.sbt.GitVersioning
+  import com.typesafe.sbt.SbtGit.git
 
   val pluginName = "sbt-bobby"
 
   lazy val root = Project(pluginName, base = file("."), settings =
-    versionWithGit ++
     Seq(
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
@@ -45,9 +45,10 @@ object PluginBuild extends Build {
     publishArtifact in Test := false,
     git.useGitDescribe := true,
     git.versionProperty := "NONE",
+    git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1))),
     HeaderSettings()
   ) ++ ArtefactDescription() ++ defaultSettings()
-  ).enablePlugins(AutomateHeaderPlugin)
+  ).enablePlugins(AutomateHeaderPlugin, GitVersioning)
 }
 
 
