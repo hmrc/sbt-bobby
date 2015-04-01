@@ -26,10 +26,8 @@ object PluginBuild extends Build {
   val pluginName = "sbt-bobby"
 
   lazy val root = Project(pluginName, base = file("."), settings =
-    //versionWithGit ++
+    versionWithGit ++
     Seq(
-    //isSnapshot := true,
-    version := "0.8.1",
     sbtPlugin := true,
     organization := "uk.gov.hmrc",
     name := pluginName,
@@ -45,8 +43,8 @@ object PluginBuild extends Build {
     ),
     publishArtifact := true,
     publishArtifact in Test := false,
-    //git.useGitDescribe := true,
-    //git.versionProperty := "NONE",
+    git.useGitDescribe := true,
+    git.versionProperty := "NONE",
     HeaderSettings()
   ) ++ ArtefactDescription() ++ defaultSettings()
   ).enablePlugins(AutomateHeaderPlugin)
