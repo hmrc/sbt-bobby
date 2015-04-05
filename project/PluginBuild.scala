@@ -64,7 +64,8 @@ object ArtefactDescription {
   import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq, _}
 
   def apply() = Seq(
-      homepage := Some(url("https://www.gov.uk/government/organisations/hm-revenue-customs")),
+      organizationHomepage := Some(url("https://www.gov.uk/government/organisations/hm-revenue-customs")),
+      homepage := Some(url("https://github.com/hmrc/sbt-bobby")),
       licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
       scmInfo := Some(
         ScmInfo(
