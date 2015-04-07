@@ -61,3 +61,7 @@ The blacklist must be a json with a list of rows where:
 | [1.0.0,2.0.0)  | 1.0.0 <= x < 2.0.0                    |
 | [1.5.0,)       | x >= 1.5.0                            |
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
+
+## License ##
+ 
+This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
