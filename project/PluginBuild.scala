@@ -15,6 +15,8 @@
  */
 import sbt._
 import Keys._
+import uk.gov.hmrc.DefaultBuildSettings._
+import uk.gov.hmrc.SbtAutoBuildPlugin
 
 object PluginBuild extends Build {
 
@@ -26,71 +28,56 @@ object PluginBuild extends Build {
 
   val pluginName = "sbt-bobby"
 
-  lazy val root = Project(pluginName, base = file("."), settings =
-    Seq(
-    sbtPlugin := true,
-    organization := "uk.gov.hmrc",
-    name := pluginName,
-    scalaVersion := "2.10.4",
-    resolvers ++= Seq(
-      Opts.resolver.sonatypeReleases,
-      Opts.resolver.sonatypeSnapshots
-    ),
-    libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % "2.4.0-M1",
-      "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-      "org.pegdown" % "pegdown" % "1.5.0" % "test"
-    ),
-    publishArtifact := true,
-    publishArtifact in Test := false,
-    git.useGitDescribe := true,
-    git.versionProperty := "NONE",
-    git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1))),
-    HeaderSettings()
-  ) ++ ArtefactDescription() ++ defaultSettings()
-  ).enablePlugins(AutomateHeaderPlugin, GitVersioning)
+  lazy val root = (project in file("."))
+    .enablePlugins(SbtAutoBuildPlugin, GitVersioning)
+    .settings(
+      sbtPlugin := true,
+      name := pluginName,
+      targetJvm := "jvm-1.7",
+      scalaVersion := "2.10.4",
+      libraryDependencies ++= Seq(
+        "com.typesafe.play" %% "play-json" % "2.4.0-M1",
+        "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+        "org.pegdown" % "pegdown" % "1.5.0" % "test"
+      ),
+      ArtefactDescription(),
+      git.useGitDescribe := true,
+      git.versionProperty := "NONE",
+      git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1)))
+  )
 }
 
 
 object ArtefactDescription {
 
-  def apply() = Seq(
-      pomExtra := (<url>https://www.gov.uk/government/organisations/hm-revenue-customs</url>
-        <licenses>
-          <license>
-            <name>Apache 2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-          </license>
-        </licenses>
-        <scm>
-          <connection>scm:git@github.com:hmrc/sbt-bobby.git</connection>
-          <developerConnection>scm:git@github.com:hmrc/sbt-bobby.git</developerConnection>
-          <url>git@github.com:hmrc/sbt-bobby.git</url>
-        </scm>
-        <developers>
-          <developer>
-            <id>jakobgrunig</id>
-            <name>Jakob Grunig</name>
-            <url>http://www.equalexperts.com</url>
-          </developer>
-          <developer>
-            <id>charleskubicek</id>
-            <name>Charles Kubicek</name>
-            <url>http://www.equalexperts.com</url>
-          </developer>
-          <developer>
-            <id>duncancrawford</id>
-            <name>Duncan Crawford</name>
-            <url>http://www.equalexperts.com</url>
-          </developer>
-        </developers>)
-    )
-
-}
-
-object HeaderSettings {
-  import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
-  import de.heikoseeberger.sbtheader.license.Apache2_0
-
-  def apply() = headers := Map("scala" -> Apache2_0("2015", "HM Revenue & Customs"))
+  def apply() =
+    pomExtra := <url>https://www.gov.uk/government/organisations/hm-revenue-customs</url>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+      </licenses>
+      <scm>
+        <connection>scm:git@github.com:hmrc/sbt-bobby.git</connection>
+        <developerConnection>scm:git@github.com:hmrc/sbt-bobby.git</developerConnection>
+        <url>git@github.com:hmrc/sbt-bobby.git</url>
+      </scm>
+      <developers>
+        <developer>
+          <id>jakobgrunig</id>
+          <name>Jakob Grunig</name>
+          <url>http://www.equalexperts.com</url>
+        </developer>
+        <developer>
+          <id>charleskubicek</id>
+          <name>Charles Kubicek</name>
+          <url>http://www.equalexperts.com</url>
+        </developer>
+        <developer>
+          <id>duncancrawford</id>
+          <name>Duncan Crawford</name>
+          <url>http://www.equalexperts.com</url>
+        </developer>
+      </developers>
 }

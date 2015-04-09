@@ -1,7 +1,6 @@
-resolvers += Opts.resolver.sonatypeReleases
+resolvers += Resolver.url("hmrc-sbt-plugin-releases",
+  url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-utils" % "2.5.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "0.1.4")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.0")
-
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "1.3.0")
