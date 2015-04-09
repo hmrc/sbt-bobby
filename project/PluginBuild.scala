@@ -27,10 +27,12 @@ object PluginBuild extends Build {
   import com.typesafe.sbt.SbtGit.git
 
   val pluginName = "sbt-bobby"
+  val appVersion = "0.8.1"
 
   lazy val root = (project in file("."))
     .enablePlugins(SbtAutoBuildPlugin, GitVersioning)
     .settings(
+      version := appVersion,
       sbtPlugin := true,
       name := pluginName,
       targetJvm := "jvm-1.7",
@@ -40,10 +42,10 @@ object PluginBuild extends Build {
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
       ),
-      ArtefactDescription(),
-      git.useGitDescribe := true,
-      git.versionProperty := "NONE",
-      git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1)))
+      ArtefactDescription()
+//      git.useGitDescribe := true,
+//      git.versionProperty := "NONE",
+//      git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1)))
   )
 }
 
