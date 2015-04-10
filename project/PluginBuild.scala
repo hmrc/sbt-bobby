@@ -27,7 +27,7 @@ object PluginBuild extends Build {
   import com.typesafe.sbt.SbtGit.git
 
   val pluginName = "sbt-bobby"
-  val appVersion = "0.8.2"
+  val appVersion = "0.9-SNAPSHOT"
 
   lazy val root = (project in file("."))
     .enablePlugins(SbtAutoBuildPlugin, GitVersioning)
