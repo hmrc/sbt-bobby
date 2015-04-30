@@ -42,7 +42,12 @@ object PluginBuild extends Build {
       ),
       ArtefactDescription(),
       git.useGitDescribe := true,
-      git.versionProperty := "NONE"
+      git.versionProperty := "NONE",
+      git.gitDescribedVersion <<= {
+        git.gitDescribedVersion((vO) => vO.map { v =>
+          if (v.startsWith("v")) v.drop(1) else v
+        })
+      }
     )
 }
 
