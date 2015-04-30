@@ -44,7 +44,7 @@ object PluginBuild extends Build {
       git.useGitDescribe := true,
       git.versionProperty := "NONE",
       git.gitDescribedVersion <<= git.gitDescribedVersion((v) => v.map(_.drop(1)))
-  )
+    )
 }
 
 
