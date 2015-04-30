@@ -45,10 +45,7 @@ object PluginBuild extends Build {
       git.versionProperty := "NONE",
       git.gitDescribedVersion <<= {
         git.gitDescribedVersion((vO) => vO.map { v =>
-          println("v = " + v)
-          val result = if (v.startsWith("v")) v.drop(1) else v
-          println("result = " + result)
-          result
+          if (v.startsWith("v")) v.drop(1) else v
         })
       }
     )
