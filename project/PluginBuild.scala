@@ -17,6 +17,7 @@ import sbt._
 import Keys._
 import uk.gov.hmrc.DefaultBuildSettings._
 import uk.gov.hmrc.SbtAutoBuildPlugin
+import uk.gov.hmrc.versioning.SbtGitVersioning
 
 object PluginBuild extends Build {
 
@@ -29,7 +30,7 @@ object PluginBuild extends Build {
   val pluginName = "sbt-bobby"
 
   lazy val root = (project in file("."))
-    .enablePlugins(SbtAutoBuildPlugin, GitVersioning)
+    .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
     .settings(
       sbtPlugin := true,
       name := pluginName,
@@ -39,49 +40,6 @@ object PluginBuild extends Build {
         "com.typesafe.play" %% "play-json" % "2.4.0-M1",
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
-      ),
-      ArtefactDescription(),
-      git.useGitDescribe := true,
-      git.versionProperty := "NONE",
-      git.gitDescribedVersion <<= {
-        git.gitDescribedVersion((vO) => vO.map { v =>
-          if (v.startsWith("v")) v.drop(1) else v
-        })
-      }
+      )
     )
-}
-
-
-object ArtefactDescription {
-
-  def apply() =
-    pomExtra := <url>https://www.gov.uk/government/organisations/hm-revenue-customs</url>
-      <licenses>
-        <license>
-          <name>Apache 2</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-      </licenses>
-      <scm>
-        <connection>scm:git@github.com:hmrc/sbt-bobby.git</connection>
-        <developerConnection>scm:git@github.com:hmrc/sbt-bobby.git</developerConnection>
-        <url>git@github.com:hmrc/sbt-bobby.git</url>
-      </scm>
-      <developers>
-        <developer>
-          <id>jakobgrunig</id>
-          <name>Jakob Grunig</name>
-          <url>http://www.equalexperts.com</url>
-        </developer>
-        <developer>
-          <id>charleskubicek</id>
-          <name>Charles Kubicek</name>
-          <url>http://www.equalexperts.com</url>
-        </developer>
-        <developer>
-          <id>duncancrawford</id>
-          <name>Duncan Crawford</name>
-          <url>http://www.equalexperts.com</url>
-        </developer>
-      </developers>
 }
