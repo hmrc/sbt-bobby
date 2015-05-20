@@ -65,7 +65,7 @@ trait Bobby {
           logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
             s"You will not be able to use it after ${latest.from}.  " +
             s"Reason: ${latest.reason}. Please consider upgrading" +
-            s"${latestRevision.map(v => s"to '$v'").getOrElse("")}")
+            s"${latestRevision.map(v => s" to '$v'").getOrElse("")}")
           result
         case _ => result //TODO unify DependencyCheckResult results
       }
