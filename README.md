@@ -1,5 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/hmrc/sbt-bobby.png?label=ready&title=Ready)](https://waffle.io/hmrc/sbt-bobby)
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby)
+[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby) [ ![Download](https://api.bintray.com/packages/hmrc/sbt-plugin-releases/sbt-bobby/images/download.svg) ](https://bintray.com/hmrc/sbt-plugin-releases/sbt-bobby/_latestVersion) [![Stories in Ready](https://badge.waffle.io/hmrc/sbt-bobby.png?label=ready&title=Ready)](https://waffle.io/hmrc/sbt-bobby)
 
 #Overview
 
@@ -21,7 +20,7 @@ If undefined it skips this step
 
 In your `~/.sbt/0.13/plugins/build.sbt`, set:
 ```scala
-addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.8.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "<INSERT VERSION>")
 ```
 
 #### Outdated Dependencies
