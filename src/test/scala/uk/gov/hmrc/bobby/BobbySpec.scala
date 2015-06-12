@@ -21,11 +21,15 @@ import org.scalatest.{Matchers, FlatSpec}
 import sbt.{State, ModuleID}
 import uk.gov.hmrc.bobby.domain.{VersionRange, Dependency, DeprecatedDependency}
 
+import scala.util.{Success, Try}
+
 class BobbySpec extends FlatSpec with Matchers {
 
   case class BobbyUnderTest(excludes: Seq[DeprecatedDependency]) extends Bobby {
     override val checker: DependencyChecker = DependencyCheckerUnderTest(excludes)
-    override val nexus: Option[Nexus] = None
+    override val repoSearch: RepoSearch = new RepoSearch {
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = Success(None)
+    }
   }
 
   "Bobby" should "fail the build if a dependency is in the exclude range" in {

@@ -18,13 +18,63 @@ package uk.gov.hmrc.bobby
 
 import java.net.URL
 
-import sbt.{ConsoleLogger, ModuleID}
+import sbt.{ModuleID, ConsoleLogger}
+import uk.gov.hmrc.bobby.domain.Version
+import uk.gov.hmrc.bobby.domain.Version._
 
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
+object MavenSearch extends RepoSearch{
 
-trait Nexus {
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
+  }
+
+
+  def buildSearchUrl(searchQuery: String) = s"http://search.maven.org/solrsearch/select?q=$searchQuery%22&core=gav&rows=20&wt=xml"
+
+  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
+    val scalaSuffix = maybeScalaVersion.map(s => "_" + s) getOrElse ""
+    s"g:%22${versionInformation.organization}%22%20AND%20a:%22${versionInformation.name}$scalaSuffix"
+  }
+
+
+  def parseVersions(xml: NodeSeq): Seq[Version] = {
+    (xml \ "result" \ "doc" \ "str" )
+      .filter(n => (n \ "@name").text.trim == "v")
+      .map(v => Version(v.text.trim))
+  }
+
+  private def query(url: String): Try[Option[String]] = Try {
+    parseVersions(XML.load(new URL(url)))
+      .filterNot(isSnapshot)
+      .sortWith(comparator)
+      .headOption.map(_.toString)
+  }
+
+}
+
+trait RepoSearch{
+
+  def shortenScalaVersion(scalaVersion: String): String = {
+    scalaVersion.split('.') match {
+      case Array(major, minor, _*) => major + "." + minor
+    }
+  }
+
+  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[String] = {
+    search(versionInformation, scalaVersion.map{ shortenScalaVersion }) match {
+      case Success(s) if s.isDefined => s
+      case Success(s) => search(versionInformation, None).toOption.flatten
+      case Failure(e) => e.printStackTrace(); None //logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
+    }
+  }
+
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]
+}
+
+trait Nexus extends RepoSearch{
 
   import uk.gov.hmrc.bobby.domain.Version._
   import uk.gov.hmrc.bobby.domain._
@@ -33,36 +83,27 @@ trait Nexus {
 
   val nexus: NexusCredentials
 
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: String): Option[String] = {
-    queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, Some(scalaVersion)))) match {
-      case Success(s) if s.isDefined => s
-      case Success(s) => queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, None))).toOption.flatten
-      case Failure(e) => logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
-    }
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+    query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
 
-  def versionsFromNexus(xml: NodeSeq): Seq[Version] = {
+
+  def parseVersions(xml: NodeSeq): Seq[Version] = {
     val nodes = xml \ "data" \ "artifact" \ "version"
     nodes.map(n => Version(n.text))
   }
 
-  private def queryNexus(url: String): Try[Option[String]] = Try {
+  private def query(url: String): Try[Option[String]] = Try {
 
-    versionsFromNexus(XML.load(new URL(url)))
+    parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)
       .headOption.map(_.toString)
   }
 
-  def shortenScalaVersion(scalaVersion: String): String = {
-    scalaVersion.split('.') match {
-      case Array(major, minor, _*) => major + "." + minor
-    }
-  }
-
   private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_${shortenScalaVersion(sv)}&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_$maybeScalaVersion&g=${versionInformation.organization}"
       case None => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }

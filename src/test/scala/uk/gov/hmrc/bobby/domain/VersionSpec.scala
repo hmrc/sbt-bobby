@@ -169,6 +169,14 @@ class VersionSpec extends FlatSpec with Matchers {
     Version.isSnapshot(Version(2,2,2)) shouldBe false
   }
 
+  it should "recognise '*-SNAP1' as a snapshot" in {
+    Version.isSnapshot(Version(2,2,3, Some(Right("M1")))) shouldBe true
+  }
+
+  it should "recognise '*-M1' as a snapshot" in {
+    Version.isSnapshot(Version(2,2,3, Some(Right("M1")))) shouldBe true
+  }
+
   it should "recognise '*-FINAL' as a release" in {
     Version.isSnapshot(Version(2,2,3, Some(Right("FINAL")))) shouldBe false
   }

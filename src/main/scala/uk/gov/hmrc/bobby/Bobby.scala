@@ -26,7 +26,10 @@ import scala.collection.mutable.ListBuffer
 
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
-  override val nexus: Option[Nexus] = Nexus(Configuration.credentials)
+  override val repoSearch: RepoSearch = Nexus(Configuration.credentials).getOrElse{
+    logger.info("[bobby] using maven search")
+    MavenSearch
+  }
 }
 
 trait Bobby {
@@ -34,7 +37,7 @@ trait Bobby {
   val logger = ConsoleLogger()
 
   val checker: DependencyChecker
-  val nexus: Option[Nexus]
+  val repoSearch: RepoSearch
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean)(state: State): State = {
     if(areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
@@ -74,15 +77,13 @@ trait Bobby {
 
   def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[String]] = {
     compacted.par.map { module =>
-      module -> nexus.flatMap { n =>
-        n.findLatestRevision(module, scalaVersion)
-      }
+      module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
     }.seq.toMap
   }
 
   def outputNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): Unit = {
     latestRevisions.foreach { case (module, latestRevision) =>
-      if (!isSbtProject && nexus.isDefined && latestRevision.isEmpty)
+      if (!isSbtProject && latestRevision.isEmpty)
         logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
       else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
         logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")

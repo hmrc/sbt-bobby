@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc
 
-import org.scalatest.{FlatSpec, FunSpec, Matchers, OptionValues}
-import uk.gov.hmrc.bobby.{NexusCredentials, Nexus}
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.domain.Version
+import uk.gov.hmrc.bobby.{Nexus, NexusCredentials}
 
 class NexusSpec extends FlatSpec with Matchers with OptionValues{
 
@@ -36,7 +36,7 @@ class NexusSpec extends FlatSpec with Matchers with OptionValues{
   }
 
   "Nexus lucene client" should "get versions from Nexus search results" in {
-    NexusUnderTest.versionsFromNexus(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
+    NexusUnderTest.parseVersions(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
   }
 
   val xml = <searchNGResponse>

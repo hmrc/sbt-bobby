@@ -46,6 +46,8 @@ object Version {
 
   def isSnapshot(v: Version): Boolean = v.buildOrQualifier match {
     case Some(Right("SNAPSHOT")) => true
+    case Some(Right(s)) if s.toLowerCase.startsWith("snap") => true
+    case Some(Right(s)) if s.toLowerCase.startsWith("m") => true
     case _ => false
   }
 }
