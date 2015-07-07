@@ -36,7 +36,7 @@ For example:
 ]
 ```
 
-Tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby`. Bobby can read both local or remote files:
+Tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
 ```properties
 deprecated-dependencies = https://some-url/deprecated-dependencies.json
