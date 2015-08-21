@@ -17,9 +17,9 @@
 package uk.gov.hmrc.bobby
 
 import org.joda.time.LocalDate
-import org.scalatest.{Matchers, FlatSpec}
-import sbt.{State, ModuleID}
-import uk.gov.hmrc.bobby.domain.{VersionRange, Dependency, DeprecatedDependency}
+import org.scalatest.{FlatSpec, Matchers}
+import sbt.ModuleID
+import uk.gov.hmrc.bobby.domain.{Dependency, DeprecatedDependency, VersionRange}
 
 import scala.util.{Success, Try}
 
@@ -51,6 +51,34 @@ class BobbySpec extends FlatSpec with Matchers {
     val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate().plusDays(2))))
 
     bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1")), "2.11") shouldBe true
+  }
+
+  it should "warn for dependencies the latest nexus revision is unknown" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate().plusDays(2))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.1", None)
+
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> None}
+
+    val results = bobby.calculateNexusResults(latestRevisions, false)
+
+    results.size shouldBe 1
+    results.head shouldBe "[bobby] Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
+  }
+
+  it should "warn for dependencies for which the latest revision is greater" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate().plusDays(2))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.1", None)
+
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
+
+    val results = bobby.calculateNexusResults(latestRevisions, false)
+
+    results.size shouldBe 1
+    results.head shouldBe "[bobby] 'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
   }
 
 }

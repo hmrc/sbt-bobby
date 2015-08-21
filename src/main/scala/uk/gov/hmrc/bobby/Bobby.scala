@@ -49,9 +49,10 @@ trait Bobby {
     if(isSbtProject){
       logger.info(s"[bobby] in SBT project, not checking for Nexus dependencies as Nexus search doesn't find SBT plugins")
     }
-    val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
 
-    outputNexusResults(latestRevisions, isSbtProject)
+    val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
+    val nexusResults = calculateNexusResults(latestRevisions, isSbtProject)
+    nexusResults.foreach(message => logger.info(message))
 
     val finalResult = doMandatoryCheck(latestRevisions)
 
@@ -81,12 +82,15 @@ trait Bobby {
     }.seq.toMap
   }
 
-  def outputNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): Unit = {
-    latestRevisions.foreach { case (module, latestRevision) =>
+  def calculateNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean) = {
+    latestRevisions.toList.flatMap {
+      case (module, latestRevision) =>
       if (!isSbtProject && latestRevision.isEmpty)
-        logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
+        List(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
       else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
-        logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+        List(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+      else
+        List.empty[String]
     }
   }
 
