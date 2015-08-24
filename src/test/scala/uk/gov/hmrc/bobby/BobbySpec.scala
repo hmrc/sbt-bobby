@@ -64,7 +64,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val results = bobby.calculateNexusResults(latestRevisions, false)
 
     results.size shouldBe 1
-    results.head shouldBe "[bobby] Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
+    results.head._2 shouldBe "[bobby] Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
   }
 
   it should "warn for dependencies for which the latest revision is greater" in {
@@ -78,7 +78,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val results = bobby.calculateNexusResults(latestRevisions, false)
 
     results.size shouldBe 1
-    results.head shouldBe "[bobby] 'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
+    results.head._2 shouldBe "[bobby] 'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
   }
 
   it should "not fail the build for mandatory dependencies which will be enforced in the future" in {
@@ -88,7 +88,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
     val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
 
-    bobby.doMandatoryCheck(latestRevisions) shouldBe true
+    bobby.doMandatoryCheck(bobby.checkMandatoryDependencies(latestRevisions)) shouldBe true
   }
 
   it should "error for mandatory dependencies which are been enforced" in {
@@ -98,7 +98,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
     val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
 
-    bobby.doMandatoryCheck(latestRevisions) shouldBe false
+    bobby.doMandatoryCheck(bobby.checkMandatoryDependencies(latestRevisions)) shouldBe false
   }
 
   it should "produce warning message for mandatory dependencies which will be enforced in the future" in {
@@ -108,7 +108,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
     val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
 
-    val results: List[(String, String)] = bobby.logMandatoryCheckResults(latestRevisions)
+    val results: List[(String, String)] = bobby.checkMandatoryDependencies(latestRevisions)
 
     results.size shouldBe 1
     val warning: (String, String) = results.head
@@ -124,7 +124,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val moduleId: ModuleID = ModuleID("uk.gov.hmrc","auth", "3.2.0", None)
     val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
 
-    val results: List[(String, String)] = bobby.logMandatoryCheckResults(latestRevisions)
+    val results: List[(String, String)] = bobby.checkMandatoryDependencies(latestRevisions)
 
     results.size shouldBe 1
     val error: (String, String) = results.head

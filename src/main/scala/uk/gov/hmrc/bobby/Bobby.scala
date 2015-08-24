@@ -48,27 +48,22 @@ trait Bobby {
     }
 
     val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
-    val nexusResults = calculateNexusResults(latestRevisions, isSbtProject)
-    nexusResults.foreach(message => logger.info(message))
+    outputWarningsToConsole(calculateNexusResults(latestRevisions, isSbtProject))
 
-    val finalResult = doMandatoryCheck(latestRevisions)
-    val resultMap = logMandatoryCheckResults(latestRevisions)
-    resultMap.foreach(resultMap => logger.info("ResultMap: " + resultMap.toString()))
+    val mandatoryRevisionCheckResults = checkMandatoryDependencies(latestRevisions)
+    outputWarningsToConsole(mandatoryRevisionCheckResults)
 
-    finalResult
+    doMandatoryCheck(mandatoryRevisionCheckResults)
   }
 
-  def doMandatoryCheck(latestRevisions: Map[ModuleID, Option[String]]): Boolean = {
-
-    val checkResults: List[(String, String)] = logMandatoryCheckResults(latestRevisions)
-
+  def doMandatoryCheck(checkResults: List[(String, String)]): Boolean = {
     checkResults.foldLeft(true) { case (result, (messageType, messageText)) => {
       !messageType.equals("ERROR")
     }
     }
   }
 
-  def logMandatoryCheckResults(latestRevisions: Map[ModuleID, Option[String]]): List[(String, String)] = {
+  def checkMandatoryDependencies(latestRevisions: Map[ModuleID, Option[String]]): List[(String, String)] = {
     latestRevisions.toList.flatMap({
       case (module, latestRevision) =>
         checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
@@ -91,15 +86,15 @@ trait Bobby {
     }.seq.toMap
   }
 
-  def calculateNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean) = {
+  def calculateNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): List[(String, String)] = {
     latestRevisions.toList.flatMap {
       case (module, latestRevision) =>
       if (!isSbtProject && latestRevision.isEmpty)
-        List(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
+        Some("INFO", s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
       else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
-        List(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+        Some("INFO", s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
       else
-        List.empty[String]
+        None
     }
   }
 
@@ -128,4 +123,17 @@ trait Bobby {
       .map { group => group._2.head._1 }
       .toSeq
   }
+
+  private def outputWarningsToConsole(messages: List[(String, String)]): Unit = {
+    messages.foreach(message => {
+      val messageType: String = message._1
+      val text: String = message._2
+      messageType match {
+        case("ERROR") => logger.error(text)
+        case("WARN") => logger.warn(text)
+        case _ => logger.info(text)
+      }
+    })
+  }
+
 }
