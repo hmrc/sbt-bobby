@@ -99,21 +99,9 @@ trait Bobby {
   }
 
   def buildErrorOutput(module:ModuleID, dep:DeprecatedDependency, latestRevision:Option[String], prefix:String = "[bobby] "):String ={
-    s"""
-      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-      |||
-      |||    BOBBY FAILURE
-      |||
-      |||    The module '${module.name} ${module.name} ${module.revision}' is deprecated.
-      |||
-      |||    After ${dep.from} builds using it will fail.
-      |||
-      |||    ${dep.reason.replaceAll("\n", "\n|||\t")}
-      |||
-      |||    ${latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")}
-      |||
-      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    """.stripMargin.replace("\n", "\n [bobby] ")
+    s"""The module '${module.name} ${module.name} ${module.revision}' is deprecated.\n\n""" +
+      s"""After ${dep.from} builds using it will fail.\n\n${dep.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
+      s"""${latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")}"""
   }
 
   def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
@@ -129,11 +117,16 @@ trait Bobby {
       val messageType: String = message._1
       val text: String = "[bobby] " + message._2
       messageType match {
-        case("ERROR") => logger.error(text)
+        case("ERROR") => renderConsoleErrorMessage(text)
         case("WARN") => logger.warn(text)
         case _ => logger.info(text)
       }
     })
   }
 
+  def renderConsoleErrorMessage(text: String): Unit = {
+    logger.error(text)
+  }
+
+  
 }
