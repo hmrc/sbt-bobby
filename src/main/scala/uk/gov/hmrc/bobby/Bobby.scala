@@ -20,9 +20,6 @@ import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-
 
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
@@ -55,25 +52,44 @@ trait Bobby {
     nexusResults.foreach(message => logger.info(message))
 
     val finalResult = doMandatoryCheck(latestRevisions)
+    val resultMap = logMandatoryCheckResults(latestRevisions)
+    resultMap.foreach(resultMap => logger.info("ResultMap: " + resultMap.toString()))
 
     finalResult
   }
 
   def doMandatoryCheck(latestRevisions: Map[ModuleID, Option[String]]): Boolean = {
-    latestRevisions.foldLeft(true) { case (result, (module, latestRevision)) => {
-      checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
-        case MandatoryFail(latest) =>
-          logger.error(buildErrorOutput(module, latest, latestRevision))
+
+    val result: Boolean = latestRevisions.foldLeft(true) { case (result, (module, latestRevision)) => {
+
+      val valid: DependencyCheckResult = checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision))
+      valid match {
+        case MandatoryFail(exclusion) =>
           false
-        case MandatoryWarn(latest) =>
-          logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
-            s"You will not be able to use it after ${latest.from}.  " +
-            s"Reason: ${latest.reason}. Please consider upgrading" +
-            s"${latestRevision.map(v => s" to '$v'").getOrElse("")}")
+        case MandatoryWarn(exclusion) =>
           result
         case _ => result //TODO unify DependencyCheckResult results
       }
-    }}
+    }
+    }
+    result
+  }
+
+  def logMandatoryCheckResults(latestRevisions: Map[ModuleID, Option[String]]): List[(String, String)] = {
+    latestRevisions.toList.flatMap({
+      case (module, latestRevision) =>
+        checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
+          case MandatoryFail(exclusion) =>
+            Some(("ERROR", buildErrorOutput(module, exclusion, latestRevision)))
+
+          case MandatoryWarn(exclusion) =>
+            Some(("WARN", s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
+              s"You will not be able to use it after ${exclusion.from}.  " +
+              s"Reason: ${exclusion.reason}. Please consider upgrading" +
+              s"${latestRevision.map(v => s" to '$v'").getOrElse("")}"))
+          case _ => None // TODO test coverage to ensure that flatten removes empty tuples
+        }
+    })
   }
 
   def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[String]] = {

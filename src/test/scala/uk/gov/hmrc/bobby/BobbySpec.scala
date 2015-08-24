@@ -81,4 +81,57 @@ class BobbySpec extends FlatSpec with Matchers {
     results.head shouldBe "[bobby] 'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
   }
 
+  it should "not fail the build for mandatory dependencies which will be enforced in the future" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,4.0.0]"), "reason", new LocalDate().plusDays(2))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
+
+    bobby.doMandatoryCheck(latestRevisions) shouldBe true
+  }
+
+  it should "error for mandatory dependencies which are been enforced" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,4.0.0]"), "reason", new LocalDate().minusDays(7))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
+
+    bobby.doMandatoryCheck(latestRevisions) shouldBe false
+  }
+
+  it should "produce warning message for mandatory dependencies which will be enforced in the future" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,4.0.0]"), "reason", new LocalDate().plusDays(2))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc", "auth", "3.2.0", None)
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
+
+    val results: List[(String, String)] = bobby.logMandatoryCheckResults(latestRevisions)
+
+    results.size shouldBe 1
+    val warning: (String, String) = results.head
+    warning._1 shouldBe "WARN"
+    warning._2 should include ("auth 3.2.0' is deprecated!")
+    warning._2 should include ("Please consider upgrading to '3.2.2'")
+  }
+
+  it should "produce error message for mandatory dependencies which are currently been enforced" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("uk.gov.hmrc","auth"), VersionRange("(,4.0.0]"),"reason", new LocalDate().minusDays(2))))
+
+    val moduleId: ModuleID = ModuleID("uk.gov.hmrc","auth", "3.2.0", None)
+    val latestRevisions: Map[ModuleID, Option[String]] = Map{moduleId -> Some("3.2.2")}
+
+    val results: List[(String, String)] = bobby.logMandatoryCheckResults(latestRevisions)
+
+    results.size shouldBe 1
+    val error: (String, String) = results.head
+    error._1 shouldBe "ERROR"
+
+    val errorMessage: String = error._2
+    errorMessage should include ("The module 'auth auth 3.2.0' is deprecated." )
+  }
+
 }
