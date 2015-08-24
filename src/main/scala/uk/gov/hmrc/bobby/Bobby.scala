@@ -71,7 +71,7 @@ trait Bobby {
             Some(("ERROR", buildErrorOutput(module, exclusion, latestRevision)))
 
           case MandatoryWarn(exclusion) =>
-            Some(("WARN", s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
+            Some(("WARN", s"'${module.name} ${module.revision}' is deprecated! " +
               s"You will not be able to use it after ${exclusion.from}.  " +
               s"Reason: ${exclusion.reason}. Please consider upgrading" +
               s"${latestRevision.map(v => s" to '$v'").getOrElse("")}"))
@@ -90,9 +90,9 @@ trait Bobby {
     latestRevisions.toList.flatMap {
       case (module, latestRevision) =>
       if (!isSbtProject && latestRevision.isEmpty)
-        Some("INFO", s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
+        Some(("INFO", s"Unable to get a latestRelease number for '${module.toString()}'"))
       else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
-        Some("INFO", s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+        Some(("INFO", s"'${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'"))
       else
         None
     }
@@ -127,7 +127,7 @@ trait Bobby {
   private def outputWarningsToConsole(messages: List[(String, String)]): Unit = {
     messages.foreach(message => {
       val messageType: String = message._1
-      val text: String = message._2
+      val text: String = "[bobby] " + message._2
       messageType match {
         case("ERROR") => logger.error(text)
         case("WARN") => logger.warn(text)

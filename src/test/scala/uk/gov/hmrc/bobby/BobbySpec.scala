@@ -64,7 +64,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val results = bobby.calculateNexusResults(latestRevisions, false)
 
     results.size shouldBe 1
-    results.head._2 shouldBe "[bobby] Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
+    results.head._2 shouldBe "Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
   }
 
   it should "warn for dependencies for which the latest revision is greater" in {
@@ -78,7 +78,7 @@ class BobbySpec extends FlatSpec with Matchers {
     val results = bobby.calculateNexusResults(latestRevisions, false)
 
     results.size shouldBe 1
-    results.head._2 shouldBe "[bobby] 'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
+    results.head._2 shouldBe "'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
   }
 
   it should "not fail the build for mandatory dependencies which will be enforced in the future" in {
