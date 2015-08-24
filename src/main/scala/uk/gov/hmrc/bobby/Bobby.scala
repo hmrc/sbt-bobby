@@ -60,19 +60,12 @@ trait Bobby {
 
   def doMandatoryCheck(latestRevisions: Map[ModuleID, Option[String]]): Boolean = {
 
-    val result: Boolean = latestRevisions.foldLeft(true) { case (result, (module, latestRevision)) => {
+    val checkResults: List[(String, String)] = logMandatoryCheckResults(latestRevisions)
 
-      val valid: DependencyCheckResult = checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision))
-      valid match {
-        case MandatoryFail(exclusion) =>
-          false
-        case MandatoryWarn(exclusion) =>
-          result
-        case _ => result //TODO unify DependencyCheckResult results
-      }
+    checkResults.foldLeft(true) { case (result, (messageType, messageText)) => {
+      !messageType.equals("ERROR")
     }
     }
-    result
   }
 
   def logMandatoryCheckResults(latestRevisions: Map[ModuleID, Option[String]]): List[(String, String)] = {
