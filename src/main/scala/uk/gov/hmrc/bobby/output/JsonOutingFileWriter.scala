@@ -19,18 +19,26 @@ package uk.gov.hmrc.bobby.output
 import java.io.{File, PrintWriter}
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.DeprecatedDependency
 
 trait JsonOutingFileWriter {
 
     def outputWarningsToJsonFile(messages: List[(String, String)]) = {
-      val json = messages.iterator.map{case (a,b) => (b -> a)}.toMap
+      val jsonString: String = renderJson(messages)
 
       val writer = new PrintWriter(new File("out.json"))
-      writer.write(Json.stringify(Json.toJson(json)))
+      writer.write(jsonString)
       writer.close()
    }
+
+    def renderJson(messages: List[(String, String)]): String = {
+      val outputMessages: List[Map[String, String]] = messages.map(row => {
+        Map("message" -> row._1, "level" -> row._2)
+      })
+
+      val outputStructure: Map[String, List[Map[String, String]]] = Map("results" -> outputMessages)
+
+      Json.stringify(Json.toJson(outputStructure))
+    }
 
 }
 
