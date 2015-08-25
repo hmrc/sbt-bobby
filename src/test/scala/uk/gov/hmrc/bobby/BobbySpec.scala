@@ -20,6 +20,7 @@ import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.{Dependency, DeprecatedDependency, VersionRange}
+import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
 
 import scala.util.{Success, Try}
 
@@ -30,6 +31,7 @@ class BobbySpec extends FlatSpec with Matchers {
     override val repoSearch: RepoSearch = new RepoSearch {
       override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = Success(None)
     }
+    override val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
   }
 
   "Bobby" should "fail the build if a dependency is in the exclude range" in {

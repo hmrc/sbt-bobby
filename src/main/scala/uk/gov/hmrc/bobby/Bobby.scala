@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.bobby
 
+import java.io.{File, PrintWriter}
+
+import play.api.libs.json.Json
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-
+import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
 
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
@@ -27,6 +30,7 @@ object Bobby extends Bobby {
     logger.info("[bobby] using maven search")
     MavenSearch
   }
+  override val jsonOutputFileWriter = JsonOutingFileWriter
 }
 
 trait Bobby {
@@ -35,6 +39,7 @@ trait Bobby {
 
   val checker: DependencyChecker
   val repoSearch: RepoSearch
+  val jsonOutputFileWriter: JsonOutingFileWriter
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean)(state: State): State = {
     if(areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
@@ -48,10 +53,13 @@ trait Bobby {
     }
 
     val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
-    outputWarningsToConsole(calculateNexusResults(latestRevisions, isSbtProject))
+    val nextResults = calculateNexusResults(latestRevisions, isSbtProject)
 
     val mandatoryRevisionCheckResults = checkMandatoryDependencies(latestRevisions)
-    outputWarningsToConsole(mandatoryRevisionCheckResults)
+
+    val messages: List[(String, String)] = nextResults ++ mandatoryRevisionCheckResults
+    outputWarningsToConsole(messages)
+    jsonOutputFileWriter.outputWarningsToJsonFile(messages)  // TODO control via a conf option; off by default
 
     doMandatoryCheck(mandatoryRevisionCheckResults)
   }
@@ -128,5 +136,4 @@ trait Bobby {
     logger.error(text)
   }
 
-  
 }
