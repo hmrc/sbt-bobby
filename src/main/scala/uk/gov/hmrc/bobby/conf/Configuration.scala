@@ -30,14 +30,14 @@ object Configuration {
   val timeout = 3000
   val logger = ConsoleLogger()
 
-  val deprecatedDependencies: Seq[DeprecatedDependency] = {
+  val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
-    val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
+  val deprecatedDependencies: Seq[DeprecatedDependency] = {
 
     val bobbyConfig: Option[String] = new ConfigFile(bobbyConfigFile).get("deprecated-dependencies")
 
     bobbyConfig.fold {
-      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured properly")
+      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies")
       Seq.empty[DeprecatedDependency]
     } { c =>
       try {
@@ -45,7 +45,6 @@ object Configuration {
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-
 
         this(Source.fromInputStream(inputStream).mkString)
       } catch {
@@ -56,6 +55,7 @@ object Configuration {
     }
   }
 
+  val outputFile: Option[String] = new ConfigFile(bobbyConfigFile).get("output-file")
 
   val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
 

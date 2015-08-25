@@ -59,7 +59,9 @@ trait Bobby {
 
     val messages: List[(String, String)] = nextResults ++ mandatoryRevisionCheckResults
     outputWarningsToConsole(messages)
-    jsonOutputFileWriter.outputWarningsToJsonFile(messages)  // TODO control via a conf option; off by default
+
+    if(!Configuration.outputFile.isEmpty)
+      jsonOutputFileWriter.outputWarningsToJsonFile(messages, Configuration.outputFile.get)
 
     doMandatoryCheck(mandatoryRevisionCheckResults)
   }

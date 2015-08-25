@@ -19,26 +19,34 @@ package uk.gov.hmrc.bobby.output
 import java.io.{File, PrintWriter}
 
 import play.api.libs.json.Json
+import sbt.ConsoleLogger
 
 trait JsonOutingFileWriter {
 
-    def outputWarningsToJsonFile(messages: List[(String, String)]) = {
-      val jsonString: String = renderJson(messages)
+  private val logger = ConsoleLogger()
 
-      val writer = new PrintWriter(new File("out.json"))
-      writer.write(jsonString)
-      writer.close()
-   }
+  def outputWarningsToJsonFile(messages: List[(String, String)], filepath: String) = {
+    val jsonString: String = renderJson(messages)
+    outputToFile(filepath, jsonString)
+  }
 
-    def renderJson(messages: List[(String, String)]): String = {
-      val outputMessages: List[Map[String, String]] = messages.map(row => {
-        Map("message" -> row._1, "level" -> row._2)
-      })
+  def renderJson(messages: List[(String, String)]): String = {
+    val outputMessages: List[Map[String, String]] = messages.map(row => {
+      Map("level" -> row._1, "message" -> row._2)
+    })
 
-      val outputStructure: Map[String, List[Map[String, String]]] = Map("results" -> outputMessages)
+    val outputStructure: Map[String, List[Map[String, String]]] = Map("results" -> outputMessages)
 
-      Json.stringify(Json.toJson(outputStructure))
-    }
+    Json.stringify(Json.toJson(outputStructure))
+  }
+
+  private def outputToFile(filepath: String, jsonString: String) = {
+    val file: File = new File(filepath)
+    logger.info("Outputting results to JSON file: " + file.getAbsolutePath);
+    val writer = new PrintWriter(file)
+    writer.write(jsonString)
+    writer.close()
+  }
 
 }
 

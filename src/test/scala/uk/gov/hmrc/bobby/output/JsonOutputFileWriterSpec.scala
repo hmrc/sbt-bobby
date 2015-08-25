@@ -23,7 +23,7 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
     "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
       val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
-      val messages = List(("An error", "ERROR"), ("Another warning", "WARNING"))
+      val messages = List(("ERROR", "An error"), ("WARNING", "Another warning"))
       val jsonString: String = jsonOutputFileWriter.renderJson(messages)
 
       val jsValue: JsValue = Json.parse(jsonString)
