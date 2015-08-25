@@ -20,14 +20,19 @@ import java.io.{File, PrintWriter}
 
 import play.api.libs.json.Json
 import sbt.ConsoleLogger
+import uk.gov.hmrc.bobby.conf.Configuration
 
 trait JsonOutingFileWriter {
 
   private val logger = ConsoleLogger()
 
-  def outputWarningsToJsonFile(messages: List[(String, String)], filepath: String) = {
-    val jsonString: String = renderJson(messages)
-    outputToFile(filepath, jsonString)
+  val filepath: Option[String]
+
+  def outputMessagesToJsonFile(messages: List[(String, String)]) = {
+    logger.info("Output file set to: " + filepath)
+    if (!filepath.isEmpty) {
+      outputToFile(filepath.get, renderJson(messages))
+    }
   }
 
   def renderJson(messages: List[(String, String)]): String = {
@@ -51,4 +56,7 @@ trait JsonOutingFileWriter {
 }
 
 object JsonOutingFileWriter extends JsonOutingFileWriter {
+
+  override val filepath: Option[String] = Configuration.outputFile
+
 }

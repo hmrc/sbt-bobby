@@ -37,7 +37,7 @@ object Configuration {
     val bobbyConfig: Option[String] = new ConfigFile(bobbyConfigFile).get("deprecated-dependencies")
 
     bobbyConfig.fold {
-      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies")
+      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
       Seq.empty[DeprecatedDependency]
     } { c =>
       try {

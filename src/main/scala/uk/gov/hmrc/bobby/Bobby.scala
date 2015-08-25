@@ -41,6 +41,7 @@ trait Bobby {
   val repoSearch: RepoSearch
   val jsonOutputFileWriter: JsonOutingFileWriter
 
+
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean)(state: State): State = {
     if(areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
   }
@@ -58,20 +59,18 @@ trait Bobby {
     val mandatoryRevisionCheckResults = checkMandatoryDependencies(latestRevisions)
 
     val messages: List[(String, String)] = nextResults ++ mandatoryRevisionCheckResults
-    outputWarningsToConsole(messages)
 
-    if(!Configuration.outputFile.isEmpty)
-      jsonOutputFileWriter.outputWarningsToJsonFile(messages, Configuration.outputFile.get)
+    outputMessagesToConsole(messages)
+    jsonOutputFileWriter.outputMessagesToJsonFile(messages)
 
     doMandatoryCheck(mandatoryRevisionCheckResults)
   }
 
-  def doMandatoryCheck(checkResults: List[(String, String)]): Boolean = {
-    checkResults.foldLeft(true) { case (result, (messageType, messageText)) => {
-      !messageType.equals("ERROR")
+  def doMandatoryCheck(checkResults: List[(String, String)]): Boolean =
+    checkResults.foldLeft(true) {
+      case (result, (messageType, messageText)) =>
+        !messageType.equals("ERROR")
     }
-    }
-  }
 
   def checkMandatoryDependencies(latestRevisions: Map[ModuleID, Option[String]]): List[(String, String)] = {
     latestRevisions.toList.flatMap({
@@ -85,7 +84,7 @@ trait Bobby {
               s"You will not be able to use it after ${exclusion.from}.  " +
               s"Reason: ${exclusion.reason}. Please consider upgrading" +
               s"${latestRevision.map(v => s" to '$v'").getOrElse("")}"))
-          case _ => None // TODO test coverage to ensure that flatten removes empty tuples
+          case _ => None
         }
     })
   }
@@ -122,7 +121,7 @@ trait Bobby {
       .toSeq
   }
 
-  private def outputWarningsToConsole(messages: List[(String, String)]): Unit = {
+  private def outputMessagesToConsole(messages: List[(String, String)]): Unit = {
     messages.foreach(message => {
       val messageType: String = message._1
       val text: String = "[bobby] " + message._2
