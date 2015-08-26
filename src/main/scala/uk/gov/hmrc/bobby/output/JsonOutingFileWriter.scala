@@ -20,6 +20,7 @@ import java.io.{File, PrintWriter}
 
 import play.api.libs.json.Json
 import sbt.ConsoleLogger
+import uk.gov.hmrc.bobby.Message
 import uk.gov.hmrc.bobby.conf.Configuration
 
 trait JsonOutingFileWriter {
@@ -28,20 +29,17 @@ trait JsonOutingFileWriter {
 
   val filepath: Option[String]
 
-  def outputMessagesToJsonFile(messages: List[(String, String)]) = {
+  def outputMessagesToJsonFile(messages: List[Message]) = {
     logger.info("Output file set to: " + filepath)
     if (!filepath.isEmpty) {
       outputToFile(filepath.get, renderJson(messages))
     }
   }
 
-  def renderJson(messages: List[(String, String)]): String = {
-    val outputMessages: List[Map[String, String]] = messages.map(row => {
-      Map("level" -> row._1, "message" -> row._2)
-    })
+  def renderJson(messages: List[Message]): String = {
 
-    val outputStructure: Map[String, List[Map[String, String]]] = Map("results" -> outputMessages)
-
+    val outputMessages = messages.map(_.jsonOutput )
+    val outputStructure = Map("results" -> outputMessages)
     Json.stringify(Json.toJson(outputStructure))
   }
 

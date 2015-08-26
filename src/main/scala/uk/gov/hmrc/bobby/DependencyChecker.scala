@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.bobby
 
-import java.net.URL
-
 import org.joda.time.LocalDate
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.conf.{Configuration, ConfigFile}
+import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 
 trait DependencyChecker {
