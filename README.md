@@ -62,6 +62,15 @@ The blacklist must be a json with a list of rows where:
 | [1.5.0,)       | x >= 1.5.0                            |
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
 
+
+###### JSON output file
+Bobby can be configured to output results to a structured JSON file. To enable this feature provide an output filepath using the 
+optional output-file parameter in your ~/.sbt/bobby.conf file. The file path could be relative or absolute.
+
+```properties
+output-file = bobby-output.json
+```
+
 ## License ##
  
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

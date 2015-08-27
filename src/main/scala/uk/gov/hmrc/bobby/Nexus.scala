@@ -25,9 +25,9 @@ import uk.gov.hmrc.bobby.domain.Version._
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
-object MavenSearch extends RepoSearch{
+object MavenSearch extends RepoSearch {
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
     query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
 
@@ -46,11 +46,11 @@ object MavenSearch extends RepoSearch{
       .map(v => Version(v.text.trim))
   }
 
-  private def query(url: String): Try[Option[String]] = Try {
+  private def query(url: String): Try[Option[Version]] = Try {
     parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)
-      .headOption.map(_.toString)
+      .headOption
   }
 
 }
@@ -63,7 +63,7 @@ trait RepoSearch{
     }
   }
 
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[String] = {
+  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[Version] = {
     search(versionInformation, scalaVersion.map{ shortenScalaVersion }) match {
       case Success(s) if s.isDefined => s
       case Success(s) => search(versionInformation, None).toOption.flatten
@@ -71,7 +71,7 @@ trait RepoSearch{
     }
   }
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]
 }
 
 trait Nexus extends RepoSearch{
@@ -83,7 +83,7 @@ trait Nexus extends RepoSearch{
 
   val nexus: NexusCredentials
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
     query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
 
@@ -93,17 +93,17 @@ trait Nexus extends RepoSearch{
     nodes.map(n => Version(n.text))
   }
 
-  private def query(url: String): Try[Option[String]] = Try {
+  private def query(url: String): Try[Option[Version]] = Try {
 
     parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)
-      .headOption.map(_.toString)
+      .headOption
   }
 
-  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
+  def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_$maybeScalaVersion&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_${maybeScalaVersion.get}&g=${versionInformation.organization}"
       case None => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }
