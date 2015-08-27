@@ -25,7 +25,7 @@ import uk.gov.hmrc.bobby.domain.Version._
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
-object MavenSearch extends RepoSearch{
+object MavenSearch extends RepoSearch {
 
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
     query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
@@ -101,9 +101,9 @@ trait Nexus extends RepoSearch{
       .headOption
   }
 
-  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
+  def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_$maybeScalaVersion&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_${maybeScalaVersion.get}&g=${versionInformation.organization}"
       case None => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }
