@@ -34,7 +34,6 @@ object PluginBuild extends Build {
     .settings(
       sbtPlugin := true,
       name := pluginName,
-      version := "999-SNAPSHOT",
       targetJvm := "jvm-1.7",
       scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
