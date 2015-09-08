@@ -26,7 +26,7 @@ import uk.gov.hmrc.bobby.domain.RepoSearch
 import scala.io.Source
 import scala.util.{Success, Try}
 
-case class BintraySearchResult(latest_version:String)
+case class BintraySearchResult(latest_version:String,name:String)
 
 object BintraySearchResult{
   implicit val format = Json.format[BintraySearchResult]
@@ -43,8 +43,10 @@ trait Bintray extends RepoSearch{
 
   val bintrayCred:BintrayCredentials
 
-  def latestVersion(json: String):String = {
-    Json.parse(json).as[List[BintraySearchResult]].head.latest_version
+  def latestVersion(json: String, name: String):Option[String] = {
+    Json.parse(json).as[List[BintraySearchResult]]
+      .find(r => r.name == name)
+      .map(_.latest_version)
   }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL={
@@ -52,11 +54,11 @@ trait Bintray extends RepoSearch{
     new URL(s"https://${encode(bintrayCred.user, "UTF-8")}:${encode(bintrayCred.password, "UTF-8")}@bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
   }
 
-  def query(url: URL): Try[Option[String]] = {
-    Success(Some(latestVersion(Source.fromURL(url).mkString)))
+  def query(url: URL, name: String): Try[Option[String]] = {
+    Success(latestVersion(Source.fromURL(url).mkString,name))
   }
 
   override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
-    query(buildSearchUrl(versionInformation, scalaVersion))
+    query(buildSearchUrl(versionInformation, scalaVersion),versionInformation.name)
   }
 }

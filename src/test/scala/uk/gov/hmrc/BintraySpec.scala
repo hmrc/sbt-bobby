@@ -33,10 +33,49 @@ class BintraySpec extends FlatSpec with Matchers with OptionValues{
   "Bintray search" should "get versions from Bintray search results" in {
     new Bintray{
       override val bintrayCred: BintrayCredentials = new BintrayCredentials("foo", "bar")
-    }.latestVersion(json) shouldBe "0.13.0"
+    }.latestVersion(json,"sbt-bobby") shouldBe Some("0.13.0")
   }
 
   val json = """[
+               |{
+               |      "name":"sbt-bobby-new",
+               |      "repo":"sbt-plugin-releases",
+               |      "owner":"hmrc",
+               |      "desc":"",
+               |      "labels":[
+               |
+               |      ],
+               |      "attribute_names":[
+               |
+               |      ],
+               |      "licenses":[
+               |         "Apache-2.0"
+               |      ],
+               |      "custom_licenses":[
+               |
+               |      ],
+               |      "followers_count":0,
+               |      "created":"2015-03-17T15:20:08.150Z",
+               |      "website_url":"",
+               |      "issue_tracker_url":"",
+               |      "linked_to_repos":[
+               |
+               |      ],
+               |      "permissions":[
+               |
+               |      ],
+               |      "versions":[
+               |         "0.3.0",
+               |         "0.1.2"
+               |      ],
+               |      "latest_version":"0.3.0",
+               |      "updated":"2015-08-24T10:10:02.871Z",
+               |      "rating_count":0,
+               |      "system_ids":[
+               |
+               |      ],
+               |      "vcs_url":"https://github.com/hmrc/sbt-bobby"
+               |   },
                |   {
                |      "name":"sbt-bobby",
                |      "repo":"sbt-plugin-releases",

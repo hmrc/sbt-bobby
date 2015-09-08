@@ -26,9 +26,15 @@ import scala.collection.mutable.ListBuffer
 
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
-  override val repoSearch: RepoSearch = Nexus(Configuration.nexusCredetials).getOrElse{
-    logger.info("[bobby] using maven search")
-    Maven
+
+  override val repoSearch = new AggregateRepoSearch() {
+    override val repos: Seq[RepoSearch] = Seq(
+      Bintray(Configuration.bintrayCredetials),
+      Nexus(Configuration.nexusCredetials),
+      Some(Maven)
+    ).flatten
+
+    logger.info(s"[bobby] using repositories: ${repos.map(_.getClass.getName).mkString(",")}")
   }
 }
 

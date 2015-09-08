@@ -20,7 +20,7 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.Maven
 import uk.gov.hmrc.bobby.domain.Version
 
-class MavenSearchSpec extends FlatSpec with Matchers with OptionValues{
+class MavenSpec extends FlatSpec with Matchers with OptionValues{
 
   "Maven search" should "get versions from Maven search results" in {
     Maven.parseVersions(xml) shouldBe Seq(Version(3,0,0, Some(Right("M1"))), Version(2,2,4))
