@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.RepoSearch
 
-import scala.util.{Success, Failure, Try}
+import scala.util.{Success, Try}
 
 
 class AggregateRepoSearchSpec extends FlatSpec with Matchers {
@@ -52,20 +53,4 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
     aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Some("3.0.0"))
     aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None) shouldBe Success(None)
   }
-}
-
-trait AggregateRepoSearch extends RepoSearch{
-
-  def repos:Seq[RepoSearch]
-
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
-
-    val latestVersions: Seq[Option[String]] = repos.map { r =>
-      r.findLatestRevision(versionInformation, scalaVersion)
-    }
-
-    val res: Option[Option[String]] = latestVersions.find(v => v.isDefined)
-    Success(res.flatten)
-  }
-
 }

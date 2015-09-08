@@ -58,31 +58,7 @@ object MavenSearch extends RepoSearch{
 
 }
 
-case class BintraySearchResult(latest_version:String)
 
-object BintraySearchResult{
-  implicit val format = Json.format[BintraySearchResult]
-}
-
-
-class BintraySearch(bintrayCred:BintrayCredentials) extends RepoSearch{
-  def latestVersion(json: String):String = {
-    Json.parse(json).as[List[BintraySearchResult]].head.latest_version
-  }
-
-  def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL={
-    import java.net.URLEncoder.encode
-    new URL(s"https://${encode(bintrayCred.user, "UTF-8")}:${encode(bintrayCred.password, "UTF-8")}@bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
-  }
-
-  def query(url: URL): Try[Option[String]] = {
-    Success(Some(latestVersion(Source.fromURL(url).mkString)))
-  }
-
-  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
-    query(buildSearchUrl(versionInformation, scalaVersion))
-  }
-}
 
 trait RepoSearch{
 
@@ -101,6 +77,12 @@ trait RepoSearch{
   }
 
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]
+}
+
+object Nexus {
+  def apply(credentials: Option[NexusCredentials]): Option[Nexus] = credentials.map(c => new Nexus {
+    override val nexus: NexusCredentials = c
+  })
 }
 
 trait Nexus extends RepoSearch{
@@ -146,8 +128,4 @@ case class NexusCredentials(host: String, username: String, password: String) {
   def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
 }
 
-object Nexus {
-  def apply(credentials: Option[NexusCredentials]): Option[Nexus] = credentials.map(c => new Nexus {
-    override val nexus: NexusCredentials = c
-  })
-}
+

@@ -18,18 +18,22 @@ package uk.gov.hmrc
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.BintraySearch
+import uk.gov.hmrc.bobby.Bintray
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
 
 
-class BintraySearchSpec extends FlatSpec with Matchers with OptionValues{
+class BintraySpec extends FlatSpec with Matchers with OptionValues{
 
   "Bintray build search url" should "build the Bintray URL" in {
-    new BintraySearch(BintrayCredentials("foo", "bar")).buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None).toString shouldBe "https://foo:bar@bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=time"
+    new Bintray{
+      override val bintrayCred: BintrayCredentials = new BintrayCredentials("foo", "bar")
+    }.buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None).toString shouldBe "https://foo:bar@bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=time"
   }
 
   "Bintray search" should "get versions from Bintray search results" in {
-    new BintraySearch(BintrayCredentials("foo", "bar")).latestVersion(json) shouldBe "0.13.0"
+    new Bintray{
+      override val bintrayCred: BintrayCredentials = new BintrayCredentials("foo", "bar")
+    }.latestVersion(json) shouldBe "0.13.0"
   }
 
   val json = """[
