@@ -20,6 +20,7 @@ import java.net.URL
 
 import play.api.libs.json.{Format, JsArray, Json}
 import sbt.{ModuleID, ConsoleLogger}
+import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.Version
 import uk.gov.hmrc.bobby.domain.Version._
 
@@ -63,13 +64,15 @@ object BintraySearchResult{
   implicit val format = Json.format[BintraySearchResult]
 }
 
-object BintraySearch extends RepoSearch{
+
+class BintraySearch(bintrayCred:BintrayCredentials) extends RepoSearch{
   def latestVersion(json: String):String = {
     Json.parse(json).as[List[BintraySearchResult]].head.latest_version
   }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL={
-    new URL(s"https://bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
+    import java.net.URLEncoder.encode
+    new URL(s"https://${encode(bintrayCred.user, "UTF-8")}:${encode(bintrayCred.password, "UTF-8")}@bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
   }
 
   def query(url: URL): Try[Option[String]] = {
