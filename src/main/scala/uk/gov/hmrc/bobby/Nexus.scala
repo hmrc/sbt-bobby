@@ -18,10 +18,12 @@ package uk.gov.hmrc.bobby
 
 import java.net.URL
 
+import play.api.libs.json.{Format, JsArray, Json}
 import sbt.{ModuleID, ConsoleLogger}
 import uk.gov.hmrc.bobby.domain.Version
 import uk.gov.hmrc.bobby.domain.Version._
 
+import scala.io.Source
 import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
@@ -53,6 +55,30 @@ object MavenSearch extends RepoSearch{
       .headOption.map(_.toString)
   }
 
+}
+
+case class BintraySearchResult(latest_version:String)
+
+object BintraySearchResult{
+  implicit val format = Json.format[BintraySearchResult]
+}
+
+object BintraySearch extends RepoSearch{
+  def latestVersion(json: String):String = {
+    Json.parse(json).as[List[BintraySearchResult]].head.latest_version
+  }
+
+  def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL={
+    new URL(s"https://bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
+  }
+
+  def query(url: URL): Try[Option[String]] = {
+    Success(Some(latestVersion(Source.fromURL(url).mkString)))
+  }
+
+  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+    query(buildSearchUrl(versionInformation, scalaVersion))
+  }
 }
 
 trait RepoSearch{
