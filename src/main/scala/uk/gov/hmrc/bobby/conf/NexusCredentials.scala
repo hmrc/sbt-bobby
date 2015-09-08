@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby.conf
 
-import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.RepoSearch
+case class NexusCredentials(host: String, username: String, password: String) {
 
-import scala.util.{Success, Try}
+  import java.net.URLEncoder.encode
 
-trait AggregateRepoSearch extends RepoSearch{
-
-  def repos:Seq[RepoSearch]
-
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
-
-    val latestVersions: Seq[Option[String]] = repos.map { r =>
-      r.findLatestRevision(versionInformation, scalaVersion)
-    }
-
-    val res: Option[Option[String]] = latestVersions.find(v => v.isDefined)
-    Success(res.flatten)
-
-
-  }
-
+  def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
 }

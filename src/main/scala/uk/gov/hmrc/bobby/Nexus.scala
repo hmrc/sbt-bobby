@@ -18,66 +18,13 @@ package uk.gov.hmrc.bobby
 
 import java.net.URL
 
-import play.api.libs.json.{Format, JsArray, Json}
-import sbt.{ModuleID, ConsoleLogger}
-import uk.gov.hmrc.bobby.conf.BintrayCredentials
-import uk.gov.hmrc.bobby.domain.Version
-import uk.gov.hmrc.bobby.domain.Version._
+import sbt.{ConsoleLogger, ModuleID}
+import uk.gov.hmrc.bobby.conf.NexusCredentials
+import uk.gov.hmrc.bobby.domain.RepoSearch
 
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 import scala.xml.{NodeSeq, XML}
 
-object MavenSearch extends RepoSearch{
-
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
-    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
-  }
-
-
-  def buildSearchUrl(searchQuery: String) = s"http://search.maven.org/solrsearch/select?q=$searchQuery%22&core=gav&rows=20&wt=xml"
-
-  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
-    val scalaSuffix = maybeScalaVersion.map(s => "_" + s) getOrElse ""
-    s"g:%22${versionInformation.organization}%22%20AND%20a:%22${versionInformation.name}$scalaSuffix"
-  }
-
-
-  def parseVersions(xml: NodeSeq): Seq[Version] = {
-    (xml \ "result" \ "doc" \ "str" )
-      .filter(n => (n \ "@name").text.trim == "v")
-      .map(v => Version(v.text.trim))
-  }
-
-  private def query(url: String): Try[Option[String]] = Try {
-    parseVersions(XML.load(new URL(url)))
-      .filterNot(isSnapshot)
-      .sortWith(comparator)
-      .headOption.map(_.toString)
-  }
-
-}
-
-
-
-trait RepoSearch{
-
-  def shortenScalaVersion(scalaVersion: String): String = {
-    scalaVersion.split('.') match {
-      case Array(major, minor, _*) => major + "." + minor
-    }
-  }
-
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[String] = {
-    search(versionInformation, scalaVersion.map{ shortenScalaVersion }) match {
-      case Success(s) if s.isDefined => s
-      case Success(s) => search(versionInformation, None).toOption.flatten
-      case Failure(e) => e.printStackTrace(); None //logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
-    }
-  }
-
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]
-}
 
 object Nexus {
   def apply(credentials: Option[NexusCredentials]): Option[Nexus] = credentials.map(c => new Nexus {
@@ -121,11 +68,6 @@ trait Nexus extends RepoSearch{
 
 }
 
-case class NexusCredentials(host: String, username: String, password: String) {
 
-  import java.net.URLEncoder.encode
-
-  def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
-}
 
 

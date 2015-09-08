@@ -14,27 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby.conf
 
-import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.RepoSearch
-
-import scala.util.{Success, Try}
-
-trait AggregateRepoSearch extends RepoSearch{
-
-  def repos:Seq[RepoSearch]
-
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
-
-    val latestVersions: Seq[Option[String]] = repos.map { r =>
-      r.findLatestRevision(versionInformation, scalaVersion)
-    }
-
-    val res: Option[Option[String]] = latestVersions.find(v => v.isDefined)
-    Success(res.flatten)
-
-
-  }
-
-}
+case class BintrayCredentials(user: String, password: String)

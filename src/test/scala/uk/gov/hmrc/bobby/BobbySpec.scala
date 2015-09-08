@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import org.joda.time.LocalDate
 import org.scalatest.{Matchers, FlatSpec}
 import sbt.{State, ModuleID}
-import uk.gov.hmrc.bobby.domain.{VersionRange, Dependency, DeprecatedDependency}
+import uk.gov.hmrc.bobby.domain.{RepoSearch, VersionRange, Dependency, DeprecatedDependency}
 
 import scala.util.{Success, Try}
 

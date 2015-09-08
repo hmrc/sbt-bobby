@@ -18,7 +18,7 @@ package uk.gov.hmrc.bobby.domain
 
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.RepoSearch
+import uk.gov.hmrc.bobby.domain.RepoSearch
 
 import scala.util.{Success, Try}
 

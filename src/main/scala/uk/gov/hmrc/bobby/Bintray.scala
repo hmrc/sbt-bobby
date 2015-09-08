@@ -21,6 +21,7 @@ import java.net.URL
 import play.api.libs.json.Json
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
+import uk.gov.hmrc.bobby.domain.RepoSearch
 
 import scala.io.Source
 import scala.util.{Success, Try}

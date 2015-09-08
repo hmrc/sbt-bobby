@@ -19,6 +19,7 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import org.scalatest.{FlatSpec, Matchers}
+import uk.gov.hmrc.bobby.conf.NexusCredentials
 
 import scala.util.Try
 
