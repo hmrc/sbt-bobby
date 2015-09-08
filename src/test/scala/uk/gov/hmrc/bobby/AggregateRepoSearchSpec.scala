@@ -25,14 +25,47 @@ import scala.util.{Success, Failure, Try}
 class AggregateRepoSearchSpec extends FlatSpec with Matchers {
 
   "AggregateRepoSearch" should
-    "look in two repositories to find a dependency" ignore {
-    new AggregateRepoSearch{}.search(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"), None) shouldBe 1
+    "look in two repositories to find a dependency" in {
+
+    val timeRepo = new RepoSearch{
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+        if(versionInformation.name == "time")
+          Success(Some("3.2.1"))
+        else
+          Success(None)
+      }
+    }
+    val domainRepo = new RepoSearch{
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+        if(versionInformation.name == "domain")
+          Success(Some("3.0.0"))
+        else
+          Success(None)
+      }
+    }
+
+    val aggregateSearch = new AggregateRepoSearch {
+      override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
+    }
+
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Some("3.2.1"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Some("3.0.0"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None) shouldBe Success(None)
   }
 }
 
 trait AggregateRepoSearch extends RepoSearch{
+
+  def repos:Seq[RepoSearch]
+
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
-    Success(None)
+
+    val latestVersions: Seq[Option[String]] = repos.map { r =>
+      r.findLatestRevision(versionInformation, scalaVersion)
+    }
+
+    val res: Option[Option[String]] = latestVersions.find(v => v.isDefined)
+    Success(res.flatten)
   }
 
 }
