@@ -28,13 +28,14 @@ object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
 
   override val repoSearch = new AggregateRepoSearch() {
+    val repoName = "aggregate"
     override val repos: Seq[RepoSearch] = Seq(
       Bintray(Configuration.bintrayCredetials),
       Nexus(Configuration.nexusCredetials),
       Some(Maven)
     ).flatten
 
-    logger.info(s"[bobby] using repositories: ${repos.map(_.getClass.getName).mkString(",")}")
+    logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(",")}")
   }
 }
 

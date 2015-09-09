@@ -28,6 +28,8 @@ object Maven extends RepoSearch{
   
   import Version._
 
+  val repoName = "Maven"
+
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
     query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }

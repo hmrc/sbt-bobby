@@ -22,6 +22,8 @@ import scala.util.{Failure, Success, Try}
 
 trait RepoSearch{
 
+  def repoName:String
+
   def shortenScalaVersion(scalaVersion: String): String = {
     scalaVersion.split('.') match {
       case Array(major, minor, _*) => major + "." + minor

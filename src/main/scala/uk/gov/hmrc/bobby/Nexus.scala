@@ -34,6 +34,8 @@ object Nexus {
 
 trait Nexus extends RepoSearch{
 
+  val repoName = "Nexus"
+
   import uk.gov.hmrc.bobby.domain.Version._
   import uk.gov.hmrc.bobby.domain._
 

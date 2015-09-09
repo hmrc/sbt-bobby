@@ -46,6 +46,8 @@ object Bintray {
 
 trait Bintray extends RepoSearch {
 
+  val repoName = "Bintray"
+
   val bintrayCred: BintrayCredentials
 
   val ws = new NingWSClient(new NingAsyncHttpClientConfigBuilder(new DefaultWSClientConfig).build())
