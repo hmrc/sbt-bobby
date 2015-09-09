@@ -35,6 +35,8 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
         else
           Success(None)
       }
+
+      override def repoName: String = ???
     }
     val domainRepo = new RepoSearch{
       override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
@@ -43,9 +45,13 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
         else
           Success(None)
       }
+      override def repoName: String = ???
+
     }
 
     val aggregateSearch = new AggregateRepoSearch {
+      override def repoName: String = ???
+
       override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
     }
 

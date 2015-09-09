@@ -29,6 +29,8 @@ class BobbySpec extends FlatSpec with Matchers {
     override val checker: DependencyChecker = DependencyCheckerUnderTest(excludes)
     override val repoSearch: RepoSearch = new RepoSearch {
       override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = Success(None)
+
+      override def repoName: String = ???
     }
   }
 
