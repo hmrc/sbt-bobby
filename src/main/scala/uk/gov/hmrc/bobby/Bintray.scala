@@ -21,8 +21,8 @@ import java.net.URLEncoder._
 import java.util.concurrent.TimeUnit
 
 import play.api.libs.json.Json
-import play.api.libs.ws.{DefaultWSClientConfig, WSResponse, WSAuthScheme}
-import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient}
+import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient, NingWSClientConfig}
+import play.api.libs.ws.{WSAuthScheme, WSResponse}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
@@ -50,7 +50,7 @@ trait Bintray extends RepoSearch {
 
   val bintrayCred: BintrayCredentials
 
-  val ws = new NingWSClient(new NingAsyncHttpClientConfigBuilder(new DefaultWSClientConfig).build())
+  val ws = new NingWSClient(new NingAsyncHttpClientConfigBuilder(new NingWSClientConfig).build())
 
   def latestVersion(json: String, name: String): Option[String] = {
     Json.parse(json).as[List[BintraySearchResult]]
