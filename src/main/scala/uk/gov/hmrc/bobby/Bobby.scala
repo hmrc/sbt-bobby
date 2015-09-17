@@ -24,11 +24,22 @@ import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
 
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+
+
 object Bobby extends Bobby {
   override val checker: DependencyChecker = DependencyChecker
-  override val repoSearch: RepoSearch = Nexus(Configuration.credentials).getOrElse {
-    logger.info("[bobby] using maven search")
-    MavenSearch
+
+  override val repoSearch = new AggregateRepoSearch() {
+    val repoName = "aggregate"
+    override val repos: Seq[RepoSearch] = Seq(
+      Bintray(Configuration.bintrayCredetials),
+      Nexus(Configuration.nexusCredetials),
+      Some(Maven)
+    ).flatten
+
+    logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(",")}")
   }
   override val jsonOutputFileWriter = JsonOutingFileWriter
 }

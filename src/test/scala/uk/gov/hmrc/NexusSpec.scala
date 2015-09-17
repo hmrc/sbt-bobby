@@ -18,8 +18,9 @@ package uk.gov.hmrc
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
-import uk.gov.hmrc.bobby.{Nexus, NexusCredentials}
+import uk.gov.hmrc.bobby.Nexus
 
 class NexusSpec extends FlatSpec with Matchers with OptionValues{
 

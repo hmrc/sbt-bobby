@@ -20,7 +20,6 @@ import java.net.URL
 
 import play.api.libs.json.Json
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.NexusCredentials
 import uk.gov.hmrc.bobby.domain.DeprecatedDependency
 
 import scala.io.Source
@@ -59,16 +58,29 @@ object Configuration {
 
   val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
 
-  val credentials: Option[NexusCredentials] = {
-    val cf = new ConfigFile(credsFile)
+  val nexusCredetials: Option[NexusCredentials] = {
+    val ncf = new ConfigFile(credsFile)
 
     for {
-      host <- cf.get("host")
-      user <- cf.get("user")
-      password <- cf.get("password")
+      host <- ncf.get("host")
+      user <- ncf.get("user")
+      password <- ncf.get("password")
 
     } yield NexusCredentials(host, user, password)
   }
 
+  val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
+
+  val bintrayCredetials: Option[BintrayCredentials] = {
+    val bncf = new ConfigFile(bintrayCredsFile)
+
+    for {
+      user <- bncf.get("user")
+      password <- bncf.get("password")
+
+    } yield BintrayCredentials(user, password)
+  }
+
   def apply(jsonConfig: String): Seq[DeprecatedDependency] = Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
 }
+

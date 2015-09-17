@@ -37,7 +37,8 @@ object PluginBuild extends Build {
       targetJvm := "jvm-1.7",
       scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
-        "com.typesafe.play" %% "play-json" % "2.4.0-M1",	// Increasing above 2.4.0-M2 introduces a Java 8 dependency
+        "com.typesafe.play" %% "play-ws" % "2.3.10",
+        "com.typesafe.play" %% "play-json" % "2.3.10",
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
       )

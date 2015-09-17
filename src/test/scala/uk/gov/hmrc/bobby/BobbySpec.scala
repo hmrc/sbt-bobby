@@ -30,6 +30,7 @@ class BobbySpec extends FlatSpec with Matchers {
     override val checker: DependencyChecker = DependencyCheckerUnderTest(excludes)
     override val repoSearch: RepoSearch = new RepoSearch {
       override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = Success(None)
+      override def repoName: String = ???
     }
     override val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
   }
@@ -51,12 +52,18 @@ class BobbySpec extends FlatSpec with Matchers {
     BobbyUnderTest(Seq(DeprecatedDependency(project, versions, "reason", scope)))
   }
 
-
-
   "Bobby" should "fail the build if a dependency is in the exclude range" in {
+
+    val bobby = BobbyUnderTest(Seq(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "reason", new LocalDate())))
+
+    bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT")), "2.11", false) shouldBe false
+  }
+
+  it should "not fail the build for valid dependencies" in {
+
     val bobby = aBobby(failing, anyProject, snapshots)
 
-    bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT")), "2.11",false) shouldBe false
+    bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1")), "2.11", false) shouldBe true
   }
 
   it should "fail the build if one of several dependencies is in the exclude range" in {
@@ -74,7 +81,7 @@ class BobbySpec extends FlatSpec with Matchers {
       false) shouldBe false
   }
 
-  it should "not fail the build for valid dependencies, concrete version, dissalow snapshot" in {
+  it should "not fail the build for valid dependencies, concrete version, disallow snapshot" in {
     val bobby = aBobby(failing, anyProject, snapshots)
     bobby.areDependenciesValid(Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1")), "2.11", false) shouldBe true
   }
