@@ -61,7 +61,7 @@ trait Nexus extends RepoSearch {
 
   def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_${maybeScalaVersion.get}&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_${sv}&g=${versionInformation.organization}"
       case None => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }
