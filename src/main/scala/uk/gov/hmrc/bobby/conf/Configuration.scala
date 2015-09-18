@@ -26,7 +26,7 @@ import scala.io.Source
 
 object Configuration {
 
-  val timeout = 5000
+  val timeout = 3000
   val logger = ConsoleLogger()
 
   val deprecatedDependencies: Seq[DeprecatedDependency] = {
@@ -40,12 +40,11 @@ object Configuration {
       Seq.empty[DeprecatedDependency]
     } { c =>
       try {
-        logger.info(s"[bobby] using $c to load deprecated dependencies")
-
         val conn = new URL(c).openConnection()
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
+
 
         this(Source.fromInputStream(inputStream).mkString)
       } catch {

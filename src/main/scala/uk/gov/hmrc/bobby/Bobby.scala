@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.bobby
 
-import java.io.{ByteArrayOutputStream, PrintStream}
-
-import dnl.utils.text.table.TextTable
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 
@@ -33,8 +31,8 @@ object Bobby extends Bobby {
     val repoName = "aggregate"
     override val repos: Seq[RepoSearch] = Seq(
       Bintray(Configuration.bintrayCredetials),
-      Nexus(Configuration.nexusCredetials)
-//      Some(Maven)
+      Nexus(Configuration.nexusCredetials),
+      Some(Maven)
     ).flatten
 
     logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(",")}")
@@ -91,37 +89,12 @@ trait Bobby {
   }
 
   def outputNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): Unit = {
-    val tabularResults = ListBuffer[Array[String]]()
     latestRevisions.foreach { case (module, latestRevision) =>
       if (!isSbtProject && latestRevision.isEmpty)
         logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
-      else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision))) {
-        tabularResults.append(Array(s"${module.organization}.${module.name}", module.revision, latestRevision.get))
-      }
+      else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
+        logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
     }
-
-    printDependencyResults(tabularResults)
-  }
-
-  def printDependencyResults(tabularResults: ListBuffer[Array[String]]): Unit = {
-    val tableColumns = tabularResults
-      .sortBy(_.apply(0))
-      .toArray
-
-    val baos = new ByteArrayOutputStream()
-    val ps = new PrintStream(baos)
-
-    val tt = new TextTable(Array("Dependency", "Version Used", "Latest Version"), tableColumns.asInstanceOf[Array[Array[AnyRef]]])
-    tt.printTable(ps, 4)
-
-    logger.info("[bobby] ")
-    logger.info("[bobby]       Bobby Dependency Results")
-    logger.info("[bobby] ")
-    logger.info("[bobby] " + baos.toString.replace("\n", "\n[bobby] "))
-    logger.info("[bobby] ")
-    
-    ps.close()
-    baos.close()
   }
 
   def buildErrorOutput(module:ModuleID, dep:DeprecatedDependency, latestRevision:Option[String], prefix:String = "[bobby] "):String ={

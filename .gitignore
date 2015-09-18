@@ -15,6 +15,3 @@ dist
 /RUNNING_PID
 /.settings
 *.iws
-test-project/project/project
-test-project/project/target
-test-project/target

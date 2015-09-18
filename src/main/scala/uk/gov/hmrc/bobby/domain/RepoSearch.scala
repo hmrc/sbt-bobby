@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import sbt.{ConsoleLogger, ModuleID}
+import sbt.ModuleID
 
 import scala.util.{Failure, Success, Try}
 
 trait RepoSearch{
 
   def repoName:String
-
-  val logger = ConsoleLogger()
 
   def shortenScalaVersion(scalaVersion: String): String = {
     scalaVersion.split('.') match {
@@ -36,11 +34,7 @@ trait RepoSearch{
     search(versionInformation, scalaVersion.map{ shortenScalaVersion }) match {
       case Success(s) if s.isDefined => s
       case Success(s) => search(versionInformation, None).toOption.flatten
-      case Failure(e) => {
-        logger.warn(s"[bobby] failed to connect to $repoName ")
-        e.printStackTrace()
-        None //logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
-      }
+      case Failure(e) => e.printStackTrace(); None //logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
     }
   }
 

@@ -39,7 +39,6 @@ object PluginBuild extends Build {
       libraryDependencies ++= Seq(
         "com.typesafe.play" %% "play-ws" % "2.3.10",
         "com.typesafe.play" %% "play-json" % "2.3.10",
-        "dnl.utils" % "j-text-utils" % "0.3.3",
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
       )
