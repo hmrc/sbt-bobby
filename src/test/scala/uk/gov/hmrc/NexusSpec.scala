@@ -17,6 +17,7 @@
 package uk.gov.hmrc
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
 import uk.gov.hmrc.bobby.Nexus
@@ -27,6 +28,16 @@ class NexusSpec extends FlatSpec with Matchers with OptionValues{
     override val nexus: NexusCredentials = NexusCredentials("","","")
   }
 
+  private val moduleId: ModuleID = (new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
+  private val scalaVersion: Option[String] = Some("2.11")
+
+  it should "construct nexus search query parameters which in the Scala version if provided" in {
+    NexusUnderTest.getSearchTerms(moduleId, scalaVersion) shouldBe "auth_2.11&g=uk.gov.hmrc"
+  }
+
+  it should "omit the Scala version from nexus search query if not provided" in {
+    NexusUnderTest.getSearchTerms(moduleId, None) shouldBe "auth&g=uk.gov.hmrc"
+  }
 
   "10.1.8.6.8.5" should "be shortened to 10.1" in {
     NexusUnderTest.shortenScalaVersion("10.1.8.6.8.5") shouldBe "10.1"

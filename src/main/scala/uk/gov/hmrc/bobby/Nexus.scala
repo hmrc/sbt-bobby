@@ -32,7 +32,7 @@ object Nexus {
   })
 }
 
-trait Nexus extends RepoSearch{
+trait Nexus extends RepoSearch {
 
   val repoName = "Nexus"
 
@@ -43,33 +43,28 @@ trait Nexus extends RepoSearch{
 
   val nexus: NexusCredentials
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
     query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
-
 
   def parseVersions(xml: NodeSeq): Seq[Version] = {
     val nodes = xml \ "data" \ "artifact" \ "version"
     nodes.map(n => Version(n.text))
   }
 
-  private def query(url: String): Try[Option[String]] = Try {
-
+  private def query(url: String): Try[Option[Version]] = Try {
     parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)
-      .headOption.map(_.toString)
+      .headOption
   }
 
-  private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
+  def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_$maybeScalaVersion&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_${maybeScalaVersion.get}&g=${versionInformation.organization}"
       case None => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }
 
 }
-
-
-
 

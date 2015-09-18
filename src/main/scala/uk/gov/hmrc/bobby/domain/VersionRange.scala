@@ -16,7 +16,11 @@
 
 package uk.gov.hmrc.bobby.domain
 
-case class VersionRange(lowerBound: Option[Version], lowerBoundInclusive: Boolean, upperBound: Option[Version], upperBoundInclusive: Boolean, qualifierStartsWith: Option[String] = None) {
+case class VersionRange(lowerBound: Option[Version],
+                        lowerBoundInclusive: Boolean,
+                        upperBound: Option[Version],
+                        upperBoundInclusive: Boolean,
+                        qualifierStartsWith: Option[String] = None) {
 
   def includes(version: Version): Boolean = {
 
@@ -51,6 +55,13 @@ case class VersionRange(lowerBound: Option[Version], lowerBoundInclusive: Boolea
    * @throws IllegalArgumentException when an illegal format is used
    */
   object VersionRange {
+
+    // TODO
+    // (,1.0.0)  x <= 1.0.0
+    // (1.0.0)   x <= 1.0.0
+    // (,1.0.0]  x <= 1.0.0  WHY ARE UNBALANCED BRACKETS ALLOWED?
+    // (1.0.0]   x <= 1.0.0  WHY IS THE COMMA NOT MANDATORY?
+    // [,1.0.0]  x <= 1.0.0  WHY IS THIS NOT ALLOWED?
 
     implicit def toVersion(v: String): Version = Version(v)
 

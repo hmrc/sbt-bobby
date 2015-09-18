@@ -16,9 +16,13 @@
 
 package uk.gov.hmrc.bobby
 
+import java.io.{File, PrintWriter}
+
+import play.api.libs.json.Json
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
+import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -37,6 +41,7 @@ object Bobby extends Bobby {
 
     logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(",")}")
   }
+  override val jsonOutputFileWriter = JsonOutingFileWriter
 }
 
 trait Bobby {
@@ -45,81 +50,137 @@ trait Bobby {
 
   val checker: DependencyChecker
   val repoSearch: RepoSearch
+  val jsonOutputFileWriter: JsonOutingFileWriter
 
-  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean)(state: State): State = {
-    if(areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
+
+  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean)(state: State): State = {
+    if (areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
   }
 
-  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject:Boolean = false): Boolean = {
+  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean): Boolean = {
 
     logger.info(s"[bobby] Checking dependencies")
-    if(isSbtProject){
+    if (isSbtProject) {
       logger.info(s"[bobby] in SBT project, not checking for Nexus dependencies as Nexus search doesn't find SBT plugins")
     }
-    val latestRevisions: Map[ModuleID, Option[String]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
 
-    outputNexusResults(latestRevisions, isSbtProject)
+    val latestRevisions: Map[ModuleID, Option[Version]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
+    val nexusResults =
+      if (isSbtProject) List.empty[Message]
+      else calculateNexusResults(latestRevisions)
 
-    val finalResult = doMandatoryCheck(latestRevisions)
+    val mandatoryRevisionCheckResults = checkMandatoryDependencies(latestRevisions)
 
-    finalResult
+    val messages: List[Message] = nexusResults ++ mandatoryRevisionCheckResults
+
+    outputMessagesToConsole(messages)
+    jsonOutputFileWriter.outputMessagesToJsonFile(messages)
+
+    noErrorsExist(mandatoryRevisionCheckResults)
   }
 
-  def doMandatoryCheck(latestRevisions: Map[ModuleID, Option[String]]): Boolean = {
-    latestRevisions.foldLeft(true) { case (result, (module, latestRevision)) => {
-      checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
-        case MandatoryFail(latest) =>
-          logger.error(buildErrorOutput(module, latest, latestRevision))
-          false
-        case MandatoryWarn(latest) =>
-          logger.warn(s"[bobby] '${module.name} ${module.revision}' is deprecated! " +
-            s"You will not be able to use it after ${latest.from}.  " +
-            s"Reason: ${latest.reason}. Please consider upgrading" +
-            s"${latestRevision.map(v => s" to '$v'").getOrElse("")}")
-          result
-        case _ => result //TODO unify DependencyCheckResult results
-      }
-    }}
+  def noErrorsExist(results: List[Message]): Boolean = ! results.exists(_.isError)
+
+
+  def checkMandatoryDependencies(latestRevisions: Map[ModuleID, Option[Version]]): List[Message] = {
+    latestRevisions.toList.flatMap({
+      case (module, latestRevision) =>
+        checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
+          case MandatoryFail(exclusion) =>
+            Some(new DependencyUnusable(module, exclusion, latestRevision))
+
+          case MandatoryWarn(exclusion) =>
+            Some(new DependencyNearlyUnusable(module, exclusion, latestRevision))
+
+          case _ => None
+        }
+    })
   }
 
-  def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[String]] = {
+  def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[Version]] = {
     compacted.par.map { module =>
       module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
     }.seq.toMap
   }
 
-  def outputNexusResults(latestRevisions: Map[ModuleID, Option[String]], isSbtProject:Boolean): Unit = {
-    latestRevisions.foreach { case (module, latestRevision) =>
-      if (!isSbtProject && latestRevision.isEmpty)
-        logger.info(s"[bobby] Unable to get a latestRelease number for '${module.toString()}'")
-      else if (!isSbtProject && latestRevision.isDefined && Version(latestRevision.get).isAfter(Version(module.revision)))
-        logger.info(s"[bobby] '${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.get}'")
+  def calculateNexusResults(latestRevisions: Map[ModuleID, Option[Version]]): List[Message] = {
+    latestRevisions.toList.flatMap {
+      case (module, None) =>
+        Some(new UnknownVersion(module))
+
+      case (module, Some(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
+        Some(new DependencyOutOfDate(module, latestRevision))
+
+      case _ =>
+        None
     }
   }
 
-  def buildErrorOutput(module:ModuleID, dep:DeprecatedDependency, latestRevision:Option[String], prefix:String = "[bobby] "):String ={
-    s"""
-      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-      |||
-      |||    BOBBY FAILURE
-      |||
-      |||    The module '${module.name} ${module.name} ${module.revision}' is deprecated.
-      |||
-      |||    After ${dep.from} builds using it will fail.
-      |||
-      |||    ${dep.reason.replaceAll("\n", "\n|||\t")}
-      |||
-      |||    ${latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")}
-      |||
-      ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    """.stripMargin.replace("\n", "\n [bobby] ")
-  }
-
   def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
+    def fullyQualifiedName(d: ModuleID) = s"${d.organization}.${d.name}"
+
     dependencies
-      .map { d => d -> s"${d.organization}.${d.name}" }
-      .groupBy(_._2)
-      .map { group => group._2.head._1 }
+      .groupBy(fullyQualifiedName)
+      .map(_._2.head)
       .toSeq
   }
+
+  private def outputMessagesToConsole(messages: List[Message]): Unit = {
+    messages.map(_.logOutput).foreach(message => {
+      val messageType = message._1
+      val text = "[bobby] " + message._2
+      messageType match {
+        case "ERROR" => renderConsoleErrorMessage(text)
+        case "WARN" => logger.warn(text)
+        case _ => logger.info(text)
+      }
+    })
+  }
+
+  def renderConsoleErrorMessage(text: String): Unit = {
+    logger.error(text)
+  }
+
 }
+
+trait Message {
+  def isError: Boolean = level.equals("ERROR")
+
+  def jsonOutput: Map[String, String] = Map("level" -> level, "message" -> message)
+
+  def logOutput: (String, String) = level -> message
+
+  def level = "INFO"
+
+  def message: String
+
+}
+
+class UnknownVersion(module: ModuleID) extends Message {
+  val message = s"Unable to get a latestRelease number for '${module.toString()}'"
+}
+
+class DependencyOutOfDate(module: ModuleID, latestRevision: Version) extends Message {
+  val message = s"'${module.name} ${module.revision}' is out of date, consider upgrading to '$latestRevision'"
+}
+
+class DependencyUnusable(module: ModuleID, dep: DeprecatedDependency, latestRevision: Option[Version], prefix: String = "[bobby] ") extends Message {
+
+  override val level: String = "ERROR"
+
+  val message =
+    s"""The module '${module.name} ${module.name} ${module.revision}' is deprecated.\n\n""" +
+      s"""After ${dep.from} builds using it will fail.\n\n${dep.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
+      latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")
+}
+
+class DependencyNearlyUnusable(module: ModuleID, exclusion: DeprecatedDependency, latestRevision: Option[Version]) extends Message {
+
+  override val level: String = "WARN"
+
+  val message = s"'${module.name} ${module.revision}' is deprecated! " +
+    s"You will not be able to use it after ${exclusion.from}.  " +
+    s"Reason: ${exclusion.reason}. Please consider upgrading" +
+    latestRevision.map(v => s" to '$v'").getOrElse("")
+}
+

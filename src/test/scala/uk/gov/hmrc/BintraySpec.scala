@@ -20,6 +20,7 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Bintray
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
+import uk.gov.hmrc.bobby.domain.Version
 
 
 class BintraySpec extends FlatSpec with Matchers with OptionValues{
@@ -33,7 +34,7 @@ class BintraySpec extends FlatSpec with Matchers with OptionValues{
   "Bintray search" should "get versions from Bintray search results" in {
     new Bintray{
       override val bintrayCred: BintrayCredentials = new BintrayCredentials("foo", "bar")
-    }.latestVersion(json,"sbt-bobby") shouldBe Some("0.13.0")
+    }.latestVersion(json,"sbt-bobby") shouldBe Some(Version("0.13.0"))
   }
 
   val json = """[

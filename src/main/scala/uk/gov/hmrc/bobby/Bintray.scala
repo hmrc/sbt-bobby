@@ -26,6 +26,7 @@ import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
+import uk.gov.hmrc.bobby.domain.Version
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -52,10 +53,10 @@ trait Bintray extends RepoSearch {
 
   val ws = new NingWSClient(new NingAsyncHttpClientConfigBuilder(new DefaultWSClientConfig).build())
 
-  def latestVersion(json: String, name: String): Option[String] = {
+  def latestVersion(json: String, name: String): Option[Version] = {
     Json.parse(json).as[List[BintraySearchResult]]
       .find(r => r.name == name)
-      .map(_.latest_version)
+      .map(v => Version(v.latest_version))
   }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL = {
@@ -63,7 +64,7 @@ trait Bintray extends RepoSearch {
     new URL(s"https://bintray.com/api/v1/search/packages?subject=hmrc&repo=releases&name=${versionInformation.name}")
   }
 
-  def query(url: URL, name: String): Try[Option[String]] = {
+  def query(url: URL, name: String): Try[Option[Version]] = {
 
     get(url.toString).map { res =>
       latestVersion(res, name)
@@ -88,7 +89,7 @@ trait Bintray extends RepoSearch {
     }
   }
 
-  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
     query(buildSearchUrl(versionInformation, scalaVersion), versionInformation.name)
   }
 }

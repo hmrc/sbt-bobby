@@ -30,7 +30,7 @@ trait RepoSearch{
     }
   }
 
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[String] = {
+  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Option[Version] = {
     search(versionInformation, scalaVersion.map{ shortenScalaVersion }) match {
       case Success(s) if s.isDefined => s
       case Success(s) => search(versionInformation, None).toOption.flatten
@@ -38,5 +38,5 @@ trait RepoSearch{
     }
   }
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]
 }

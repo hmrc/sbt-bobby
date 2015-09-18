@@ -30,7 +30,7 @@ object Maven extends RepoSearch{
 
   val repoName = "Maven"
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
     query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
 
@@ -49,11 +49,11 @@ object Maven extends RepoSearch{
       .map(v => Version(v.text.trim))
   }
 
-  private def query(url: String): Try[Option[String]] = Try {
+  private def query(url: String): Try[Option[Version]] = Try {
     parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)
-      .headOption.map(_.toString)
+      .headOption
   }
 
 }

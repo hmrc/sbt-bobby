@@ -36,7 +36,7 @@ class ConfigurationSpec extends FlatSpec with Matchers {
     c.head.dependency.name shouldBe "some-frontend"
     c.head.range shouldBe VersionRange("(,7.4.1)")
     c.head.reason shouldBe "7.4.1 has important security fixes"
-    c.head.from shouldBe new LocalDate(2015, 01, 01)
+    c.head.from shouldBe new LocalDate(2015, 1, 1)
 
   }
 
@@ -55,14 +55,14 @@ class ConfigurationSpec extends FlatSpec with Matchers {
     c(0).dependency.name shouldBe "some-frontend"
     c(0).range shouldBe VersionRange("(,7.4.1)")
     c(0).reason shouldBe "7.4.1 has important security fixes"
-    c(0).from shouldBe new LocalDate(2015, 01, 01)
+    c(0).from shouldBe new LocalDate(2015, 1, 1)
 
 
     c(1).dependency.organisation shouldBe "uk.gov.hmrc"
     c(1).dependency.name shouldBe "some-service"
     c(1).range shouldBe VersionRange("[8.0.0, 8.4.1]")
     c(1).reason shouldBe "Versions between 8.0.0 and 8.4.1 have a bug"
-    c(1).from shouldBe new LocalDate(2015, 03, 01)
+    c(1).from shouldBe new LocalDate(2015, 3, 1)
 
   }
 

@@ -17,7 +17,6 @@
 package uk.gov.hmrc.bobby.domain
 
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.RepoSearch
 
 import scala.util.{Success, Try}
 
@@ -25,15 +24,14 @@ trait AggregateRepoSearch extends RepoSearch{
 
   def repos:Seq[RepoSearch]
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[String]]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
 
-    val latestVersions: Seq[Option[String]] = repos.map { r =>
+    val latestVersions: Seq[Option[Version]] = repos.map { r =>
       r.findLatestRevision(versionInformation, scalaVersion)
     }
 
-    val res: Option[Option[String]] = latestVersions.find(v => v.isDefined)
+    val res: Option[Option[Version]] = latestVersions.find(v => v.isDefined)
     Success(res.flatten)
-
 
   }
 

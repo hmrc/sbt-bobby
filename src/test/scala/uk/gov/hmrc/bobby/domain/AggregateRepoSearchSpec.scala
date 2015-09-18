@@ -18,7 +18,6 @@ package uk.gov.hmrc.bobby.domain
 
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.RepoSearch
 
 import scala.util.{Success, Try}
 
@@ -29,9 +28,9 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
     "look in two repositories to find a dependency" in {
 
     val timeRepo = new RepoSearch{
-      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
         if(versionInformation.name == "time")
-          Success(Some("3.2.1"))
+          Success(Some(Version("3.2.1")))
         else
           Success(None)
       }
@@ -39,9 +38,9 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
       override def repoName: String = ???
     }
     val domainRepo = new RepoSearch{
-      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[String]] = {
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
         if(versionInformation.name == "domain")
-          Success(Some("3.0.0"))
+          Success(Some(Version("3.0.0")))
         else
           Success(None)
       }
@@ -55,8 +54,8 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
       override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
     }
 
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Some("3.2.1"))
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Some("3.0.0"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Some(Version("3.2.1")))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Some(Version("3.0.0")))
     aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None) shouldBe Success(None)
   }
 }
