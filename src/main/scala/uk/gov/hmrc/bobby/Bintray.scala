@@ -85,7 +85,7 @@ trait Bintray extends RepoSearch {
 
     result.status match {
       case s if s >= 200 && s < 300 => Success(result.body)
-      case _@e => Failure(new scala.Exception(s"Didn't get expected status code when writing to Bintray. Got status ${result.status}: ${result.body}"))
+      case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${result.status}: ${result.body}"))
     }
   }
 
