@@ -20,7 +20,7 @@ If undefined it skips this step
 
 In your `~/.sbt/0.13/plugins/build.sbt`, set:
 ```scala
-addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "<INSERT VERSION>")
+addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 ```
 
 #### Outdated Dependencies
