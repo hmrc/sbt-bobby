@@ -20,6 +20,10 @@ If undefined it skips this step
 
 In your `~/.sbt/0.13/plugins/build.sbt`, set:
 ```scala
+resolvers += Resolver.url(
+  "hmrc-sbt-plugin-releases",
+    url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 ```
 
