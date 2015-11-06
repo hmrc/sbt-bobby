@@ -36,6 +36,19 @@ class DependencyCheckerSpec extends FlatSpec with Matchers {
     dc.isDependencyValid(d, Version("0.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)))
   }
 
+
+  it should "return warn result if the version is in when two restricted ranges, and the result should be the soonest deprecation" in {
+
+    val d = Dependency("uk.gov.hmrc", "some-service")
+    val dc = DependencyCheckerUnderTest(List(
+      DeprecatedDependency(d, VersionRange("(,6.0.0]"), "testing 2", new LocalDate().plusDays(2)),
+      DeprecatedDependency(d, VersionRange("(,5.0.0]"), "testing 1", new LocalDate().plusDays(1)),
+      DeprecatedDependency(d, VersionRange("(,7.0.0]"), "testing 3", new LocalDate().plusDays(3))
+    ))
+
+    dc.isDependencyValid(d, Version("3.1.0")) shouldBe MandatoryWarn(DeprecatedDependency(d, VersionRange("(,5.0.0]"), "testing 1", new LocalDate().plusDays(1)))
+  }
+
   it should "return failed result if the version is in a restricted range of multiple exclude" in {
 
     val d = Dependency("uk.gov.hmrc", "some-service")

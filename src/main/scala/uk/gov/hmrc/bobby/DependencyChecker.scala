@@ -33,10 +33,24 @@ trait DependencyChecker {
         (dd.dependency.name.equals(dependency.name) || dd.dependency.name.equals("*"))
     })
 
-    filtered.foldLeft[DependencyCheckResult](OK) {
-      case (OK, exclude) if exclude.range.includes(version) && exclude.from.isAfter(new LocalDate()) => MandatoryWarn(exclude)
-      case (result: Pass, exclude) if exclude.range.includes(version) => MandatoryFail(exclude)
-      case (result, exclude) => result
+    val now = new LocalDate()
+
+    val fails = filtered.filter { exclude =>
+      exclude.range.includes(version) && (exclude.from.isBefore(now) || exclude.from.isEqual(now))
+    }.sortBy(_.from.toDate)
+
+    val warns = filtered.filter { exclude =>
+      exclude.range.includes(version) && exclude.from.isAfter(now)
+    }.sortBy(_.from.toDate)
+
+    val failO = fails.headOption.map { dep => MandatoryFail(dep) }
+
+    val warnO = warns.headOption.map { dep => MandatoryWarn(dep) }
+
+    (failO, warnO) match {
+      case(Some(f), _) => f
+      case(None, Some(w)) => w
+      case(None, None) => OK
     }
   }
 }
