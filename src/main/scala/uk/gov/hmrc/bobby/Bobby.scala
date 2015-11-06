@@ -34,6 +34,7 @@ object Bobby extends Bobby {
   override val repoSearch = new AggregateRepoSearch() {
     val repoName = "aggregate"
     override val repos: Seq[RepoSearch] = Seq(
+      Bintray(Configuration.bintrayCredetials),
       Nexus(Configuration.nexusCredetials),
       Some(Maven)
     ).flatten
