@@ -178,4 +178,16 @@ class BobbySpec extends FlatSpec with Matchers {
     error.message should include ("The module 'auth auth 3.2.0' is deprecated." )
   }
 
+  it should "prepare dependencies by removing any on a blacklist" in {
+    val auth = ModuleID("uk.gov.hmrc","auth", "3.2.0")
+
+    val mods = Seq(
+      auth,
+      ModuleID("com.typesafe.play", "play-ws", "6.2.0", None)
+    )
+
+    val blacklisted: Set[String] = Set("com.typesafe.play")
+
+    BobbyUnderTest(Seq()).prepareDependencies(mods, blacklisted) shouldBe Seq(auth)
+  }
 }

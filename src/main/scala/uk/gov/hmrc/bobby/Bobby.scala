@@ -38,6 +38,7 @@ object Bobby extends Bobby {
   }
   override val jsonOutputFileWriter = JsonOutingFileWriter
   override val textOutputFileWriter = TextOutingFileWriter
+
 }
 
 trait Bobby {
@@ -49,19 +50,25 @@ trait Bobby {
   val jsonOutputFileWriter: JsonOutingFileWriter
   val textOutputFileWriter: TextOutingFileWriter
 
+  val blackListModuleOrgs = Set("com.typesafe.play")
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean)(state: State): State = {
-    if (areDependenciesValid(dependencies, scalaVersion, isSbtProject)) state else state.exit(true)
+    if (areDependenciesValid(dependencies, scalaVersion, isSbtProject, blackListModuleOrgs)) state else state.exit(true)
   }
 
-  def areDependenciesValid(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean): Boolean = {
+  def areDependenciesValid(
+                            dependencies: Seq[ModuleID],
+                            scalaVersion: String,
+                            isSbtProject: Boolean,
+                            blackListModuleOrgs:Set[String] = Set.empty[String]): Boolean = {
 
     logger.info(s"[bobby] Checking dependencies")
     if (isSbtProject) {
       logger.info(s"[bobby] in SBT project, not checking for Nexus dependencies as Nexus search doesn't find SBT plugins")
     }
 
-    val latestRevisions: Map[ModuleID, Option[Version]] = getNexusRevisions(scalaVersion, compactDependencies(dependencies))
+    val prepared = prepareDependencies(dependencies, blackListModuleOrgs)
+    val latestRevisions: Map[ModuleID, Option[Version]] = getNexusRevisions(scalaVersion, prepared)
     val nexusResults =
       if (isSbtProject) List.empty[Message]
       else calculateNexusResults(latestRevisions)
@@ -75,6 +82,11 @@ trait Bobby {
     textOutputFileWriter.outputMessagesToTextFile(messages)
 
     noErrorsExist(mandatoryRevisionCheckResults)
+  }
+
+  private[bobby] def prepareDependencies(dependencies: Seq[ModuleID], blackListModuleOrgs:Set[String]): Seq[ModuleID] = {
+    compactDependencies(dependencies)
+      .filterNot(m => blackListModuleOrgs.contains(m.organization))
   }
 
   def noErrorsExist(results: List[Message]): Boolean = ! results.exists(_.isError)
