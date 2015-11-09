@@ -18,7 +18,9 @@ package uk.gov.hmrc.bobby.output
 
 import org.scalatest.{Matchers, FlatSpec}
 import play.api.libs.json._
+import sbt.ModuleID
 import uk.gov.hmrc.bobby.Message
+import uk.gov.hmrc.bobby.domain.Version
 
 class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
@@ -40,5 +42,9 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
   def makeMessage(pLevel: String, pMessage: String) = new Message {
     override val level: String = pLevel
     override def message: String = pMessage
+
+    override def module: ModuleID = ???
+
+    override def latestRevision: Option[Version] = ???
   }
 }

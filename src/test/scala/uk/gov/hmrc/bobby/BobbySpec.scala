@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
+import uk.gov.hmrc.bobby.output.{TextOutingFileWriter, JsonOutingFileWriter}
 
 import scala.util.{Success, Try}
 
@@ -33,6 +33,7 @@ class BobbySpec extends FlatSpec with Matchers {
       override def repoName: String = ???
     }
     override val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
+    override val textOutputFileWriter: TextOutingFileWriter = TextOutingFileWriter
   }
 
   private val failing = new LocalDate().minusDays(1)

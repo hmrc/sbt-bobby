@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.bobby
 
+import java.lang.Throwable
 import java.net.URL
 import java.net.URLEncoder._
 import java.util.concurrent.TimeUnit
@@ -28,7 +29,7 @@ import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
 import uk.gov.hmrc.bobby.domain.Version
 
-import scala.concurrent.Await
+import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
@@ -75,6 +76,7 @@ trait Bintray extends RepoSearch {
 
     val call = ws
       .url(url)
+      .withRequestTimeout(5000)
       .withAuth(
         encode(bintrayCred.user, "UTF-8"),
         encode(bintrayCred.password, "UTF-8"), WSAuthScheme.BASIC)

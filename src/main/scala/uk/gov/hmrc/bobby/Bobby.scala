@@ -16,16 +16,10 @@
 
 package uk.gov.hmrc.bobby
 
-import java.io.{File, PrintWriter}
-
-import play.api.libs.json.Json
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.JsonOutingFileWriter
-
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, TextOutingFileWriter}
 
 
 object Bobby extends Bobby {
@@ -39,9 +33,11 @@ object Bobby extends Bobby {
       Some(Maven)
     ).flatten
 
-    logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(",")}")
+    val currentVersion = getClass.getPackage.getImplementationVersion
+    logger.info(s"[bobby] Bobby version $currentVersion using repositories: ${repos.map(_.repoName).mkString(", ")}")
   }
   override val jsonOutputFileWriter = JsonOutingFileWriter
+  override val textOutputFileWriter = TextOutingFileWriter
 }
 
 trait Bobby {
@@ -51,6 +47,7 @@ trait Bobby {
   val checker: DependencyChecker
   val repoSearch: RepoSearch
   val jsonOutputFileWriter: JsonOutingFileWriter
+  val textOutputFileWriter: TextOutingFileWriter
 
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean)(state: State): State = {
@@ -75,6 +72,7 @@ trait Bobby {
 
     outputMessagesToConsole(messages)
     jsonOutputFileWriter.outputMessagesToJsonFile(messages)
+    textOutputFileWriter.outputMessagesToTextFile(messages)
 
     noErrorsExist(mandatoryRevisionCheckResults)
   }
@@ -87,10 +85,10 @@ trait Bobby {
       case (module, latestRevision) =>
         checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
           case MandatoryFail(exclusion) =>
-            Some(new DependencyUnusable(module, exclusion, latestRevision))
+            Some(new DependencyUnusable(module, latestRevision, exclusion))
 
           case MandatoryWarn(exclusion) =>
-            Some(new DependencyNearlyUnusable(module, exclusion, latestRevision))
+            Some(new DependencyNearlyUnusable(module, latestRevision, exclusion))
 
           case _ => None
         }
@@ -109,7 +107,7 @@ trait Bobby {
         Some(new UnknownVersion(module))
 
       case (module, Some(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
-        Some(new DependencyOutOfDate(module, latestRevision))
+        Some(new DependencyOutOfDate(module, Some(latestRevision)))
 
       case _ =>
         None
@@ -143,44 +141,76 @@ trait Bobby {
 
 }
 
+object Message{
+  val tabularHeader = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline", "Information")
+}
+
 trait Message {
   def isError: Boolean = level.equals("ERROR")
 
   def jsonOutput: Map[String, String] = Map("level" -> level, "message" -> message)
 
+  def tabularOutput = Seq(
+    level,
+    s"${module.organization}.${module.name}",
+    module.revision,
+    latestRevision.map(_.toString).getOrElse("(not-found)"),
+    "-",
+    message
+  )
+
   def logOutput: (String, String) = level -> message
+
+  def module:ModuleID
 
   def level = "INFO"
 
   def message: String
 
+  def latestRevision: Option[Version]
 }
 
-class UnknownVersion(module: ModuleID) extends Message {
+trait MessageWithInfo extends Message {
+
+  def deprecationInfo: DeprecatedDependency
+
+  override def tabularOutput = Seq(
+    level,
+    s"${module.organization}.${module.name}",
+    module.revision,
+    latestRevision.map(_.toString).getOrElse("(not-found)"),
+    deprecationInfo.from.toString,
+    message
+  )
+}
+
+class UnknownVersion(val module: ModuleID) extends Message {
   val message = s"Unable to get a latestRelease number for '${module.toString()}'"
+  val latestRevision: Option[Version] = None
 }
 
-class DependencyOutOfDate(module: ModuleID, latestRevision: Version) extends Message {
-  val message = s"'${module.name} ${module.revision}' is out of date, consider upgrading to '$latestRevision'"
+class DependencyOutOfDate(val module: ModuleID, val latestRevision: Option[Version]) extends Message {
+  val message = s"'${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.getOrElse("-")}'"
+  val deprecationInfo = None
 }
 
-class DependencyUnusable(module: ModuleID, dep: DeprecatedDependency, latestRevision: Option[Version], prefix: String = "[bobby] ") extends Message {
+class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency, prefix: String = "[bobby] ") extends Message {
 
   override val level: String = "ERROR"
 
   val message =
     s"""The module '${module.name} ${module.name} ${module.revision}' is deprecated.\n\n""" +
-      s"""After ${dep.from} builds using it will fail.\n\n${dep.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
+      s"""After ${deprecationInfo.from} builds using it will fail.\n\n${deprecationInfo.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
       latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")
 }
 
-class DependencyNearlyUnusable(module: ModuleID, exclusion: DeprecatedDependency, latestRevision: Option[Version]) extends Message {
+class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency) extends MessageWithInfo {
 
   override val level: String = "WARN"
 
   val message = s"'${module.name} ${module.revision}' is deprecated! " +
-    s"You will not be able to use it after ${exclusion.from}.  " +
-    s"Reason: ${exclusion.reason}. Please consider upgrading" +
+    s"You will not be able to use it after ${deprecationInfo.from}.  " +
+    s"Reason: ${deprecationInfo.reason}. Please consider upgrading" +
     latestRevision.map(v => s" to '$v'").getOrElse("")
 }
 

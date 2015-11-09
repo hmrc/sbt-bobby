@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby.output
 
-import java.io.{File, PrintWriter}
+import java.io.File
+import java.nio.file.Files
 
 import play.api.libs.json.Json
 import sbt.ConsoleLogger
@@ -27,34 +28,32 @@ trait JsonOutingFileWriter {
 
   private val logger = ConsoleLogger()
 
-  val filepath: Option[String]
+  val filepath: String
 
   def outputMessagesToJsonFile(messages: List[Message]) = {
     logger.info("Output file set to: " + filepath)
-    if (!filepath.isEmpty) {
-      outputToFile(filepath.get, renderJson(messages))
-    }
+    outputToFile(filepath, renderJson(messages))
   }
 
   def renderJson(messages: List[Message]): String = {
 
     val outputMessages = messages.map(_.jsonOutput )
     val outputStructure = Map("results" -> outputMessages)
-    Json.stringify(Json.toJson(outputStructure))
+    Json.prettyPrint(Json.toJson(outputStructure))
   }
 
   private def outputToFile(filepath: String, jsonString: String) = {
     val file: File = new File(filepath)
+    file.getParentFile.mkdirs()
     logger.info("Outputting results to JSON file: " + file.getAbsolutePath);
-    val writer = new PrintWriter(file)
-    writer.write(jsonString)
-    writer.close()
+
+    Files.write(file.toPath, jsonString.getBytes)
   }
 
 }
 
 object JsonOutingFileWriter extends JsonOutingFileWriter {
 
-  override val filepath: Option[String] = Configuration.outputFile
+  override val filepath = Configuration.jsonOutputFile
 
 }
