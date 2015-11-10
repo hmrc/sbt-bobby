@@ -30,7 +30,7 @@ trait TextOutingFileWriter {
   val filepath: String
 
   def outputMessagesToTextFile(messages: List[Message]) = {
-    logger.info("Output file set to: " + filepath)
+    logger.info("[bobby] Output file set to: " + filepath)
     outputToFile(filepath, renderText(messages))
   }
 
@@ -47,7 +47,7 @@ trait TextOutingFileWriter {
   private def outputToFile(filepath: String, textString: String) = {
     val file: File = new File(filepath)
     file.getParentFile.mkdirs()
-    logger.info("Outputting results to Text file: " + file.getAbsolutePath)
+    logger.info("[bobby] Outputting results to Text file: " + file.getAbsolutePath)
 
     Files.write(file.toPath, textString.getBytes)
   }
