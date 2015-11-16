@@ -54,8 +54,8 @@ object Configuration {
     }
   }
 
-  val jsonOutputFile: String = new ConfigFile(bobbyConfigFile).get("output-file").getOrElse("./target/bobby-reports/bobby-report.json")
-  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse("./target/bobby-reports/bobby-report.txt")
+  val jsonOutputFile: String = new ConfigFile(bobbyConfigFile).get("output-file").getOrElse("./target/dependencies/bobby-report.json")
+  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse("./target/dependencies/bobby-report.txt")
 
   val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
 
