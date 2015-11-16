@@ -24,12 +24,15 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
+  lazy val validate = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
+
+
   override lazy val projectSettings = Seq(
     parallelExecution in GlobalScope := true,
 
-    onLoad in Global := {
+    validate := {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
-      Bobby.validateDependencies(libraryDependencies.value, scalaVersion.value, isSbtProject) _ compose (onLoad in Global).value
+      Bobby.validateDependencies(libraryDependencies.value, scalaVersion.value, isSbtProject)(state.value) //(onLoad in Global).value
     }
   )
 }

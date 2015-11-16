@@ -50,7 +50,12 @@ trait Bobby {
   val jsonOutputFileWriter: JsonOutingFileWriter
   val textOutputFileWriter: TextOutingFileWriter
 
-  val blackListModuleOrgs = Set("com.typesafe.play")
+  val blackListModuleOrgs = Set(
+    "com.typesafe.play",
+    "com.kenshoo",
+    "com.codahale.metrics",
+    "org.scala-lang"
+  )
 
   def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean)(state: State): State = {
     if (areDependenciesValid(dependencies, scalaVersion, isSbtProject, blackListModuleOrgs)) state else state.exit(true)
