@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc
+package uk.gov.hmrc.bobby
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
-import uk.gov.hmrc.bobby.Maven
 import uk.gov.hmrc.bobby.domain.Version
 
 class MavenSpec extends FlatSpec with Matchers with OptionValues{

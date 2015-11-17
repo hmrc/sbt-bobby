@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc
+package uk.gov.hmrc.bobby
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
-import uk.gov.hmrc.bobby.Nexus
 
 class NexusSpec extends FlatSpec with Matchers with OptionValues{
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.conf
+package uk.gov.hmrc.bobby.conf
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}

@@ -37,8 +37,10 @@ trait TextOutingFileWriter {
   def renderText(messages: List[Message]): String = {
 
     val messageModel = messages
+      .sorted
       .map { m => m.longTabularOutput }
-      .sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
+
+      //.sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
 
 
     Tabulator.format(Message.tabularHeader +: messageModel)

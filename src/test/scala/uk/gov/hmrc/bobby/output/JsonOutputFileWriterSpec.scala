@@ -19,14 +19,18 @@ package uk.gov.hmrc.bobby.output
 import org.scalatest.{Matchers, FlatSpec}
 import play.api.libs.json._
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.Message
+import uk.gov.hmrc.bobby.{MessageBuilder, LogLevels, Message}
 import uk.gov.hmrc.bobby.domain.Version
+import LogLevels._
+import MessageBuilder._
+
+
 
 class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
     "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
       val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
-      val messages = List(makeMessage("ERROR", "An error"), makeMessage("WARNING", "Another warning"))
+      val messages = List(makeMessage(ERROR, "An error"), makeMessage(WARN, "Another warning"))
       val jsonString: String = jsonOutputFileWriter.renderJson(messages)
 
       val jsValue: JsValue = Json.parse(jsonString)
@@ -35,16 +39,7 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
       rows.size shouldBe 2
       (rows.head \ "level").as[String] shouldBe "ERROR"
       (rows.head \ "message").as[String] shouldBe "An error"
-      (rows(1) \ "level").as[String] shouldBe "WARNING"
+      (rows(1) \ "level").as[String] shouldBe "WARN"
     }
 
-
-  def makeMessage(pLevel: String, pMessage: String) = new Message {
-    override val level: String = pLevel
-    override def message: String = pMessage
-
-    override def module: ModuleID = ???
-
-    override def latestRevision: Option[Version] = ???
-  }
 }

@@ -144,14 +144,14 @@ trait Bobby {
   }
 
   private def outputMessagesToConsole(messages: List[Message]): Unit = {
-    val infoAndWarnModel = messages
-      .filterNot(_.isError)
+    val model = messages
+      .sortBy(_.moduleName)
+      .sortWith((a, b) => LogLevels.compare(a.level, b.level))
       .map { m => m.shortTabularOutput }
-      .sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
 
-    logger.info("[bobby] Bobby info and warnings. See bobby report artefact for warning reasons.")
+    logger.info("[bobby] Bobby info and warnings. See bobby report artefact for more info.")
 
-    Tabulator.formatAsStrings(Message.shortTabularHeader +: infoAndWarnModel).foreach { log =>
+    Tabulator.formatAsStrings(Message.shortTabularHeader +: model).foreach { log =>
       logger.info(log)
     }
 
@@ -170,19 +170,43 @@ trait Bobby {
 
 }
 
+object LogLevels {
+
+  sealed abstract class Level(
+                                val order: Int,
+                                val name: String) extends Ordered[Level] {
+
+    def compare(that: Level) = this.order - that.order
+
+    override def toString = name
+  }
+
+  def compare(a:Level, b:Level):Boolean = a.compare(b) < 0
+
+  case object ERROR extends Level(0, "ERROR")
+  case object WARN extends Level(1, "WARN")
+  case object INFO extends Level(2, "INFO")
+
+}
+
 object Message{
   val tabularHeader      = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline", "Reason")
   val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline")
+
+  implicit object MessageOrdering extends Ordering[Message] {
+    def compare(a:Message, b:Message) = a.level compare b.level
+  }
 }
 
-trait Message {
-  def isError: Boolean = level.equals("ERROR")
 
-  def jsonOutput: Map[String, String] = Map("level" -> level, "message" -> message)
+trait Message {
+  def isError: Boolean = level.equals(LogLevels.ERROR)
+
+  def jsonOutput: Map[String, String] = Map("level" -> level.name, "message" -> message)
 
   def shortTabularOutput = Seq(
     level,
-    s"${module.organization}.${module.name}",
+    moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("-"),
     "-"
@@ -190,18 +214,20 @@ trait Message {
 
   def longTabularOutput = Seq(
     level,
-    s"${module.organization}.${module.name}",
+    moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("(not-found)"),
     "-",
     message
   )
 
-  def logOutput: (String, String) = level -> message
+  def logOutput: (String, String) = level.name -> message
 
   def module:ModuleID
 
-  def level = "INFO"
+  def moduleName = s"${module.organization}.${module.name}"
+
+  def level:LogLevels.Level = LogLevels.INFO
 
   def message: String
 
@@ -214,7 +240,7 @@ trait MessageWithInfo extends Message {
 
   override def longTabularOutput = Seq(
     level,
-    s"${module.organization}.${module.name}",
+    moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("(not-found)"),
     deprecationInfo.from.toString,
@@ -222,7 +248,7 @@ trait MessageWithInfo extends Message {
   )
   override def shortTabularOutput = Seq(
     level,
-    s"${module.organization}.${module.name}",
+    moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("-"),
     deprecationInfo.from.toString
@@ -241,7 +267,7 @@ class NewVersionAvailable(val module: ModuleID, val latestRevision: Option[Versi
 
 class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency, prefix: String = "[bobby] ") extends Message {
 
-  override val level: String = "ERROR"
+  override val level = LogLevels.ERROR
 
   val message =
     s"""${module.organization}.${module.name} ${module.revision} is deprecated.\n\n""" +
@@ -251,7 +277,7 @@ class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Versio
 
 class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency) extends MessageWithInfo {
 
-  override val level: String = "WARN"
+  override val level = LogLevels.WARN
 
   val message = s"${module.organization}.${module.name} ${module.revision} is deprecated: '${deprecationInfo.reason}'. To be updated by ${deprecationInfo.from} to version ${latestRevision.getOrElse("-")}"
 }

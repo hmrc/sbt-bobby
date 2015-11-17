@@ -19,10 +19,12 @@ package uk.gov.hmrc.bobby
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.LogLevels.{ERROR, WARN, INFO}
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.{TextOutingFileWriter, JsonOutingFileWriter}
 
 import scala.util.{Success, Try}
+import MessageBuilder._
 
 class BobbySpec extends FlatSpec with Matchers {
 
@@ -101,7 +103,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     results.size shouldBe 1
     val message = results.head
-    message.level shouldBe "INFO"
+    message.level shouldBe LogLevels.INFO
     message.message shouldBe "Unable to get a latestRelease number for 'uk.gov.hmrc:auth:3.2.1'"
   }
 
@@ -115,7 +117,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     results.size shouldBe 1
     val message = results.head
-    message.level shouldBe "INFO"
+    message.level shouldBe INFO
     message.message shouldBe "'uk.gov.hmrc.auth 3.2.1' is not the most recent version, consider upgrading to '3.2.2'"
   }
 
@@ -158,7 +160,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     results.size shouldBe 1
     val warn = results.head
-    warn.level shouldBe "WARN"
+    warn.level shouldBe WARN
     warn.message should include ("uk.gov.hmrc.auth 3.2.0 is deprecated")
     warn.message should include ("to version 3.2.2")
   }
@@ -174,7 +176,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     results.size shouldBe 1
     val error = results.head
-    error.level shouldBe "ERROR"
+    error.level shouldBe ERROR
     error.message should include ("uk.gov.hmrc.auth 3.2.0 is deprecated." )
   }
 
@@ -189,5 +191,15 @@ class BobbySpec extends FlatSpec with Matchers {
     val blacklisted: Set[String] = Set("com.typesafe.play")
 
     BobbyUnderTest(Seq()).prepareDependencies(mods, blacklisted) shouldBe Seq(auth)
+  }
+
+  it should "order messages correctly" in {
+
+    val messages = Seq(
+      makeMessage(INFO, "info message"),
+      makeMessage(ERROR, "error message"),
+      makeMessage(WARN, "warn message"))
+
+    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
   }
 }
