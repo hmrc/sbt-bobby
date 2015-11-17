@@ -116,7 +116,7 @@ class BobbySpec extends FlatSpec with Matchers {
     results.size shouldBe 1
     val message = results.head
     message.level shouldBe "INFO"
-    message.message shouldBe "'auth 3.2.1' is out of date, consider upgrading to '3.2.2'"
+    message.message shouldBe "'uk.gov.hmrc.auth 3.2.1' is not the most recent version, consider upgrading to '3.2.2'"
   }
 
   it should "not fail the build for mandatory dependencies which will be enforced in the future" in {
@@ -159,8 +159,8 @@ class BobbySpec extends FlatSpec with Matchers {
     results.size shouldBe 1
     val warn = results.head
     warn.level shouldBe "WARN"
-    warn.message should include ("auth 3.2.0' is deprecated!")
-    warn.message should include ("Please consider upgrading to '3.2.2'")
+    warn.message should include ("uk.gov.hmrc.auth 3.2.0 is deprecated")
+    warn.message should include ("to version 3.2.2")
   }
 
   it should "produce error message for mandatory dependencies which are currently been enforced" in {
@@ -175,7 +175,7 @@ class BobbySpec extends FlatSpec with Matchers {
     results.size shouldBe 1
     val error = results.head
     error.level shouldBe "ERROR"
-    error.message should include ("The module 'auth auth 3.2.0' is deprecated." )
+    error.message should include ("uk.gov.hmrc.auth 3.2.0 is deprecated." )
   }
 
   it should "prepare dependencies by removing any on a blacklist" in {

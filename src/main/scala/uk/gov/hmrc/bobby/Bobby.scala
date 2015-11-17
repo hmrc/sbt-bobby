@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, TextOutingFileWriter}
+import uk.gov.hmrc.bobby.output.{Tabulator, JsonOutingFileWriter, TextOutingFileWriter}
 
 
 object Bobby extends Bobby {
@@ -41,6 +41,8 @@ object Bobby extends Bobby {
 
 }
 
+class BobbyValidationFailedException(message:String) extends RuntimeException(message)
+
 trait Bobby {
 
   val logger = ConsoleLogger()
@@ -57,8 +59,9 @@ trait Bobby {
     "org.scala-lang"
   )
 
-  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean)(state: State): State = {
-    if (areDependenciesValid(dependencies, scalaVersion, isSbtProject, blackListModuleOrgs)) state else state.exit(true)
+  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean) = {
+    if (!areDependenciesValid(dependencies, scalaVersion, isSbtProject, blackListModuleOrgs))
+      throw new BobbyValidationFailedException("See previous bobby output for more information")
   }
 
   def areDependenciesValid(
@@ -124,7 +127,7 @@ trait Bobby {
         Some(new UnknownVersion(module))
 
       case (module, Some(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
-        Some(new DependencyOutOfDate(module, Some(latestRevision)))
+        Some(new NewVersionAvailable(module, Some(latestRevision)))
 
       case _ =>
         None
@@ -141,25 +144,35 @@ trait Bobby {
   }
 
   private def outputMessagesToConsole(messages: List[Message]): Unit = {
-    messages.map(_.logOutput).foreach(message => {
-      val messageType = message._1
-      val text = "[bobby] " + message._2
-      messageType match {
-        case "ERROR" => renderConsoleErrorMessage(text)
-        case "WARN" => logger.warn(text)
-        case _ => logger.info(text)
-      }
-    })
+    val infoAndWarnModel = messages
+      .filterNot(_.isError)
+      .map { m => m.shortTabularOutput }
+      .sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
+
+    logger.info("[bobby] Bobby info and warnings. See bobby report artefact for warning reasons.")
+
+    Tabulator.formatAsStrings(Message.shortTabularHeader +: infoAndWarnModel).foreach { log =>
+      logger.info(log)
+    }
+
+    messages.filter(_.isError).foreach { log =>
+      renderConsoleErrorMessage(log.message)
+    }
   }
 
   def renderConsoleErrorMessage(text: String): Unit = {
+    logger.error("-")
+    logger.error("- Bobby mandatory failure details:")
+    logger.error("-")
     logger.error(text)
+    logger.error("")
   }
 
 }
 
 object Message{
-  val tabularHeader = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline", "Information")
+  val tabularHeader      = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline", "Reason")
+  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline")
 }
 
 trait Message {
@@ -167,7 +180,15 @@ trait Message {
 
   def jsonOutput: Map[String, String] = Map("level" -> level, "message" -> message)
 
-  def tabularOutput = Seq(
+  def shortTabularOutput = Seq(
+    level,
+    s"${module.organization}.${module.name}",
+    module.revision,
+    latestRevision.map(_.toString).getOrElse("-"),
+    "-"
+  )
+
+  def longTabularOutput = Seq(
     level,
     s"${module.organization}.${module.name}",
     module.revision,
@@ -191,13 +212,20 @@ trait MessageWithInfo extends Message {
 
   def deprecationInfo: DeprecatedDependency
 
-  override def tabularOutput = Seq(
+  override def longTabularOutput = Seq(
     level,
     s"${module.organization}.${module.name}",
     module.revision,
     latestRevision.map(_.toString).getOrElse("(not-found)"),
     deprecationInfo.from.toString,
-    message
+    deprecationInfo.reason
+  )
+  override def shortTabularOutput = Seq(
+    level,
+    s"${module.organization}.${module.name}",
+    module.revision,
+    latestRevision.map(_.toString).getOrElse("-"),
+    deprecationInfo.from.toString
   )
 }
 
@@ -206,8 +234,8 @@ class UnknownVersion(val module: ModuleID) extends Message {
   val latestRevision: Option[Version] = None
 }
 
-class DependencyOutOfDate(val module: ModuleID, val latestRevision: Option[Version]) extends Message {
-  val message = s"'${module.name} ${module.revision}' is out of date, consider upgrading to '${latestRevision.getOrElse("-")}'"
+class NewVersionAvailable(val module: ModuleID, val latestRevision: Option[Version]) extends Message {
+  val message = s"'${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '${latestRevision.getOrElse("-")}'"
   val deprecationInfo = None
 }
 
@@ -216,7 +244,7 @@ class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Versio
   override val level: String = "ERROR"
 
   val message =
-    s"""The module '${module.name} ${module.name} ${module.revision}' is deprecated.\n\n""" +
+    s"""${module.organization}.${module.name} ${module.revision} is deprecated.\n\n""" +
       s"""After ${deprecationInfo.from} builds using it will fail.\n\n${deprecationInfo.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
       latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")
 }
@@ -225,9 +253,6 @@ class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[
 
   override val level: String = "WARN"
 
-  val message = s"'${module.name} ${module.revision}' is deprecated! " +
-    s"You will not be able to use it after ${deprecationInfo.from}.  " +
-    s"Reason: ${deprecationInfo.reason}. Please consider upgrading" +
-    latestRevision.map(v => s" to '$v'").getOrElse("")
+  val message = s"${module.organization}.${module.name} ${module.revision} is deprecated: '${deprecationInfo.reason}'. To be updated by ${deprecationInfo.from} to version ${latestRevision.getOrElse("-")}"
 }
 

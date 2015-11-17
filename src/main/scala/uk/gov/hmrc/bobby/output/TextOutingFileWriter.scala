@@ -37,7 +37,7 @@ trait TextOutingFileWriter {
   def renderText(messages: List[Message]): String = {
 
     val messageModel = messages
-      .map { m => m.tabularOutput }
+      .map { m => m.longTabularOutput }
       .sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
 
 
@@ -47,7 +47,7 @@ trait TextOutingFileWriter {
   private def outputToFile(filepath: String, textString: String) = {
     val file: File = new File(filepath)
     file.getParentFile.mkdirs()
-    logger.info("[bobby] Outputting results to Text file: " + file.getAbsolutePath)
+    logger.debug("[bobby] Writing Bobby report to: " + file.getAbsolutePath);
 
     Files.write(file.toPath, textString.getBytes)
   }
@@ -67,8 +67,10 @@ object TextOutingFileWriter extends TextOutingFileWriter {
 //
 object Tabulator {
 
-  def format(table: Seq[Seq[Any]]) = table match {
-    case Seq() => ""
+  def format(table: Seq[Seq[Any]]): String = formatAsStrings(table).mkString("\n")
+
+  def formatAsStrings(table: Seq[Seq[Any]]): Seq[String] = table match {
+    case Seq() => Seq()
     case _ =>
       val sizes = for (row <- table) yield (for (cell <- row) yield if (cell == null) 0 else cell.toString.length)
       val colSizes = for (col <- sizes.transpose) yield col.max
@@ -76,13 +78,13 @@ object Tabulator {
       formatRows(rowSeparator(colSizes), rows)
   }
 
-  def formatRows(rowSeparator: String, rows: Seq[String]): String = (
+  def formatRows(rowSeparator: String, rows: Seq[String]): Seq[String] = rowSeparator ::
+    rows.head ::
     rowSeparator ::
-      rows.head ::
-      rowSeparator ::
-      rows.tail.toList :::
-      rowSeparator ::
-      List()).mkString("\n")
+    rows.tail.toList :::
+    rowSeparator ::
+    List()
+
 
   def formatRow(row: Seq[Any], colSizes: Seq[Int]) = {
     val cells = (for ((item, size) <- row.zip(colSizes)) yield if (size == 0) "" else ("%" + -size + "s").format(item))

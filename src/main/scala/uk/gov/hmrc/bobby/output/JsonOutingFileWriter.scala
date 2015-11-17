@@ -31,7 +31,7 @@ trait JsonOutingFileWriter {
   val filepath: String
 
   def outputMessagesToJsonFile(messages: List[Message]) = {
-    logger.info("[bobby] Output file set to: " + filepath)
+    logger.debug("[bobby] Output file set to: " + filepath)
     outputToFile(filepath, renderJson(messages))
   }
 
@@ -45,7 +45,7 @@ trait JsonOutingFileWriter {
   private def outputToFile(filepath: String, jsonString: String) = {
     val file: File = new File(filepath)
     file.getParentFile.mkdirs()
-    logger.info("[bobby] Outputting results to JSON file: " + file.getAbsolutePath);
+    logger.debug("[bobby] Writing Bobby report to: " + file.getAbsolutePath);
 
     Files.write(file.toPath, jsonString.getBytes)
   }
