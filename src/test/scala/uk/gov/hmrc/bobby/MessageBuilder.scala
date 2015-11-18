@@ -23,10 +23,12 @@ object MessageBuilder{
 
   def makeMessage(pLevel: LogLevels.Level, pMessage: String) = new Message {
     override val level = pLevel
-    override def message: String = pMessage
+    override def jsonMessage: String = pMessage
 
     override def module: ModuleID = ???
 
     override def latestRevision: Option[Version] = ???
+
+    override def tabularMessage: String = ???
   }
 }

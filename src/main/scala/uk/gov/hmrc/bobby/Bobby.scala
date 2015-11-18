@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.bobby
 
+import org.joda.time.LocalDate
 import sbt.{ConsoleLogger, ModuleID, State}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
@@ -156,7 +157,7 @@ trait Bobby {
     }
 
     messages.filter(_.isError).foreach { log =>
-      renderConsoleErrorMessage(log.message)
+      renderConsoleErrorMessage(log.jsonMessage)
     }
   }
 
@@ -202,14 +203,14 @@ object Message{
 trait Message {
   def isError: Boolean = level.equals(LogLevels.ERROR)
 
-  def jsonOutput: Map[String, String] = Map("level" -> level.name, "message" -> message)
+  def jsonOutput: Map[String, String] = Map("level" -> level.name, "message" -> jsonMessage)
 
   def shortTabularOutput = Seq(
     level,
     moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("-"),
-    "-"
+    deadline.map(_.toString).getOrElse("-")
   )
 
   def longTabularOutput = Seq(
@@ -217,11 +218,11 @@ trait Message {
     moduleName,
     module.revision,
     latestRevision.map(_.toString).getOrElse("(not-found)"),
-    "-",
-    message
+    deadline.map(_.toString).getOrElse("-"),
+    tabularMessage
   )
 
-  def logOutput: (String, String) = level.name -> message
+  def logOutput: (String, String) = level.name -> jsonMessage
 
   def module:ModuleID
 
@@ -229,56 +230,51 @@ trait Message {
 
   def level:LogLevels.Level = LogLevels.INFO
 
-  def message: String
+  def jsonMessage: String
+
+  def tabularMessage:String
+
+  def deadline:Option[LocalDate] = None
 
   def latestRevision: Option[Version]
 }
 
-trait MessageWithInfo extends Message {
-
-  def deprecationInfo: DeprecatedDependency
-
-  override def longTabularOutput = Seq(
-    level,
-    moduleName,
-    module.revision,
-    latestRevision.map(_.toString).getOrElse("(not-found)"),
-    deprecationInfo.from.toString,
-    deprecationInfo.reason
-  )
-  override def shortTabularOutput = Seq(
-    level,
-    moduleName,
-    module.revision,
-    latestRevision.map(_.toString).getOrElse("-"),
-    deprecationInfo.from.toString
-  )
-}
-
 class UnknownVersion(val module: ModuleID) extends Message {
-  val message = s"Unable to get a latestRelease number for '${module.toString()}'"
+  val jsonMessage = s"Unable to get a latestRelease number for '${module.toString()}'"
+
+  val tabularMessage = s"Unable to get a latestRelease number for '${module.toString()}'"
+
   val latestRevision: Option[Version] = None
 }
 
 class NewVersionAvailable(val module: ModuleID, val latestRevision: Option[Version]) extends Message {
-  val message = s"'${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '${latestRevision.getOrElse("-")}'"
-  val deprecationInfo = None
+  val jsonMessage = s"'${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '${latestRevision.getOrElse("-")}'"
+
+  val tabularMessage = s"A new version is available"
 }
 
 class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency, prefix: String = "[bobby] ") extends Message {
 
   override val level = LogLevels.ERROR
 
-  val message =
+  val jsonMessage =
     s"""${module.organization}.${module.name} ${module.revision} is deprecated.\n\n""" +
       s"""After ${deprecationInfo.from} builds using it will fail.\n\n${deprecationInfo.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
       latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")
+
+  val tabularMessage = deprecationInfo.reason
+
+  override val deadline = Option(deprecationInfo.from)
 }
 
-class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency) extends MessageWithInfo {
+class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency) extends Message {
 
   override val level = LogLevels.WARN
 
-  val message = s"${module.organization}.${module.name} ${module.revision} is deprecated: '${deprecationInfo.reason}'. To be updated by ${deprecationInfo.from} to version ${latestRevision.getOrElse("-")}"
+  val jsonMessage = s"${module.organization}.${module.name} ${module.revision} is deprecated: '${deprecationInfo.reason}'. To be updated by ${deprecationInfo.from} to version ${latestRevision.getOrElse("-")}"
+
+  val tabularMessage = deprecationInfo.reason
+
+  override val deadline = Option(deprecationInfo.from)
 }
 
