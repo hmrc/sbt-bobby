@@ -30,9 +30,27 @@ For example:
 
 ```json
 [
-{ "organisation" : "uk.gov.hmrc", "name" : "my-library", "range" : "(,6.0.0)", "reason" : "Versions older than 6.0.0 have a security vulnerability", "from" : "2015-03-15" },
-{ "organisation" : "uk.gov.hmrc", "name" : "my-other-library", "range" : "[1.2.0]", "reason" : "1.2.0 has a bug", "from" : "2015-03-15" }
-{ "organisation" : "*", "name" : "*", "range" : "[*-SNAPSHOT]", "reason" : "You shouldn't be deploying a snapshot to production should you?", "from" : "2000-01-01" }
+  {
+    "organisation": "uk.gov.hmrc",
+    "name": "my-library",
+    "range": "(,6.0.0)",
+    "reason": "Versions older than 6.0.0 have a security vulnerability",
+    "from": "2015-03-15"
+  },
+  {
+    "organisation": "uk.gov.hmrc",
+    "name": "my-other-library",
+    "range": "[1.2.0]",
+    "reason": "1.2.0 has a bug",
+    "from": "2015-03-15"
+  },
+  {
+    "organisation": "*",
+    "name": "*",
+    "range": "[*-SNAPSHOT]",
+    "reason": "You shouldn't be deploying a snapshot to production should you?",
+    "from": "2000-01-01"
+  }
 ]
 ```
 
