@@ -18,8 +18,10 @@ package uk.gov.hmrc.bobby
 
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.LogLevels.{ERROR, INFO, WARN}
-import uk.gov.hmrc.bobby.MessageBuilder._
+import uk.gov.hmrc.bobby.domain.{MessageLevels, Message, MessageBuilder}
+import MessageLevels.{ERROR, INFO, WARN}
+import uk.gov.hmrc.bobby.domain.{Message, MessageBuilder}
+import MessageBuilder._
 
 class BobbySpec extends FlatSpec with Matchers {
 

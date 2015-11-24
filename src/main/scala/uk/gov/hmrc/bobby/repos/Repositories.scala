@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.repos
 
 import uk.gov.hmrc.SbtBobbyPlugin
 import uk.gov.hmrc.SbtBobbyPlugin.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{RepoSearch, AggregateRepoSearch}
+import uk.gov.hmrc.bobby.domain.{AggregateRepoSearch, RepoSearch}
 
 object Repositories {
 

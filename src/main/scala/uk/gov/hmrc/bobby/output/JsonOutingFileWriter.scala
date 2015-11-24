@@ -21,8 +21,8 @@ import java.nio.file.Files
 
 import play.api.libs.json.Json
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.Message
 import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.domain.Message
 
 class JsonOutingFileWriter(val filepath:String) {
 

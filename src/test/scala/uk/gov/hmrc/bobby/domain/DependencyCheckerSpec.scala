@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.hmrc.bobby.domain._
 
 //case class DependencyCheckerUnderTest(override val excludes: Seq[DeprecatedDependency]) extends DependencyChecker
 

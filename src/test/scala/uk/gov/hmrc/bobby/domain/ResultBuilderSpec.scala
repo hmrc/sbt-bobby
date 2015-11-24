@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.LogLevels.{ERROR, INFO, WARN}
-import uk.gov.hmrc.bobby.domain.{Version, Dependency, DeprecatedDependency, VersionRange}
+import MessageLevels.{ERROR, INFO, WARN}
 
-import scala.util.{Success, Try, Failure}
+import scala.util.{Failure, Success}
 
 class ResultBuilderSpec extends FlatSpec with Matchers {
 

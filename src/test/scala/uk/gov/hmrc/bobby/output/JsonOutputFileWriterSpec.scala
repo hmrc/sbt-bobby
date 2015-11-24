@@ -20,9 +20,8 @@ import org.scalatest.{Matchers, FlatSpec}
 import play.api.libs.json._
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.{MessageBuilder, LogLevels, Message}
-import uk.gov.hmrc.bobby.domain.Version
-import LogLevels._
+import uk.gov.hmrc.bobby.domain.{MessageLevels, MessageBuilder, Version}
+import MessageLevels._
 import MessageBuilder._
 
 

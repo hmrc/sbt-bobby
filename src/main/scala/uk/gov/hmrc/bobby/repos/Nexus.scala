@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 
 import sbt.{ConsoleLogger, ModuleID}
+import uk.gov.hmrc.bobby.Helpers
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
 

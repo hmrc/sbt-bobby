@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.repos
 
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import uk.gov.hmrc.bobby.domain.Version

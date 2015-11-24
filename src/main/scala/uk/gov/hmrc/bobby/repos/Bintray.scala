@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 import java.net.URLEncoder._
@@ -24,6 +24,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient}
 import play.api.libs.ws.{DefaultWSClientConfig, WSAuthScheme, WSResponse}
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.Helpers
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 

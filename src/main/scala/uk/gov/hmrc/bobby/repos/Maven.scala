@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 
@@ -22,8 +22,8 @@ import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 
 import scala.util.Try
-import scala.xml.{XML, NodeSeq}
-import Helpers._
+import scala.xml.{NodeSeq, XML}
+import uk.gov.hmrc.bobby.Helpers._
 
 object Maven extends RepoSearch{
   

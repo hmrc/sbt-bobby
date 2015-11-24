@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.Version
-
 import scala.util.Try
 
 object MessageBuilder{
 
-  def makeMessage(pLevel: LogLevels.Level, pMessage: String) = new Message {
+  def makeMessage(pLevel: MessageLevels.Level, pMessage: String) = new Message {
     override val level = pLevel
     override def jsonMessage: String = pMessage
 

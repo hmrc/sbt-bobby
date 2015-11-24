@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain._
 
-trait DependencyChecker {
+object DependencyChecker {
 
   val logger = ConsoleLogger()
-
-  //val excludes: Seq[DeprecatedDependency]
 
   def isDependencyValid(excludes: Seq[DeprecatedDependency])(dependency: Dependency, version: Version): DependencyCheckResult = {
     val filtered = excludes.filter(dd => {
@@ -53,7 +49,4 @@ trait DependencyChecker {
       case(None, None)       => OK
     }
   }
-}
-
-object DependencyChecker extends DependencyChecker {
 }

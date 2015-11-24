@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby
+package uk.gov.hmrc.bobby.domain
 
 import sbt.{ConsoleLogger, ModuleID}
-import uk.gov.hmrc.bobby.domain._
+import uk.gov.hmrc.bobby._
 
 import scala.util.{Failure, Success, Try}
 

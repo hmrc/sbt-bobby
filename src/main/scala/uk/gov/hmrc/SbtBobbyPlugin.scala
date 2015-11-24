@@ -19,7 +19,7 @@ package uk.gov.hmrc
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.{Maven, Nexus, Bintray, Bobby}
+import uk.gov.hmrc.bobby.Bobby
 import uk.gov.hmrc.bobby.domain.RepoSearch
 
 object SbtBobbyPlugin extends AutoPlugin {
