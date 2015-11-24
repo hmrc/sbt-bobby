@@ -24,11 +24,11 @@ import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.Message
 import uk.gov.hmrc.bobby.conf.Configuration
 
-trait JsonOutingFileWriter {
+class JsonOutingFileWriter(val filepath:String) {
 
   private val logger = ConsoleLogger()
 
-  val filepath: String
+//  val filepath: String
 
   def outputMessagesToJsonFile(messages: List[Message]) = {
     logger.debug("[bobby] Output file set to: " + filepath)
@@ -49,11 +49,5 @@ trait JsonOutingFileWriter {
 
     Files.write(file.toPath, jsonString.getBytes)
   }
-
-}
-
-object JsonOutingFileWriter extends JsonOutingFileWriter {
-
-  override val filepath = Configuration.jsonOutputFile
 
 }

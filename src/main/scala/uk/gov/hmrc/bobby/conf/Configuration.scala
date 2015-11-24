@@ -24,40 +24,19 @@ import uk.gov.hmrc.bobby.domain.DeprecatedDependency
 
 import scala.io.Source
 
-object Configuration {
+object Configuration{
 
-  val timeout = 3000
-  val logger = ConsoleLogger()
+  val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
+  val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
 
-  val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
-  val deprecatedDependencies: Seq[DeprecatedDependency] = {
+  val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
+  val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
-    val bobbyConfig: Option[String] = new ConfigFile(bobbyConfigFile).get("deprecated-dependencies")
 
-    bobbyConfig.fold {
-      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
-      Seq.empty[DeprecatedDependency]
-    } { c =>
-      try {
-        val conn = new URL(c).openConnection()
-        conn.setConnectTimeout(timeout)
-        conn.setReadTimeout(timeout)
-        val inputStream = conn.getInputStream
-
-        this(Source.fromInputStream(inputStream).mkString)
-      } catch {
-        case e: Exception =>
-          logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
-          Seq.empty
-      }
-    }
+  def apply(jsonConfig: String): Seq[DeprecatedDependency] = {
+    Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
   }
-
-  val jsonOutputFile: String = new ConfigFile(bobbyConfigFile).get("output-file").getOrElse("./target/bobby-reports/bobby-report.json")
-  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse("./target/bobby-reports/bobby-report.txt")
-
-  val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
 
   val nexusCredetials: Option[NexusCredentials] = {
     val ncf = new ConfigFile(credsFile)
@@ -70,8 +49,6 @@ object Configuration {
     } yield NexusCredentials(host, user, password)
   }
 
-  val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
-
   val bintrayCredetials: Option[BintrayCredentials] = {
     val bncf = new ConfigFile(bintrayCredsFile)
 
@@ -82,6 +59,47 @@ object Configuration {
     } yield BintrayCredentials(user, password)
   }
 
-  def apply(jsonConfig: String): Seq[DeprecatedDependency] = Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
+}
+
+class Configuration(
+                     url:Option[URL] = None,
+                     jsonOutputFileOverride:Option[String]
+                   ) {
+
+  import Configuration._
+
+  val timeout = 3000
+  val logger = ConsoleLogger()
+
+  val bobbyConfigFile  = System.getProperty("user.home") + "/.sbt/bobby.conf"
+
+  val jsonOutputFile: String = (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
+  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
+
+
+  def loadDeprecatedDependencies: Seq[DeprecatedDependency] = {
+
+    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map{ u => new URL(u) }
+
+    bobbyConfig.fold {
+      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
+      Seq.empty[DeprecatedDependency]
+    } { c =>
+      try {
+        logger.info(s"[bobby] loading deprecated dependency list from $c")
+        val conn = c.openConnection()
+        conn.setConnectTimeout(timeout)
+        conn.setReadTimeout(timeout)
+        val inputStream = conn.getInputStream
+
+        Configuration(Source.fromInputStream(inputStream).mkString)
+      } catch {
+        case e: Exception =>
+          logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
+          Seq.empty
+      }
+    }
+  }
+
 }
 

@@ -23,6 +23,7 @@ import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 
 import scala.util.Try
 import scala.xml.{XML, NodeSeq}
+import Helpers._
 
 object Maven extends RepoSearch{
   
@@ -30,8 +31,10 @@ object Maven extends RepoSearch{
 
   val repoName = "Maven"
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
-    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
+    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion))).flatMap{ ov =>
+      ov.toTry(new Exception("(try Bintray)"))
+    }
   }
 
 

@@ -25,9 +25,9 @@ trait DependencyChecker {
 
   val logger = ConsoleLogger()
 
-  val excludes: Seq[DeprecatedDependency]
+  //val excludes: Seq[DeprecatedDependency]
 
-  def isDependencyValid(dependency: Dependency, version: Version): DependencyCheckResult = {
+  def isDependencyValid(excludes: Seq[DeprecatedDependency])(dependency: Dependency, version: Version): DependencyCheckResult = {
     val filtered = excludes.filter(dd => {
       (dd.dependency.organisation.equals(dependency.organisation) || dd.dependency.organisation.equals("*")) &&
         (dd.dependency.name.equals(dependency.name) || dd.dependency.name.equals("*"))
@@ -48,15 +48,12 @@ trait DependencyChecker {
     val warnO = warns.headOption.map { dep => MandatoryWarn(dep) }
 
     (failO, warnO) match {
-      case(Some(f), _) => f
-      case(None, Some(w)) => w
-      case(None, None) => OK
+      case(Some(fail), _)    => fail
+      case(None, Some(warn)) => warn
+      case(None, None)       => OK
     }
   }
 }
 
 object DependencyChecker extends DependencyChecker {
-
-  override val excludes: Seq[DeprecatedDependency] = Configuration.deprecatedDependencies
-
 }

@@ -1,0 +1,5 @@
+[
+  { "organisation" : "*",           "name" : "*",             "range" : "[*-SNAPSHOT]", "reason" : "No snapshot dependencies permitted",      "from" : "2099-01-01" },
+  { "organisation" : "uk.gov.hmrc", "name" : "play-frontend", "range" : "(,99.99.99)",  "reason" : "Post Play Frontend mandatory from 2 Nov", "from" : "2099-01-01" },
+  { "organisation" : "uk.gov.hmrc", "name" : "play-health",   "range" : "(,1.0.0]",     "reason" : "play-health",                             "from" : "2099-01-01" }
+]

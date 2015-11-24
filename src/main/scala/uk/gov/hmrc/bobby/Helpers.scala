@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby
 
-import sbt.ModuleID
-import uk.gov.hmrc.bobby.Helpers
+import scala.util.{Failure, Success, Try}
 
-import scala.util.{Success, Try}
-import Helpers._
+object Helpers {
 
-trait AggregateRepoSearch extends RepoSearch{
 
-  def repos:Seq[RepoSearch]
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
-
-    val latestVersions: Seq[Try[Version]] = repos.map { r =>
-      r.findLatestRevision(versionInformation, scalaVersion)
+  implicit class RichOption[A](opt: Option[A]) {
+    def toTry(onNone: Exception): Try[A] = opt match {
+      case Some(a) => Success(a)
+      case None => Failure(onNone)
     }
+  }
 
-    val res: Option[Try[Version]] = latestVersions.find(v => v.isSuccess)
-    res.toTry(new Exception("Not found")).flatten
+  implicit class RichTry[A](ty: Try[A]) {
+    def getOrElseWith(e: Throwable => A) = ty match {
+      case Success(a) => a
+      case Failure(t) => e(t)
+    }
   }
 
 }

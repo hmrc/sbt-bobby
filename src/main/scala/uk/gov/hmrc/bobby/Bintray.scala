@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.bobby
 
-import java.lang.Throwable
 import java.net.URL
 import java.net.URLEncoder._
 import java.util.concurrent.TimeUnit
 
 import play.api.libs.json.Json
-import play.api.libs.ws.{DefaultWSClientConfig, WSResponse, WSAuthScheme}
 import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient}
+import play.api.libs.ws.{DefaultWSClientConfig, WSAuthScheme, WSResponse}
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
-import uk.gov.hmrc.bobby.domain.RepoSearch
-import uk.gov.hmrc.bobby.domain.Version
+import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 
-import scala.concurrent.{Future, Await}
+import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
@@ -91,7 +89,11 @@ trait Bintray extends RepoSearch {
     }
   }
 
-  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
-    query(buildSearchUrl(versionInformation, scalaVersion), versionInformation.name)
+  override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
+    import Helpers._
+
+    query(buildSearchUrl(versionInformation, scalaVersion), versionInformation.name).flatMap{ ov =>
+      ov.toTry(new Exception("didn't find version in Bintray"))
+    }
   }
 }

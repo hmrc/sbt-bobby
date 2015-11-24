@@ -43,8 +43,12 @@ trait Nexus extends RepoSearch {
 
   val nexus: NexusCredentials
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Option[Version]]={
-    query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
+    import Helpers._
+
+    query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion))).flatMap{ ov =>
+      ov.toTry(new Exception("(see bintray)"))
+    }
   }
 
   def parseVersions(xml: NodeSeq): Seq[Version] = {
@@ -62,7 +66,7 @@ trait Nexus extends RepoSearch {
   def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     maybeScalaVersion match {
       case Some(sv) => s"${versionInformation.name}_${sv}&g=${versionInformation.organization}"
-      case None => s"${versionInformation.name}&g=${versionInformation.organization}"
+      case None     => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
   }
 

@@ -19,6 +19,7 @@ package uk.gov.hmrc.bobby.output
 import org.scalatest.{Matchers, FlatSpec}
 import play.api.libs.json._
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.{MessageBuilder, LogLevels, Message}
 import uk.gov.hmrc.bobby.domain.Version
 import LogLevels._
@@ -29,7 +30,7 @@ import MessageBuilder._
 class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
     "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
-      val jsonOutputFileWriter: JsonOutingFileWriter = JsonOutingFileWriter
+      val jsonOutputFileWriter: JsonOutingFileWriter = new JsonOutingFileWriter(Configuration.defaultJsonOutputFile)
       val messages = List(makeMessage(ERROR, "An error"), makeMessage(WARN, "Another warning"))
       val jsonString: String = jsonOutputFileWriter.renderJson(messages)
 

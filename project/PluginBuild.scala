@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import sbt.ScriptedPlugin._
 import sbt._
 import Keys._
 import uk.gov.hmrc.DefaultBuildSettings._
@@ -43,4 +45,6 @@ object PluginBuild extends Build {
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
       )
     )
+    .settings(ScriptedPlugin.scriptedSettings: _*)
+    .settings(scriptedLaunchOpts += s"-Dproject.version=${version.value}")
 }

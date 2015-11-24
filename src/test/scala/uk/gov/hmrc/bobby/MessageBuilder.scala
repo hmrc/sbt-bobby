@@ -19,6 +19,8 @@ package uk.gov.hmrc.bobby
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.Version
 
+import scala.util.Try
+
 object MessageBuilder{
 
   def makeMessage(pLevel: LogLevels.Level, pMessage: String) = new Message {
@@ -27,7 +29,7 @@ object MessageBuilder{
 
     override def module: ModuleID = ???
 
-    override def latestRevision: Option[Version] = ???
+    override def latestRevision: Try[Version] = ???
 
     override def tabularMessage: String = ???
   }

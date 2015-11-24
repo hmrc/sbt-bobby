@@ -16,81 +16,68 @@
 
 package uk.gov.hmrc.bobby
 
+import java.net.URL
+
 import org.joda.time.LocalDate
-import sbt.{ConsoleLogger, ModuleID, State}
+import sbt.{ConsoleLogger, ModuleID}
+import uk.gov.hmrc.SbtBobbyPlugin.Repo
+import uk.gov.hmrc.bobby.Helpers._
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{Tabulator, JsonOutingFileWriter, TextOutingFileWriter}
+import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, Tabulator, TextOutingFileWriter}
+
+import scala.util.{Failure, Try}
 
 
-object Bobby extends Bobby {
-  override val checker: DependencyChecker = DependencyChecker
-
-  override val repoSearch = new AggregateRepoSearch() {
-    val repoName = "aggregate"
-    override val repos: Seq[RepoSearch] = Seq(
-      Bintray(Configuration.bintrayCredetials),
-      Nexus(Configuration.nexusCredetials),
-      Some(Maven)
-    ).flatten
-
-    val currentVersion = getClass.getPackage.getImplementationVersion
-    logger.info(s"[bobby] Bobby version $currentVersion using repositories: ${repos.map(_.repoName).mkString(", ")}")
-  }
-  override val jsonOutputFileWriter = JsonOutingFileWriter
-  override val textOutputFileWriter = TextOutingFileWriter
-
-}
 
 class BobbyValidationFailedException(message:String) extends RuntimeException(message)
 
-trait Bobby {
+object Bobby {
 
   val logger = ConsoleLogger()
 
-  val checker: DependencyChecker
-  val repoSearch: RepoSearch
-  val jsonOutputFileWriter: JsonOutingFileWriter
-  val textOutputFileWriter: TextOutingFileWriter
+
+//  val repoSearch: RepoSearch
 
   val blackListModuleOrgs = Set(
-    "com.typesafe.play",
-    "com.kenshoo",
-    "com.codahale.metrics",
+//    "com.typesafe.play",
+//    "com.kenshoo",
+//    "com.codahale.metrics",
     "org.scala-lang"
   )
 
-  def validateDependencies(dependencies: Seq[ModuleID], scalaVersion: String, isSbtProject: Boolean) = {
-    if (!areDependenciesValid(dependencies, scalaVersion, isSbtProject, blackListModuleOrgs))
-      throw new BobbyValidationFailedException("See previous bobby output for more information")
-  }
-
-  def areDependenciesValid(
+  def validateDependencies(
                             dependencies: Seq[ModuleID],
                             scalaVersion: String,
-                            isSbtProject: Boolean,
-                            blackListModuleOrgs:Set[String] = Set.empty[String]): Boolean = {
+                            reposValue:Seq[Repo],
+                            checkForLatest: Boolean,
+                            deprecatedDependenciesUrl: Option[URL] = None,
+                            jsonOutputFileOverride:Option[String] = None,
+                            isSbtProject: Boolean = false) = {
 
-    logger.info(s"[bobby] Checking dependencies")
-    if (isSbtProject) {
-      logger.info(s"[bobby] in SBT project, not checking for Nexus dependencies as Nexus search doesn't find SBT plugins")
-    }
+    dependencies foreach println
+
+    val currentVersion = getClass.getPackage.getImplementationVersion
+    logger.info(s"[bobby] Bobby version $currentVersion using repositories: ${reposValue.mkString(", ")}")
+
+    val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
     val prepared = prepareDependencies(dependencies, blackListModuleOrgs)
-    val latestRevisions: Map[ModuleID, Option[Version]] = getNexusRevisions(scalaVersion, prepared)
-    val nexusResults =
-      if (isSbtProject) List.empty[Message]
-      else calculateNexusResults(latestRevisions)
 
-    val mandatoryRevisionCheckResults = checkMandatoryDependencies(latestRevisions)
+    val repoSearchO  = Repositories.buildAggregateRepositories(reposValue, checkForLatest)
 
-    val messages: List[Message] = nexusResults ++ mandatoryRevisionCheckResults
+    val latestRevisions: Option[Map[ModuleID, Try[Version]]] = repoSearchO.map { rs =>
+      getLatestRepoRevisions(scalaVersion, prepared, rs)
+    }
 
-    outputMessagesToConsole(messages)
-    jsonOutputFileWriter.outputMessagesToJsonFile(messages)
-    textOutputFileWriter.outputMessagesToTextFile(messages)
+    val messages = ResultBuilder.calculate(prepared, config.loadDeprecatedDependencies, latestRevisions)
 
-    noErrorsExist(mandatoryRevisionCheckResults)
+    Output.output(messages, config.jsonOutputFile, config.textOutputFile)
+
+    messages.exists(_.isError)
+
+    if (!messages.exists(_.isError))
+      throw new BobbyValidationFailedException("See previous bobby output for more information")
   }
 
   private[bobby] def prepareDependencies(dependencies: Seq[ModuleID], blackListModuleOrgs:Set[String]): Seq[ModuleID] = {
@@ -98,50 +85,39 @@ trait Bobby {
       .filterNot(m => blackListModuleOrgs.contains(m.organization))
   }
 
-  def noErrorsExist(results: List[Message]): Boolean = ! results.exists(_.isError)
-
-
-  def checkMandatoryDependencies(latestRevisions: Map[ModuleID, Option[Version]]): List[Message] = {
-    latestRevisions.toList.flatMap({
-      case (module, latestRevision) =>
-        checker.isDependencyValid(Dependency(module.organization, module.name), Version(module.revision)) match {
-          case MandatoryFail(exclusion) =>
-            Some(new DependencyUnusable(module, latestRevision, exclusion))
-
-          case MandatoryWarn(exclusion) =>
-            Some(new DependencyNearlyUnusable(module, latestRevision, exclusion))
-
-          case _ => None
-        }
-    })
-  }
-
-  def getNexusRevisions(scalaVersion: String, compacted: Seq[ModuleID]): Map[ModuleID, Option[Version]] = {
+  private[bobby] def getLatestRepoRevisions(
+                         scalaVersion: String,
+                         compacted: Seq[ModuleID],
+                         repoSearch:RepoSearch
+                       ): Map[ModuleID, Try[Version]] = {
     compacted.par.map { module =>
       module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
     }.seq.toMap
   }
 
-  def calculateNexusResults(latestRevisions: Map[ModuleID, Option[Version]]): List[Message] = {
-    latestRevisions.toList.flatMap {
-      case (module, None) =>
-        Some(new UnknownVersion(module))
-
-      case (module, Some(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
-        Some(new NewVersionAvailable(module, Some(latestRevision)))
-
-      case _ =>
-        None
-    }
-  }
 
   def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
-    def fullyQualifiedName(d: ModuleID) = s"${d.organization}.${d.name}"
+    def orgAndName(d: ModuleID) = s"${d.organization}.${d.name}"
 
     dependencies
-      .groupBy(fullyQualifiedName)
+      .groupBy(orgAndName)
       .map(_._2.head)
       .toSeq
+  }
+
+object Output {
+
+  def output(messages:List[Message], jsonFilePath:String, textFilePath:String): Unit ={
+    messages.foreach { res =>
+      println("all   " + res.longTabularOutput)
+    }
+    val jsonOutputFileWriter = new JsonOutingFileWriter(jsonFilePath)
+    val textOutputFileWriter = new TextOutingFileWriter(textFilePath)
+
+
+    outputMessagesToConsole(messages)
+    jsonOutputFileWriter.outputMessagesToJsonFile(messages)
+    textOutputFileWriter.outputMessagesToTextFile(messages)
   }
 
   private def outputMessagesToConsole(messages: List[Message]): Unit = {
@@ -151,6 +127,8 @@ trait Bobby {
       .map { m => m.shortTabularOutput }
 
     logger.info("[bobby] Bobby info and warnings. See bobby report artefact for more info.")
+
+
 
     Tabulator.formatAsStrings(Message.shortTabularHeader +: model).foreach { log =>
       logger.info(log)
@@ -168,7 +146,7 @@ trait Bobby {
     logger.error(text)
     logger.error("")
   }
-
+}
 }
 
 object LogLevels {
@@ -209,7 +187,7 @@ trait Message {
     level,
     moduleName,
     module.revision,
-    latestRevision.map(_.toString).getOrElse("-"),
+    latestRevision.map(_.toString).getOrElseWith(_.getMessage),
     deadline.map(_.toString).getOrElse("-")
   )
 
@@ -217,7 +195,7 @@ trait Message {
     level,
     moduleName,
     module.revision,
-    latestRevision.map(_.toString).getOrElse("(not-found)"),
+    latestRevision.map(_.toString).getOrElseWith(_.getMessage),
     deadline.map(_.toString).getOrElse("-"),
     tabularMessage
   )
@@ -236,38 +214,40 @@ trait Message {
 
   def deadline:Option[LocalDate] = None
 
-  def latestRevision: Option[Version]
+  def latestRevision: Try[Version]
+
+  override def toString():String = jsonMessage
 }
 
-class UnknownVersion(val module: ModuleID) extends Message {
+class UnknownVersion(val module: ModuleID, reason:Throwable) extends Message {
   val jsonMessage = s"Unable to get a latestRelease number for '${module.toString()}'"
 
   val tabularMessage = s"Unable to get a latestRelease number for '${module.toString()}'"
 
-  val latestRevision: Option[Version] = None
+  val latestRevision: Try[Version] = Failure(reason)
 }
 
-class NewVersionAvailable(val module: ModuleID, val latestRevision: Option[Version]) extends Message {
+class NewVersionAvailable(val module: ModuleID, override val latestRevision: Try[Version]) extends Message {
   val jsonMessage = s"'${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '${latestRevision.getOrElse("-")}'"
 
   val tabularMessage = s"A new version is available"
 }
 
-class DependencyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency, prefix: String = "[bobby] ") extends Message {
+class DependencyUnusable(val module: ModuleID, override val latestRevision: Try[Version], val deprecationInfo: DeprecatedDependency, prefix: String = "[bobby] ") extends Message {
 
   override val level = LogLevels.ERROR
 
   val jsonMessage =
     s"""${module.organization}.${module.name} ${module.revision} is deprecated.\n\n""" +
       s"""After ${deprecationInfo.from} builds using it will fail.\n\n${deprecationInfo.reason.replaceAll("\n", "\n|||\t")}\n\n""" +
-      latestRevision.map(s => "Latest version is: " + s).getOrElse(" ")
+      latestRevision.map(s => "Latest version is: " + s).getOrElseWith(_.getMessage)
 
   val tabularMessage = deprecationInfo.reason
 
   override val deadline = Option(deprecationInfo.from)
 }
 
-class DependencyNearlyUnusable(val module: ModuleID, val latestRevision: Option[Version], val deprecationInfo: DeprecatedDependency) extends Message {
+class DependencyNearlyUnusable(val module: ModuleID, override val latestRevision: Try[Version], val deprecationInfo: DeprecatedDependency) extends Message {
 
   override val level = LogLevels.WARN
 

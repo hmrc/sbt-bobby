@@ -16,33 +16,33 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{TryValues, FlatSpec, Matchers}
 import sbt.ModuleID
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
 
-class AggregateRepoSearchSpec extends FlatSpec with Matchers {
+class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues{
 
   "AggregateRepoSearch" should
     "look in two repositories to find a dependency" in {
 
     val timeRepo = new RepoSearch{
-      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
         if(versionInformation.name == "time")
-          Success(Some(Version("3.2.1")))
+          Success(Version("3.2.1"))
         else
-          Success(None)
+          Failure(new Exception("error"))
       }
 
       override def repoName: String = ???
     }
     val domainRepo = new RepoSearch{
-      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] = {
+      override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
         if(versionInformation.name == "domain")
-          Success(Some(Version("3.0.0")))
+          Success(Version("3.0.0"))
         else
-          Success(None)
+          Failure(new Exception("error"))
       }
       override def repoName: String = ???
 
@@ -54,8 +54,8 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers {
       override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
     }
 
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Some(Version("3.2.1")))
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Some(Version("3.0.0")))
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None) shouldBe Success(None)
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("3.2.1"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Version("3.0.0"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None).isFailure shouldBe true
   }
 }

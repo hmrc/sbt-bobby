@@ -23,11 +23,9 @@ import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.Message
 import uk.gov.hmrc.bobby.conf.Configuration
 
-trait TextOutingFileWriter {
+class TextOutingFileWriter(filepath:String) {
 
   private val logger = ConsoleLogger()
-
-  val filepath: String
 
   def outputMessagesToTextFile(messages: List[Message]) = {
     logger.info("[bobby] Output file set to: " + filepath)
@@ -40,9 +38,6 @@ trait TextOutingFileWriter {
       .sorted
       .map { m => m.longTabularOutput }
 
-      //.sortBy(_(1)).sortBy(_(4)).sortBy(_(0)).reverse
-
-
     Tabulator.format(Message.tabularHeader +: messageModel)
   }
 
@@ -54,13 +49,6 @@ trait TextOutingFileWriter {
     Files.write(file.toPath, textString.getBytes)
   }
 }
-
-object TextOutingFileWriter extends TextOutingFileWriter {
-
-  override val filepath = Configuration.textOutputFile
-
-}
-
 //
 // heavily influenced by http://stackoverflow.com/a/7542476/599068.
 //

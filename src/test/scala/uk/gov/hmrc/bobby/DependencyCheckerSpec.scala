@@ -20,60 +20,62 @@ import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
 import uk.gov.hmrc.bobby.domain._
 
-case class DependencyCheckerUnderTest(override val excludes: Seq[DeprecatedDependency]) extends DependencyChecker
+//case class DependencyCheckerUnderTest(override val excludes: Seq[DeprecatedDependency]) extends DependencyChecker
 
 class DependencyCheckerSpec extends FlatSpec with Matchers {
+  
+   val dc = DependencyChecker
 
   "The mandatory dependency checker" should "return success result if the version is not in a restricted range" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(d, Version("2.0.0")) shouldBe OK
+    val deps: List[DeprecatedDependency] = List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1))))(d, Version("2.0.0")) shouldBe OK
   }
 
   it should "return failed result if the version is in a restricted range" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(d, Version("0.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)))
+    val deps = List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(deps)(d, Version("0.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)))
   }
 
 
   it should "return warn result if the version is in when two restricted ranges, and the result should be the soonest deprecation" in {
 
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(
+    val deps = (List(
       DeprecatedDependency(d, VersionRange("(,6.0.0]"), "testing 2", new LocalDate().plusDays(2)),
       DeprecatedDependency(d, VersionRange("(,5.0.0]"), "testing 1", new LocalDate().plusDays(1)),
       DeprecatedDependency(d, VersionRange("(,7.0.0]"), "testing 3", new LocalDate().plusDays(3))
     ))
 
-    dc.isDependencyValid(d, Version("3.1.0")) shouldBe MandatoryWarn(DeprecatedDependency(d, VersionRange("(,5.0.0]"), "testing 1", new LocalDate().plusDays(1)))
+    dc.isDependencyValid(deps)(d, Version("3.1.0")) shouldBe MandatoryWarn(DeprecatedDependency(d, VersionRange("(,5.0.0]"), "testing 1", new LocalDate().plusDays(1)))
   }
 
   it should "return failed result if the version is in a restricted range of multiple exclude" in {
 
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(
+    val deps = (List(
       DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)),
       DeprecatedDependency(d, VersionRange("[1.0.0,1.2.0]"), "testing", new LocalDate().minusDays(1)),
       DeprecatedDependency(d, VersionRange("[2.0.0,2.2.0]"), "testing", new LocalDate().minusDays(1))
     ))
 
-    dc.isDependencyValid(d, Version("1.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[1.0.0,1.2.0]"), "testing", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(deps)(d, Version("1.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[1.0.0,1.2.0]"), "testing", new LocalDate().minusDays(1)))
   }
 
   it should "return warning if excludes are not applicable yet" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
     val tomorrow: LocalDate = new LocalDate().plusDays(1)
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", tomorrow)))
-    dc.isDependencyValid(d, Version("0.1.0")) shouldBe MandatoryWarn(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", tomorrow))
+    val deps = (List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", tomorrow)))
+    dc.isDependencyValid(deps)(d, Version("0.1.0")) shouldBe MandatoryWarn(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", tomorrow))
 
   }
 
   it should "return fail if exclude is applicable from today" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
     val today: LocalDate = new LocalDate()
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", today)))
-    dc.isDependencyValid(d, Version("0.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", today))
+    val deps = (List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", today)))
+    dc.isDependencyValid(deps)(d, Version("0.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", today))
 
   }
 
@@ -83,63 +85,63 @@ class DependencyCheckerSpec extends FlatSpec with Matchers {
     val d = Dependency("uk.gov.hmrc", "some-service")
     val validTomorrow: LocalDate = new LocalDate().plusDays(1)
     val validToday: LocalDate = new LocalDate().minusDays(1)
-    val dc = DependencyCheckerUnderTest(List(
+    val deps = (List(
       DeprecatedDependency(d, VersionRange("[1.0.0,1.2.0]"), "testing1", validTomorrow),
       DeprecatedDependency(d, VersionRange("[1.0.0,2.2.0]"), "testing2", validToday)
     ))
 
-    dc.isDependencyValid(d, Version("1.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[1.0.0,2.2.0]"), "testing2", validToday))
+    dc.isDependencyValid(deps)(d, Version("1.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[1.0.0,2.2.0]"), "testing2", validToday))
   }
 
   it should "filter non-relevant deprecated dependencies and return success" in {
 
     val d = Dependency("uk.gov.hmrc", "some-service")
     val other = Dependency("uk.gov.hmrc", "some-other-service")
-    val dc = DependencyCheckerUnderTest(List(
+    val deps = (List(
       DeprecatedDependency(other, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1)),
       DeprecatedDependency(other, VersionRange("[1.0.0,1.2.0]"), "testing", new LocalDate().minusDays(1)),
       DeprecatedDependency(other, VersionRange("[2.0.0,2.2.0]"), "testing", new LocalDate().minusDays(1))
     ))
 
-    dc.isDependencyValid(d, Version("1.1.0")) shouldBe OK
+    dc.isDependencyValid(deps)(d, Version("1.1.0")) shouldBe OK
 
   }
   it should "filter non-relevant deprecated dependencies and return fail when deprecated" in {
 
     val d = Dependency("uk.gov.hmrc", "some-service")
     val other = Dependency("uk.gov.hmrc", "some-other-service")
-    val dc = DependencyCheckerUnderTest(List(
+    val deps = (List(
       DeprecatedDependency(other, VersionRange("(,3.0.0]"), "testing", new LocalDate().minusDays(1)),
       DeprecatedDependency(d, VersionRange("[2.0.0,2.2.0]"), "testing2", new LocalDate().minusDays(1))
     ))
 
-    dc.isDependencyValid(d, Version("2.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[2.0.0,2.2.0]"), "testing2", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(deps)(d, Version("2.1.0")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[2.0.0,2.2.0]"), "testing2", new LocalDate().minusDays(1)))
   }
 
   it should "work when there is no deprecated dependencies" in {
-    DependencyCheckerUnderTest(Seq.empty).isDependencyValid(Dependency("org", "me"), Version("1.2.3")) shouldBe OK
+    dc.isDependencyValid(Seq.empty)(Dependency("org", "me"), Version("1.2.3")) shouldBe OK
   }
 
   it should "return failed result if the version has snapshot and [*-SNAPSHOT] range is set" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(d, Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+    val deps = (List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(deps)(d, Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
   }
 
   it should "return ok result if the version has no snapshot and [*-SNAPSHOT] range is set" in {
     val d = Dependency("uk.gov.hmrc", "some-service")
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(d, Version("0.1.0")) shouldBe OK
+    val deps = (List(DeprecatedDependency(d, VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(deps)(d, Version("0.1.0")) shouldBe OK
   }
 
   it should "support '*' wildcard in organisation and name" in {
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+    val deps = (List(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(deps)(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("*", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
   }
 
   it should "support '*' wildcard in name only" in {
-    val dc = DependencyCheckerUnderTest(List(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
-    dc.isDependencyValid(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
-    dc.isDependencyValid(Dependency("org.scalatest", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe OK
+    val deps = (List(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1))))
+    dc.isDependencyValid(deps)(Dependency("uk.gov.hmrc", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe MandatoryFail(DeprecatedDependency(Dependency("uk.gov.hmrc", "*"), VersionRange("[*-SNAPSHOT]"), "testing", new LocalDate().minusDays(1)))
+    dc.isDependencyValid(deps)(Dependency("org.scalatest", "some-service"), Version("0.1.0-SNAPSHOT")) shouldBe OK
   }
 }
