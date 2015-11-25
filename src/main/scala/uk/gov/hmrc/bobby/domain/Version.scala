@@ -58,9 +58,12 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
 
   def isAfter(version: Version) = this.compareTo(version) > 0
 
-  lazy val boqFormatted = buildOrQualifier map { boq =>
-    boq.left.getOrElse(boq.right).toString
-  }
+  lazy val boqFormatted = buildOrQualifier.map { boqE => boqE match {
+    case Left(num) => num.toString
+    case Right(st) => st
+  }}
+
+  println(s"boqFormatted = $boqFormatted")
 
   override def toString = s"$major.$minor.$revision${boqFormatted.map(b => "-" + b).getOrElse("")}"
 

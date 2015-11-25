@@ -184,4 +184,8 @@ class VersionSpec extends FlatSpec with Matchers {
   it should "recognise '2.3.0_0.1.8' as a release" in {
     Version.isSnapshot(Version("2.3.0_0.1.8")) shouldBe false
   }
+
+  it should "correctly print qualifiers" in {
+    Version("2.0.1-klm").toString shouldBe "2.0.1-klm"
+  }
 }
