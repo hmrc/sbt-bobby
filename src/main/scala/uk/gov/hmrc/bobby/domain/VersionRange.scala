@@ -77,7 +77,7 @@ case class VersionRange(lowerBound: Option[Version],
         case ValidVersionRangeLeftOpen(v) => VersionRange(None, false, Some(v), range.endsWith("]"))
         case ValidVersionRangeRightOpen(v) => VersionRange(Some(v), range.startsWith("["), None, false)
         case ValidVersionRangeBetween(v1, v2) => VersionRange(Some(v1), range.startsWith("["), Some(v2), range.endsWith("]"))
-        case Qualifier(q) => VersionRange(None, false, None, false, Some(q))
+        case Qualifier(q) if q.length() > 1 => VersionRange(None, false, None, false, Some(q))
         case _ => throw new IllegalArgumentException(s"'$range' is not a valid range expression")
       }
     }

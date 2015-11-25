@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+import _root_.sbtassembly.AssemblyKeys._
+import _root_.sbtassembly.AssemblyKeys._
+import _root_.sbtassembly.MergeStrategy
+import _root_.sbtassembly.PathList
+import sbtassembly.AssemblyKeys._
+import sbtassembly._
+
 import sbt.ScriptedPlugin._
 import sbt._
 import Keys._
@@ -43,8 +50,29 @@ object PluginBuild extends Build {
         "com.typesafe.play" %% "play-json" % "2.3.10",
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
-      )
+      ),
+      AssemblySettings(),
+      addArtifact(artifact in (Compile, assembly), assembly)
     )
+
     .settings(ScriptedPlugin.scriptedSettings: _*)
     .settings(scriptedLaunchOpts += s"-Dproject.version=${version.value}")
 }
+
+object AssemblySettings{
+  def apply()= Seq(
+    assemblyJarName in assembly := "bobby.jar",
+    assemblyMergeStrategy in assembly := {
+      case PathList("org", "apache", "commons", "logging", xs@_*) => MergeStrategy.first
+      case PathList("play", "core", "server", xs@_*) => MergeStrategy.first
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    },
+    artifact in(Compile, assembly) := {
+      val art = (artifact in(Compile, assembly)).value
+      art.copy(`classifier` = Some("assembly"))
+    }
+  )
+}
+

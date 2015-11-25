@@ -33,21 +33,21 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     DeprecatedDependency(Dependency(org, name), VersionRange(version), "reason", new LocalDate().minusWeeks(1))
   }
 
-  it should "fail the build if a dependency is in the exclude range" in {
+  it should "return error if a dependency is in the exclude range" in {
     val deprecated = Seq(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
     ResultBuilder.calculate(projectDependencies, deprecated, None).head.level shouldBe ERROR
   }
 
-  it should "not fail the build if a dependency is not in the exclude range" in {
+  it should "not return error if a dependency is not in the exclude range" in {
     val deprecated = Seq(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
     ResultBuilder.calculate(projectDependencies, deprecated, None) shouldBe 'empty
   }
 
-  it should "fail the build if a dependency is in the exclude range using wildcards for org, name and version number " in {
+  it should "return error if a dependency is in the exclude range using wildcards for org, name and version number " in {
 
     val deprecated = Seq(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
@@ -55,7 +55,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     ResultBuilder.calculate(projectDependencies, deprecated, None).head.level shouldBe ERROR
   }
 
-  it should "not fail the build for valid dependencies that don't include snapshots" in {
+  it should "not return error for valid dependencies that don't include snapshots" in {
 
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val deprecated = Seq(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
@@ -64,7 +64,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
 
   }
 
-  it should "fail the build if one of several dependencies is in the exclude range" in {
+  it should "return error if one of several dependencies is in the exclude range" in {
 
     val projectDependencies = Seq(
       new ModuleID("uk.gov.hmrc", "auth", "3.2.1"),
@@ -77,7 +77,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     ResultBuilder.calculate(projectDependencies, deprecated, None).map(_.level).toSet shouldBe Set(WARN, ERROR)
   }
 
-  it should "not fail the build for dependencies in the exclude range but not applicable yet" in {
+  it should "not return error for dependencies in the exclude range but not applicable yet" in {
 
     val deprecated = Seq(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
@@ -85,7 +85,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     ResultBuilder.calculate(projectDependencies, deprecated, None).head.level shouldBe WARN
   }
 
-  it should "not fail the build for mandatory dependencies which are superseded" in {
+  it should "not return error for mandatory dependencies which are superseded" in {
 
     val deprecated = Seq(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))

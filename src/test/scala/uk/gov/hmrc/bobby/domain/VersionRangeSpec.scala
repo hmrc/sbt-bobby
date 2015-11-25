@@ -153,4 +153,14 @@ class VersionRangeSpec extends FlatSpec with Matchers {
   it should "not include snapshots when the version is 1.0.0" in {
     VersionRange("[*-SNAPSHOT]").includes(Version("1.0.0")) shouldBe false
   }
+
+  it should "throw exception when qualifier is not defined" in {
+    intercept[IllegalArgumentException] {
+      VersionRange("[*-]")
+    }
+
+    intercept[IllegalArgumentException] {
+      VersionRange("[*]")
+    }
+  }
 }
