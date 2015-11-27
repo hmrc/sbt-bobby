@@ -20,7 +20,7 @@ import org.scalatest.{Matchers, FlatSpec}
 import play.api.libs.json._
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{MessageLevels, MessageBuilder, Version}
+import uk.gov.hmrc.bobby.domain._
 import MessageLevels._
 import MessageBuilder._
 
@@ -30,7 +30,10 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
     "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
       val jsonOutputFileWriter: JsonOutingFileWriter = new JsonOutingFileWriter(Configuration.defaultJsonOutputFile)
-      val messages = List(makeMessage(ERROR, "An error"), makeMessage(WARN, "Another warning"))
+
+      val messages = List(makeMessage(DependencyUnusable),
+                          makeMessage(DependencyNearlyUnusable))
+
       val jsonString: String = jsonOutputFileWriter.renderJson(messages)
 
       val jsValue: JsValue = Json.parse(jsonString)
@@ -38,7 +41,8 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
       val rows: List[JsValue] = (jsValue \ "results").as[List[JsValue]]
       rows.size shouldBe 2
       (rows.head \ "level").as[String] shouldBe "ERROR"
-      (rows.head \ "message").as[String] shouldBe "An error"
+      (rows.head \ "message").as[String] shouldBe "-"
+
       (rows(1) \ "level").as[String] shouldBe "WARN"
     }
 

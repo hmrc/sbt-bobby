@@ -130,15 +130,38 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.3.0")))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies)).map(_.level) shouldBe List(INFO)
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe INFO
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("3.3.0")
   }
 
-  it should "show an INFO message for a dependency for which the latest nexus revision is unknown" in {
+  it should "show an INFO message for a dependency for which the latest nexus revision is unknown and show 'not-found' in the results table" in {
     val deprecated = Seq.empty
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Failure(new Exception("not-found")))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies)).map(_.level) shouldBe List(INFO)
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe INFO
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("not-found")
   }
 
+  it should "show an WARN message for a dependency which will be deprecated soon AND has a newer version in a repository" in {
+    val deprecated = Seq(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
+    val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.8.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe WARN
+    messages.head.shortTabularOutput should contain ("3.2.1")
+    messages.head.shortTabularOutput should contain("3.8.0")
+    messages.head.shortTabularOutput should not contain "4.0.0"
+  }
 }

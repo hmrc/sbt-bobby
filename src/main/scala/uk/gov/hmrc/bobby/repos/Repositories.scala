@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import uk.gov.hmrc.SbtBobbyPlugin
-import uk.gov.hmrc.SbtBobbyPlugin.Repo
+import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys
+import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys._
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.{AggregateRepoSearch, RepoSearch}
 
@@ -36,9 +36,9 @@ object Repositories {
 
   def buildRepos(repos:Seq[Repo]):Seq[Option[RepoSearch]]={
     repos map {
-      case SbtBobbyPlugin.Bintray => Bintray(Configuration.bintrayCredetials)
-      case SbtBobbyPlugin.Nexus   => Nexus(Configuration.nexusCredetials)
-      case SbtBobbyPlugin.Maven   => Some(Maven)
+      case BobbyKeys.Bintray => Bintray(Configuration.bintrayCredetials)
+      case BobbyKeys.Nexus   => Nexus(Configuration.nexusCredetials)
+      case BobbyKeys.Maven   => Some(Maven)
     }
   }
 

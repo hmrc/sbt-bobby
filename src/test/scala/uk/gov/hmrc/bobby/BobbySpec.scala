@@ -18,9 +18,8 @@ package uk.gov.hmrc.bobby
 
 import org.scalatest.{FlatSpec, Matchers}
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain.{MessageLevels, Message, MessageBuilder}
+import uk.gov.hmrc.bobby.domain._
 import MessageLevels.{ERROR, INFO, WARN}
-import uk.gov.hmrc.bobby.domain.{Message, MessageBuilder}
 import MessageBuilder._
 
 class BobbySpec extends FlatSpec with Matchers {
@@ -49,10 +48,11 @@ class BobbySpec extends FlatSpec with Matchers {
   it should "order messages correctly" in {
 
     val messages = Seq(
-      makeMessage(INFO, "info message"),
-      makeMessage(ERROR, "error message"),
-      makeMessage(WARN, "warn message"))
+      makeMessage(UnknownVersion),
+      makeMessage(NewVersionAvailable),
+      makeMessage(DependencyNearlyUnusable),
+      makeMessage(DependencyUnusable))
 
-    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
+    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO, INFO)
   }
 }

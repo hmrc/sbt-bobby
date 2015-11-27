@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import sbt.{ConsoleLogger, ModuleID}
-import uk.gov.hmrc.SbtBobbyPlugin.Repo
+import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.Output
@@ -30,6 +30,10 @@ import scala.util.Try
 class BobbyValidationFailedException(message:String) extends RuntimeException(message)
 
 object Bobby {
+
+  private val logger = ConsoleLogger()
+  private val currentVersion = getClass.getPackage.getImplementationVersion
+
 
   val blackListModuleOrgs = Set(
     "com.typesafe.play",
@@ -47,11 +51,6 @@ object Bobby {
                             jsonOutputFileOverride: Option[String] = None,
                             isSbtProject: Boolean = false) = {
 
-    dependencies foreach println
-
-    val logger = ConsoleLogger()
-
-    val currentVersion = getClass.getPackage.getImplementationVersion
     logger.info(s"[bobby] Bobby version $currentVersion using repositories: ${reposValue.mkString(", ")}")
 
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
@@ -64,9 +63,7 @@ object Bobby {
       getLatestRepoRevisions(scalaVersion, prepared, rs)
     }
 
-
     val messages = ResultBuilder.calculate(prepared, config.loadDeprecatedDependencies, latestRevisions)
-
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 

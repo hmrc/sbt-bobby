@@ -18,15 +18,18 @@ package uk.gov.hmrc
 
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.Bobby
-import uk.gov.hmrc.bobby.domain.RepoSearch
 
 object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
   object BobbyKeys {
+
+    sealed trait Repo
+    object Bintray extends Repo
+    object Nexus extends Repo
+    object Maven extends Repo
 
     lazy val validate = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
     lazy val repositories = SettingKey[Seq[Repo]]("repositories", "The repositories to check, in order")
@@ -35,10 +38,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val jsonOutputFileOverride = SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
   }
 
-  sealed trait Repo
-  object Bintray extends Repo
-  object Nexus extends Repo
-  object Maven extends Repo
 
   import BobbyKeys._
 
@@ -50,7 +49,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     parallelExecution in GlobalScope := true,
 
-    repositories := Seq(Bintray, Nexus, Maven),
+    repositories := Seq(Nexus),
 
     checkForLatest := false,
 

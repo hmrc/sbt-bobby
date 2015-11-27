@@ -33,9 +33,28 @@ object ResultBuilder {
     val seq: Seq[(ModuleID, Try[Version])] = projectDependencies.map { p => p -> Try(Version(p.revision)) }
 
     val mandatoryMessages = checkMandatoryDependencies(deprecatedDependencies, seq.toMap)
-    val repositoryMessages = latestDependencies.map { ld => calculateRepositoryResults(ld) }.getOrElse(List.empty[Message])
 
-    mandatoryMessages ++ repositoryMessages.filterNot { m => mandatoryMessages.map(_.moduleName).contains(m.moduleName) }
+    val repositoryMessages = latestDependencies.map { ld =>
+      calculateRepositoryResults(ld)
+    }.getOrElse(List.empty[Message])
+
+    val warns = mandatoryMessages ++ repositoryMessages.filterNot { m =>
+      mandatoryMessages.map(_.moduleName).contains(m.moduleName)
+    }
+
+    val repoOnlyMessages = repositoryMessages.filterNot { m => mandatoryMessages.map(_.moduleName).contains(m.moduleName) }
+    val mandatoryOnlyMessages = mandatoryMessages.filterNot { m => repositoryMessages.map(_.moduleName).contains(m.moduleName) }
+
+    val mandatoryAndRepoMessages = mandatoryMessages.filter { m => repositoryMessages.map(_.moduleName).contains(m.moduleName) }
+    val upatedMandatoryAndRepoMessages = mandatoryAndRepoMessages
+      .map { m => m -> repositoryMessages.find(_.moduleName == m.moduleName)}
+      .collect { case (mm, Some(rm)) => mm.copy(latestRevisionT = rm.latestRevisionT)}
+
+    println(s"repoOnlyMessages = $repoOnlyMessages")
+    println(s"mandatoryOnlyMessages = $mandatoryOnlyMessages")
+    println(s"upatedMandatoryAndRepoMessages = $upatedMandatoryAndRepoMessages")
+
+    repoOnlyMessages ++ mandatoryOnlyMessages ++ upatedMandatoryAndRepoMessages
   }
 
   def checkMandatoryDependencies(excludes: Seq[DeprecatedDependency], latestRevisions: Map[ModuleID, Try[Version]]): List[Message] = {
@@ -43,10 +62,10 @@ object ResultBuilder {
       case (module, latestRevision) =>
         DependencyChecker.isDependencyValid(excludes)(Dependency(module.organization, module.name), Version(module.revision)) match {
           case MandatoryFail(exclusion) =>
-            Some(new DependencyUnusable(module, latestRevision, exclusion))
+            Some(new Message(DependencyUnusable, module, latestRevision, Some(exclusion)))
 
           case MandatoryWarn(exclusion) =>
-            Some(new DependencyNearlyUnusable(module, latestRevision, exclusion))
+            Some(new Message(DependencyNearlyUnusable, module, latestRevision, Some(exclusion)))
 
           case _ => None
         }
@@ -56,11 +75,11 @@ object ResultBuilder {
 
   def calculateRepositoryResults(latestRevisions: Map[ModuleID, Try[Version]]): List[Message] = {
     latestRevisions.toList.flatMap {
-      case (module, Failure(ex)) =>
-        Some(new UnknownVersion(module, ex))
+      case (module, f @ Failure(ex)) =>
+        Some(new Message(UnknownVersion, module, f, None))
 
       case (module, Success(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
-        Some(new NewVersionAvailable(module, Success(latestRevision)))
+        Some(new Message(NewVersionAvailable, module, Success(latestRevision), None))
 
       case a @ _ =>
         logger.warn("in bad state, got module and version: " + a)

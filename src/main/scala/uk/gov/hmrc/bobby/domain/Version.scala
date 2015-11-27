@@ -63,8 +63,6 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
     case Right(st) => st
   }}
 
-  println(s"boqFormatted = $boqFormatted")
-
   override def toString = s"$major.$minor.$revision${boqFormatted.map(b => "-" + b).getOrElse("")}"
 
   val parts = List(major, minor, revision)

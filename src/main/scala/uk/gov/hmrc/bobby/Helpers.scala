@@ -20,8 +20,6 @@ import scala.util.{Failure, Success, Try}
 
 object Helpers {
 
-
-
   implicit class RichOption[A](opt: Option[A]) {
     def toTry(onNone: Exception): Try[A] = opt match {
       case Some(a) => Success(a)

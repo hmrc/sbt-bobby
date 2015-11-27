@@ -17,18 +17,12 @@
 package uk.gov.hmrc.bobby.domain
 
 import sbt.ModuleID
-import scala.util.Try
+
+import scala.util.Failure
 
 object MessageBuilder{
 
-  def makeMessage(pLevel: MessageLevels.Level, pMessage: String) = new Message {
-    override val level = pLevel
-    override def jsonMessage: String = pMessage
+  def makeMessage(result:Result) =
+    new Message(result, new ModuleID("org", "name", "0.0.0"), Failure(new Exception("ex")), None)
 
-    override def module: ModuleID = ???
-
-    override def latestRevision: Try[Version] = ???
-
-    override def tabularMessage: String = ???
-  }
 }
