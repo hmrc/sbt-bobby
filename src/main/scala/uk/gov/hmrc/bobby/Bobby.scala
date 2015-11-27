@@ -17,10 +17,10 @@
 package uk.gov.hmrc.bobby
 
 import org.joda.time.LocalDate
-import sbt.{ConsoleLogger, ModuleID, State}
+import sbt.{ConsoleLogger, ModuleID}
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{Tabulator, JsonOutingFileWriter, TextOutingFileWriter}
+import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, Tabulator, TextOutingFileWriter}
 
 
 object Bobby extends Bobby {
@@ -204,6 +204,12 @@ trait Message {
   def isError: Boolean = level.equals(LogLevels.ERROR)
 
   def jsonOutput: Map[String, String] = Map("level" -> level.name, "message" -> jsonMessage)
+
+  def rawJson:String =
+    s"""{
+       |"level" : "${level.name}",
+       |"message" : "${jsonMessage}"
+       |}""".stripMargin
 
   def shortTabularOutput = Seq(
     level,

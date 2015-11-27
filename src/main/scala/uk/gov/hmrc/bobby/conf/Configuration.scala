@@ -18,11 +18,12 @@ package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
 
-import play.api.libs.json.Json
+import org.joda.time.LocalDate
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.domain.DeprecatedDependency
+import uk.gov.hmrc.bobby.domain.{Dependency, DeprecatedDependency, VersionRange}
 
 import scala.io.Source
+import scala.util.parsing.json.JSON
 
 object Configuration {
 
@@ -82,6 +83,19 @@ object Configuration {
     } yield BintrayCredentials(user, password)
   }
 
-  def apply(jsonConfig: String): Seq[DeprecatedDependency] = Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
+def apply(jsonConfig: String): Seq[DeprecatedDependency] = {
+    import uk.gov.hmrc.bobby.NativeJsonHelpers._
+
+    for {
+      Some(L(list)) <- List(JSON.parseFull(jsonConfig))
+      MS(map) <- list
+      organisation <- map.get("organisation")
+      name <- map.get("name")
+      range <- map.get("range")
+      reason <- map.get("reason")
+      fromString <- map.get("from")
+      fromDate = LocalDate.parse(fromString)
+    } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate)
+  }
 }
 
