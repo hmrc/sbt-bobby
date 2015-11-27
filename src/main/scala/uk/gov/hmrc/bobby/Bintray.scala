@@ -16,28 +16,19 @@
 
 package uk.gov.hmrc.bobby
 
-import java.lang.Throwable
-import java.net.URL
-import java.net.URLEncoder._
-import java.util.concurrent.TimeUnit
+import java.net.{HttpURLConnection, URL}
 
-import play.api.libs.json.Json
-import play.api.libs.ws.{DefaultWSClientConfig, WSResponse, WSAuthScheme}
-import play.api.libs.ws.ning.{NingAsyncHttpClientConfigBuilder, NingWSClient}
+import org.apache.commons.codec.binary.Base64
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.NativeJsonHelpers._
 import uk.gov.hmrc.bobby.conf.BintrayCredentials
-import uk.gov.hmrc.bobby.domain.RepoSearch
-import uk.gov.hmrc.bobby.domain.Version
+import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 
-import scala.concurrent.{Future, Await}
-import scala.concurrent.duration.Duration
-import scala.util.{Failure, Success, Try}
+import scala.io.Source
+import scala.util.parsing.json.JSON
+import scala.util.{Success, Failure, Try}
 
 case class BintraySearchResult(latest_version: String, name: String)
-
-object BintraySearchResult {
-  implicit val format = Json.format[BintraySearchResult]
-}
 
 object Bintray {
   def apply(credentials: Option[BintrayCredentials]): Option[Bintray] = credentials.map(c => new Bintray {
@@ -45,6 +36,16 @@ object Bintray {
   })
 }
 
+object NativeJsonHelpers {
+  class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
+
+  object M extends CC[Map[String, Any]]
+  object MS extends CC[Map[String, String]]
+  object L extends CC[List[Any]]
+  object S extends CC[String]
+  object D extends CC[Double]
+  object B extends CC[Boolean]
+}
 
 trait Bintray extends RepoSearch {
 
@@ -52,10 +53,16 @@ trait Bintray extends RepoSearch {
 
   val bintrayCred: BintrayCredentials
 
-  val ws = new NingWSClient(new NingAsyncHttpClientConfigBuilder(new DefaultWSClientConfig).build())
+  def latestVersion(jsonString: String, name: String): Option[Version] = {
 
-  def latestVersion(json: String, name: String): Option[Version] = {
-    Json.parse(json).as[List[BintraySearchResult]]
+    val results = for {
+      Some(L(list)) <- List(JSON.parseFull(jsonString))
+      MS(map) <- list
+      latest_version <- map.get("latest_version")
+      name <- map.get("name")
+    } yield  BintraySearchResult(latest_version, name)
+
+    results
       .find(r => r.name == name)
       .map(v => Version(v.latest_version))
   }
@@ -74,20 +81,23 @@ trait Bintray extends RepoSearch {
 
   def get[A](url: String): Try[String] = {
 
-    val call = ws
-      .url(url)
-      .withRequestTimeout(5000)
-      .withAuth(
-        encode(bintrayCred.user, "UTF-8"),
-        encode(bintrayCred.password, "UTF-8"), WSAuthScheme.BASIC)
-      .withHeaders("content-type" -> "application/json")
-      .get()
+    val con = new URL(url).openConnection().asInstanceOf[HttpURLConnection]
 
-    val result: WSResponse = Await.result(call, Duration.apply(5, TimeUnit.MINUTES))
+    con.setRequestMethod("GET")
+    con.setRequestProperty("content-type", "application/json")
+    val userpass = bintrayCred.user + ":" + bintrayCred.password
+    val basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()))
+    con.setRequestProperty ("Authorization", basicAuth)
 
-    result.status match {
-      case s if s >= 200 && s < 300 => Success(result.body)
-      case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${result.status}: ${result.body}"))
+    con.connect()
+
+    val resultStatus =  con.getResponseCode
+
+    val resultBody = Source.fromInputStream(con.getInputStream).mkString
+
+    resultStatus match {
+      case s if s >= 200 && s < 300 => Success(resultBody)
+      case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${resultStatus}: ${resultBody}"))
     }
   }
 

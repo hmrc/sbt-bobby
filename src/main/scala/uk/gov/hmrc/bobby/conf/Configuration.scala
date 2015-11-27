@@ -19,6 +19,9 @@ package uk.gov.hmrc.bobby.conf
 import java.net.URL
 
 import play.api.libs.json.Json
+
+//import play.api.libs.json.Json
+import scala.util.parsing.json._
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain.DeprecatedDependency
 
