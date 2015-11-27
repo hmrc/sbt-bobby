@@ -16,15 +16,11 @@
 
 package uk.gov.hmrc.bobby.output
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 import play.api.libs.json._
-import sbt.ModuleID
-import uk.gov.hmrc.bobby.{MessageBuilder, LogLevels, Message}
-import uk.gov.hmrc.bobby.domain.Version
-import LogLevels._
-import MessageBuilder._
-
-
+import uk.gov.hmrc.bobby.LogLevels._
+import uk.gov.hmrc.bobby.MessageBuilder._
+import uk.gov.hmrc.bobby.{LogLevels, MessageBuilder}
 
 class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 

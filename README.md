@@ -16,6 +16,10 @@ If a newer one is available it suggests to use it without failing the build.
 The current version looks into nexus for this, using what is defined in ~/.sbt/.credentials. 
 If undefined it skips this step
 
+#Contributing
+Do not use any dependencies for Bobby as it is hooked into builds early in the SBT lifecycle and required
+repositories cannot be guaranteed to be in place when it is invoked.
+
 #How To Use
 
 In your `~/.sbt/0.13/plugins/build.sbt`, set:

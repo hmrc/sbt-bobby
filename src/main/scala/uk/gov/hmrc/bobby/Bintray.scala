@@ -36,17 +36,6 @@ object Bintray {
   })
 }
 
-object NativeJsonHelpers {
-  class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
-
-  object M extends CC[Map[String, Any]]
-  object MS extends CC[Map[String, String]]
-  object L extends CC[List[Any]]
-  object S extends CC[String]
-  object D extends CC[Double]
-  object B extends CC[Boolean]
-}
-
 trait Bintray extends RepoSearch {
 
   val repoName = "Bintray"

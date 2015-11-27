@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby
 
-import org.joda.time.LocalDate
+object NativeJsonHelpers {
+  class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
 
-case class DeprecatedDependency(dependency: Dependency, range: VersionRange, reason: String, from: LocalDate)
+  object M extends CC[Map[String, Any]]
+  object MS extends CC[Map[String, String]]
+  object L extends CC[List[Any]]
+  object S extends CC[String]
+  object D extends CC[Double]
+  object B extends CC[Boolean]
+}

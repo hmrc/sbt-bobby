@@ -19,7 +19,6 @@ package uk.gov.hmrc.bobby.output
 import java.io.File
 import java.nio.file.Files
 
-import play.api.libs.json.Json
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.Message
 import uk.gov.hmrc.bobby.conf.Configuration
@@ -37,9 +36,14 @@ trait JsonOutingFileWriter {
 
   def renderJson(messages: List[Message]): String = {
 
-    val outputMessages = messages.map(_.jsonOutput )
-    val outputStructure = Map("results" -> outputMessages)
-    Json.prettyPrint(Json.toJson(outputStructure))
+    val outputMessages = messages.map(_.rawJson )
+
+    s"""{
+      | "results" : [
+      |   ${outputMessages.mkString(", ")}
+      | ]
+      |}""".stripMargin
+
   }
 
   private def outputToFile(filepath: String, jsonString: String) = {
