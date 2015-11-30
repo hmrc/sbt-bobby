@@ -25,7 +25,7 @@ class ConfigurationSpec extends FlatSpec with Matchers {
 
   "The Configuration parser" should "read a well formatted json file with one element" in {
 
-    val c = Configuration(
+    val c = Configuration.parseConfig(
       """
         |[
         |   { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
@@ -42,7 +42,7 @@ class ConfigurationSpec extends FlatSpec with Matchers {
 
   it should "read a well formatted json file with multiple elements" in {
 
-    val c = Configuration(
+    val c = Configuration.parseConfig(
       """
         |[
         |   { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" },

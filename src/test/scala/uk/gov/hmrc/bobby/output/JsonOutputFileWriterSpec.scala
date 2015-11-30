@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.bobby.output
 
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 import play.api.libs.json._
-import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.domain.MessageBuilder._
 import uk.gov.hmrc.bobby.domain._
-import MessageLevels._
-import MessageBuilder._
 
 
 

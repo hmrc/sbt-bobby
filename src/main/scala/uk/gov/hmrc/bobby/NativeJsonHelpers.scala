@@ -16,20 +16,13 @@
 
 package uk.gov.hmrc.bobby
 
-import java.io.File
+object NativeJsonHelpers {
+  class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
 
-import uk.gov.hmrc.bobby.conf.Configuration
-
-import scala.io.Source
-
-object ConfigValidator {
-  def main(args: Array[String]) {
-
-    if(args.length != 1){
-      throw new IllegalArgumentException("pass one file to the validator")
-    } else {
-      val file = args.head
-      Configuration.parseConfig(Source.fromFile(new File(file)).mkString)
-    }
-  }
+  object M extends CC[Map[String, Any]]
+  object MS extends CC[Map[String, String]]
+  object L extends CC[List[Any]]
+  object S extends CC[String]
+  object D extends CC[Double]
+  object B extends CC[Boolean]
 }

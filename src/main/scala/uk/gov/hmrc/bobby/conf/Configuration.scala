@@ -18,24 +18,34 @@ package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
 
-import play.api.libs.json.Json
+import org.joda.time.LocalDate
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.domain.DeprecatedDependency
+import uk.gov.hmrc.bobby.domain.{Dependency, DeprecatedDependency, VersionRange}
 
 import scala.io.Source
+import scala.util.parsing.json.JSON
 
 object Configuration{
 
   val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
   val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
 
-
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
+  def parseConfig(jsonConfig: String): Seq[DeprecatedDependency] = {
+    import uk.gov.hmrc.bobby.NativeJsonHelpers._
 
-  def apply(jsonConfig: String): Seq[DeprecatedDependency] = {
-    Json.parse(jsonConfig).as[Seq[DeprecatedDependency]]
+    for {
+      Some(L(list)) <- List(JSON.parseFull(jsonConfig))
+      MS(map) <- list
+      organisation <- map.get("organisation")
+      name <- map.get("name")
+      range <- map.get("range")
+      reason <- map.get("reason")
+      fromString <- map.get("from")
+      fromDate = LocalDate.parse(fromString)
+    } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate)
   }
 
   val nexusCredetials: Option[NexusCredentials] = {
@@ -58,7 +68,6 @@ object Configuration{
 
     } yield BintrayCredentials(user, password)
   }
-
 }
 
 class Configuration(
@@ -92,7 +101,7 @@ class Configuration(
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
 
-        Configuration(Source.fromInputStream(inputStream).mkString)
+        Configuration.parseConfig(Source.fromInputStream(inputStream).mkString)
       } catch {
         case e: Exception =>
           logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
@@ -100,6 +109,4 @@ class Configuration(
       }
     }
   }
-
 }
-
