@@ -167,7 +167,6 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
 
     val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
 
-    messages.size shouldBe 1
     messages.head.level shouldBe INFO
     messages.head.shortTabularOutput should contain("3.2.1")
     messages.head.shortTabularOutput should contain("not-found")
@@ -180,10 +179,20 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
 
     val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
 
-    messages.size shouldBe 1
     messages.head.level shouldBe WARN
     messages.head.shortTabularOutput should contain ("3.2.1")
     messages.head.shortTabularOutput should contain("3.8.0")
     messages.head.shortTabularOutput should not contain "4.0.0"
+  }
+
+  it should "not show an eariler version of a mandatory dependency if the latest was not found in a repository" in {
+    val deprecated = Seq(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
+    val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("1.0.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages.head.shortTabularOutput should not contain "1.0.0"
+    messages.head.shortTabularOutput should not contain "3.1.0"
   }
 }
