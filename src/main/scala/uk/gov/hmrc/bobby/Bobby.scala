@@ -52,24 +52,27 @@ object Bobby {
                             jsonOutputFileOverride: Option[String] = None,
                             isSbtProject: Boolean = false) = {
 
-    logger.info(s"[bobby] Bobby version $currentVersion using repositories: ${reposValue.mkString(", ")}")
+    logger.info(s"[bobby] Bobby version $currentVersion")
 
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
     val prepared = prepareDependencies(dependencies, blackListModuleOrgs)
 
-    val repoSearchO = Repositories.buildAggregateRepositories(reposValue, checkForLatest)
+    val latestRevisionsO = if(checkForLatest) {
+      Some(findLatestVersions(scalaVersion, reposValue, prepared))
+    } else None
 
-    val latestRevisions: Option[Map[ModuleID, Try[Version]]] = repoSearchO.map { rs =>
-      getLatestRepoRevisions(scalaVersion, prepared, rs)
-    }
-
-    val messages = ResultBuilder.calculate(prepared, config.loadDeprecatedDependencies, latestRevisions)
+    val messages = ResultBuilder.calculate(prepared, config.loadDeprecatedDependencies, latestRevisionsO)
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 
     if (messages.exists(_.isError))
       throw new BobbyValidationFailedException("See previous bobby output for more information")
+  }
+
+  def findLatestVersions(scalaVersion: String, repositoriesToCheck: Seq[Repo], prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
+    val repoSearch = Repositories.buildAggregateRepositories(repositoriesToCheck)
+    getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
   }
 
   private[bobby] def prepareDependencies(dependencies: Seq[ModuleID], blackListModuleOrgs: Set[String]): Seq[ModuleID] = {

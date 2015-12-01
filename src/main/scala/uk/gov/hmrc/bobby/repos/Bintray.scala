@@ -71,24 +71,26 @@ trait Bintray extends RepoSearch {
 
   def get[A](url: String): Try[String] = {
 
-    val con = new URL(url).openConnection().asInstanceOf[HttpURLConnection]
+    Try {
+      val con = new URL(url).openConnection().asInstanceOf[HttpURLConnection]
 
-    con.setRequestMethod("GET")
-    con.setRequestProperty("content-type", "application/json")
-    val userpass = bintrayCred.user + ":" + bintrayCred.password
-    val basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()))
-    con.setRequestProperty ("Authorization", basicAuth)
+      con.setRequestMethod("GET")
+      con.setRequestProperty("content-type", "application/json")
+      val userpass = bintrayCred.user + ":" + bintrayCred.password
+      val basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()))
+      con.setRequestProperty("Authorization", basicAuth)
 
-    con.connect()
+      con.connect()
 
-    val resultStatus =  con.getResponseCode
+      val resultStatus = con.getResponseCode
 
-    val resultBody = Source.fromInputStream(con.getInputStream).mkString
+      val resultBody = Source.fromInputStream(con.getInputStream).mkString
 
-    resultStatus match {
-      case s if s >= 200 && s < 300 => Success(resultBody)
-      case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${resultStatus}: ${resultBody}"))
-    }
+      resultStatus match {
+        case s if s >= 200 && s < 300 => Success(resultBody)
+        case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${resultStatus}: ${resultBody}"))
+      }
+    }.flatten
   }
 
   override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {

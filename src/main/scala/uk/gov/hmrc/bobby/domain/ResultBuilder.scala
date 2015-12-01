@@ -27,49 +27,44 @@ object ResultBuilder {
 
   def calculate(projectDependencies:Seq[ModuleID],
                 deprecatedDependencies: Seq[DeprecatedDependency],
-                latestDependencies:Option[Map[ModuleID, Try[Version]]]): List[Message]={
+                latestRepoDependencies:Option[Map[ModuleID, Try[Version]]]): List[Message]={
 
+    val mandatoryMessages = checkMandatoryDependencies(deprecatedDependencies, projectDependencies)
 
-    val seq: Seq[(ModuleID, Try[Version])] = projectDependencies.map { p => p -> Try(Version(p.revision)) }
-
-    val mandatoryMessages = checkMandatoryDependencies(deprecatedDependencies, seq.toMap)
-
-    val repositoryMessages = latestDependencies.map { ld =>
+    val repositoryMessages = latestRepoDependencies.map { ld =>
       calculateRepositoryResults(ld)
     }.getOrElse(List.empty[Message])
 
-    val warns = mandatoryMessages ++ repositoryMessages.filterNot { m =>
-      mandatoryMessages.map(_.moduleName).contains(m.moduleName)
-    }
+    val repoOnlyMessages = repositoryMessages.filterNot { m =>
+      mandatoryMessages.map(_.moduleName).contains(m.moduleName) }
 
-    val repoOnlyMessages = repositoryMessages.filterNot { m => mandatoryMessages.map(_.moduleName).contains(m.moduleName) }
-    val mandatoryOnlyMessages = mandatoryMessages.filterNot { m => repositoryMessages.map(_.moduleName).contains(m.moduleName) }
 
-    val mandatoryAndRepoMessages = mandatoryMessages.filter { m => repositoryMessages.map(_.moduleName).contains(m.moduleName) }
-    val upatedMandatoryAndRepoMessages = mandatoryAndRepoMessages
+    val (mandatoryAndRepoMessages, mandatoryOnlyMessages) = mandatoryMessages.partition { m =>
+        repositoryMessages.map(_.moduleName).contains(m.moduleName) }
+
+
+    val updatedMandatoryAndRepoMessages = mandatoryAndRepoMessages
       .map { m => m -> repositoryMessages.find(_.moduleName == m.moduleName)}
       .collect { case (mm, Some(rm)) => mm.copy(latestRevisionT = rm.latestRevisionT)}
 
-    println(s"repoOnlyMessages = $repoOnlyMessages")
-    println(s"mandatoryOnlyMessages = $mandatoryOnlyMessages")
-    println(s"upatedMandatoryAndRepoMessages = $upatedMandatoryAndRepoMessages")
+//    println(s"repositoryMessages")
+//    repositoryMessages foreach println
 
-    repoOnlyMessages ++ mandatoryOnlyMessages ++ upatedMandatoryAndRepoMessages
+    repoOnlyMessages ++ mandatoryOnlyMessages ++ updatedMandatoryAndRepoMessages
   }
 
-  def checkMandatoryDependencies(excludes: Seq[DeprecatedDependency], latestRevisions: Map[ModuleID, Try[Version]]): List[Message] = {
-    latestRevisions.toList.flatMap({
-      case (module, latestRevision) =>
-        DependencyChecker.isDependencyValid(excludes)(Dependency(module.organization, module.name), Version(module.revision)) match {
-          case MandatoryFail(exclusion) =>
-            Some(new Message(DependencyUnusable, module, latestRevision, Some(exclusion)))
+  def checkMandatoryDependencies(excludes: Seq[DeprecatedDependency], projectVersions: Seq[ModuleID]): List[Message] = {
+    projectVersions.toList.flatMap { module =>
+      DependencyChecker.isDependencyValid(excludes)(Dependency(module.organization, module.name), Version(module.revision)) match {
+        case MandatoryFail(exclusion) =>
+          Some(new Message(DependencyUnusable, module, Failure(new Exception("(check repo)")), Some(exclusion)))
 
-          case MandatoryWarn(exclusion) =>
-            Some(new Message(DependencyNearlyUnusable, module, latestRevision, Some(exclusion)))
+        case MandatoryWarn(exclusion) =>
+          Some(new Message(DependencyNearlyUnusable, module, Failure(new Exception("(check repo)")), Some(exclusion)))
 
-          case _ => None
-        }
-    })
+        case _ => None
+      }
+    }
   }
 
 
@@ -82,7 +77,7 @@ object ResultBuilder {
         Some(new Message(NewVersionAvailable, module, Success(latestRevision), None))
 
       case a @ _ =>
-        logger.warn("in bad state, got module and version: " + a)
+        logger.warn(s"in bad state: '${a}', got module and version: " + a)
         None
     }
   }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.bobby.repos
 
+import sbt.ConsoleLogger
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys._
 import uk.gov.hmrc.bobby.conf.Configuration
@@ -23,16 +24,16 @@ import uk.gov.hmrc.bobby.domain.{AggregateRepoSearch, RepoSearch}
 
 object Repositories {
 
+  private val logger = ConsoleLogger()
 
-  def buildAggregateRepositories(reposValue:Seq[Repo], checkForLatest: Boolean):Option[AggregateRepoSearch] ={
-    if (!checkForLatest) None else Some {
-      new AggregateRepoSearch() {
-        val repoName = "aggregate"
-        override val repos = buildRepos(reposValue).flatten
-      }
+  def buildAggregateRepositories(repositories:Seq[Repo]):AggregateRepoSearch ={
+    new AggregateRepoSearch() {
+      val repoName = "aggregate"
+      override val repos: Seq[RepoSearch] = buildRepos(repositories).flatten
+
+      logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(", ")}")
     }
   }
-
 
   def buildRepos(repos:Seq[Repo]):Seq[Option[RepoSearch]]={
     repos map {

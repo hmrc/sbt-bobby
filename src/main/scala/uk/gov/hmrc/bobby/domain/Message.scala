@@ -45,8 +45,12 @@ case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version
   val deprecationFrom = deprecationInfoO.map(_.from).getOrElse("-")
   val latestRevision = latestRevisionT.getOrElse("-")
 
+  val moduleName = s"${module.organization}.${module.name}"
+
+  val deadline:Option[LocalDate] = deprecationInfoO.map(_.from)
+
   val (level, tabularMessage) = result match {
-    case UnknownVersion           => (INFO, "Unable to get a latestRelease number for '${module.toString()}'")
+    case UnknownVersion           => (INFO, s"Unable to get a latestRelease number for '${module.toString()}'")
     case NewVersionAvailable      => (INFO, "A new version is available")
     case DependencyNearlyUnusable => (WARN, deprecationReason)
     case DependencyUnusable       => (ERROR, deprecationReason)
@@ -75,7 +79,4 @@ case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version
 
   def logOutput: (String, String) = level.name -> jsonMessage
 
-  def moduleName = s"${module.organization}.${module.name}"
-
-  def deadline:Option[LocalDate] = None
 }

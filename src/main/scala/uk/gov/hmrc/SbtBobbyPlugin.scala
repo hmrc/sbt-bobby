@@ -49,9 +49,9 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     parallelExecution in GlobalScope := true,
 
-    repositories := Seq(Nexus),
+    repositories := Seq(Nexus, Bintray, Maven),
 
-    checkForLatest := false,
+    checkForLatest := true,
 
     validate := {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this

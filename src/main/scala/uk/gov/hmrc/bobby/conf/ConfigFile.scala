@@ -16,12 +16,19 @@
 
 package uk.gov.hmrc.bobby.conf
 
+import java.io.File
+
 import sbt.ConsoleLogger
 
 import scala.io.Source
 
 class ConfigFile(fileName: String) {
   val logger = ConsoleLogger()
+
+  if(!new File(fileName).exists()){
+      logger.warn(s"Supplied configuration file '$fileName' does not exist.")
+  }
+
 
   private val kvMap: Map[String, String] = {
     try {

@@ -16,24 +16,38 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import sbt.ModuleID
+import sbt.{ConsoleLogger, ModuleID}
 import uk.gov.hmrc.bobby.Helpers
 
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 import Helpers._
 
 trait AggregateRepoSearch extends RepoSearch{
 
+  val log = ConsoleLogger()
+
   def repos:Seq[RepoSearch]
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
+  def findBestMatch(seq:Seq[Try[Version]]):Try[Version]={
+    seq.collect { case Success(v) => v }
+      .sortWith((a, b) => a.compareTo(b) < 0)
+      .reverse
+      .headOption
+      .toTry(new Exception("(Not found)"))
+  }
 
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
     val latestVersions: Seq[Try[Version]] = repos.map { r =>
-      r.findLatestRevision(versionInformation, scalaVersion)
+      val latestVersion = r.findLatestRevision(versionInformation, scalaVersion)
+      latestVersion match {
+        case Success(v) => log.debug(s"[bobby] found ${versionInformation.organization}.${versionInformation.name}.${v.toString} in ${r.repoName}")
+        case Failure(e) => log.debug(s"[bobby] Didn't find ${versionInformation.organization}.${versionInformation.name} in ${r.repoName}, reason: ${e.getMessage}")
+      }
+
+      latestVersion
     }
 
-    val res: Option[Try[Version]] = latestVersions.find(v => v.isSuccess)
-    res.toTry(new Exception("Not found")).flatten
+    findBestMatch(latestVersions)
   }
 
 }

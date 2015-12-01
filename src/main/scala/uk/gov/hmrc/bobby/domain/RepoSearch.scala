@@ -31,11 +31,7 @@ trait RepoSearch{
   }
 
   def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
-    search(versionInformation, scalaVersion.map{ shortenScalaVersion })// match {
-//      case Success(s) if s.isDefined => s
-//      case Success(s) => search(versionInformation, None).toOption.flatten
-//      case Failure(e) => e.printStackTrace(); None //logger.warn(s"Unable to query nexus: ${e.getClass.getName}: ${e.getMessage}"); None
-//    }
+    search(versionInformation, scalaVersion.map{ shortenScalaVersion })
   }
 
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]

@@ -29,8 +29,8 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     DeprecatedDependency(Dependency(org, name), VersionRange(version), "reason", new LocalDate().plusWeeks(1))
   }
 
-  def deprecatedNow(org:String, name:String, version:String):DeprecatedDependency={
-    DeprecatedDependency(Dependency(org, name), VersionRange(version), "reason", new LocalDate().minusWeeks(1))
+  def deprecatedNow(org:String, name:String, version:String, reason:String = "reason", deadline:LocalDate = new LocalDate().minusWeeks(1)):DeprecatedDependency={
+    DeprecatedDependency(Dependency(org, name), VersionRange(version), reason, deadline)
   }
 
   it should "return error if a dependency is in the exclude range" in {
@@ -103,10 +103,16 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
 
   it should "produce error message for mandatory dependencies which are currently been enforced" in {
 
-    val deprecated = Seq(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
+    val deprecated = Seq(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1)))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, None).head.level shouldBe ERROR
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, None)
+    println(s"messages = $messages")
+    messages.head.longTabularOutput(0) shouldBe "ERROR"
+    messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
+    messages.head.longTabularOutput(2) shouldBe "3.2.0"
+    messages.head.longTabularOutput(4) shouldBe "2000-01-01"
+    messages.head.longTabularOutput(5) shouldBe "the reason"
   }
 
   it should "show a ERROR message for a dependency which has a newer version in a repository AND is a mandatory upgrade now" in {
@@ -114,7 +120,8 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies)).map(_.level) shouldBe List(ERROR)
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+    messages.head.longTabularOutput(0) shouldBe "ERROR"
   }
 
   it should "show a WARN message for a dependency which has a newer version in a repository AND is a mandatory upgrade soon" in {
@@ -122,7 +129,12 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies)).map(_.level) shouldBe List(WARN)
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe WARN
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("4.3.0")
   }
 
   it should "show an INFO message for a dependency which has a newer version in a repository" in {
@@ -136,6 +148,16 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     messages.head.level shouldBe INFO
     messages.head.shortTabularOutput should contain("3.2.1")
     messages.head.shortTabularOutput should contain("3.3.0")
+  }
+
+  it should "not show a message if a dependency is up-to-date" in {
+    val deprecated = Seq.empty
+    val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.2.1")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
+
+    messages shouldBe 'empty
   }
 
   it should "show an INFO message for a dependency for which the latest nexus revision is unknown and show 'not-found' in the results table" in {
