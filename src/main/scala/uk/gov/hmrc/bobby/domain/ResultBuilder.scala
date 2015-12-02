@@ -77,7 +77,6 @@ object ResultBuilder {
         Some(new Message(NewVersionAvailable, module, Success(latestRevision), None))
 
       case a @ _ =>
-        logger.warn(s"found lower dependency version in repository than version in project: '${a}', got module and version: " + a)
         None
     }
   }
