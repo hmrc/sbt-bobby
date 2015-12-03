@@ -23,7 +23,7 @@ import uk.gov.hmrc.bobby.Helpers
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
 
-import scala.util.Try
+import scala.util.{Success, Failure, Try}
 import scala.xml.{NodeSeq, XML}
 
 
@@ -47,9 +47,28 @@ trait Nexus extends RepoSearch {
   def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
     import Helpers._
 
-    query(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion))).flatMap{ ov =>
-      ov.toTry(new Exception("(see bintray)"))
+    versionInformation.organization match {
+
+      case "uk.gov.hmrc" => Failure(new Exception("(hmrc-lib)"))
+
+      case _ => {
+        executeQuery(versionInformation, scalaVersion).flatMap{ ov =>
+          val nonScalaVersionResult: Try[Option[Version]] = (scalaVersion, ov) match {
+
+            case (Some(_), None) => {
+              executeQuery(versionInformation, None)
+            }
+            case _ => Success(ov)
+          }
+
+          nonScalaVersionResult.flatMap(_.toTry(new Exception("(see bintray)")))
+        }
+      }
     }
+  }
+
+  def executeQuery(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] ={
+    queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
   }
 
   def parseVersions(xml: NodeSeq): Seq[Version] = {
@@ -57,7 +76,7 @@ trait Nexus extends RepoSearch {
     nodes.map(n => Version(n.text))
   }
 
-  private def query(url: String): Try[Option[Version]] = Try {
+  private def queryNexus(url: String): Try[Option[Version]] = Try {
     parseVersions(XML.load(new URL(url)))
       .filterNot(isSnapshot)
       .sortWith(comparator)

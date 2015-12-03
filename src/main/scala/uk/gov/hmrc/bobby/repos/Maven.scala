@@ -25,6 +25,7 @@ import scala.util.Try
 import scala.xml.{NodeSeq, XML}
 import uk.gov.hmrc.bobby.Helpers._
 
+//TODO retry without scala version for java libraries
 object Maven extends RepoSearch{
   
   import Version._

@@ -110,7 +110,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
     val messages = ResultBuilder.calculate(projectDependencies, deprecated, None)
-    println(s"messages = $messages")
+
     messages.head.longTabularOutput(0) shouldBe "ERROR"
     messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
     messages.head.longTabularOutput(2) shouldBe "3.2.0"

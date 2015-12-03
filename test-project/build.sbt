@@ -10,6 +10,9 @@ resolvers += Resolver.bintrayRepo("hmrc", "releases")
 deprecatedDependenciesUrl := Some(file("dependencies.json").toURL)
 
 libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "1.2.0",
+  "org.pegdown" % "pegdown" % "1.3.0",
+  "org.jsoup" % "jsoup" % "1.6.0",
   "uk.gov.hmrc" %% "play-reactivemongo" % "3.2.0",
   "uk.gov.hmrc" %% "simple-reactivemongo" % "2.1.0",
   "uk.gov.hmrc" %% "microservice-bootstrap" % "2.0.0",

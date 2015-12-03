@@ -49,7 +49,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     parallelExecution in GlobalScope := true,
 
-    repositories := Seq(Nexus, Bintray, Maven),
+    repositories := Seq(Nexus, Bintray),
 
     checkForLatest := true,
 

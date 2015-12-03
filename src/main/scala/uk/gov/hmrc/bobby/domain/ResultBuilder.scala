@@ -47,9 +47,6 @@ object ResultBuilder {
       .map { m => m -> repositoryMessages.find(_.moduleName == m.moduleName)}
       .collect { case (mm, Some(rm)) => mm.copy(latestRevisionT = rm.latestRevisionT)}
 
-//    println(s"repositoryMessages")
-//    repositoryMessages foreach println
-
     repoOnlyMessages ++ mandatoryOnlyMessages ++ updatedMandatoryAndRepoMessages
   }
 

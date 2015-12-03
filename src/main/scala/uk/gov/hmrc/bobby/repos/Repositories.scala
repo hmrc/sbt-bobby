@@ -37,7 +37,7 @@ object Repositories {
 
   def buildRepos(repos:Seq[Repo]):Seq[Option[RepoSearch]]={
     repos map {
-      case BobbyKeys.Bintray => Bintray(Configuration.bintrayCredetials)
+      case BobbyKeys.Bintray => Some(HmrcBintray)
       case BobbyKeys.Nexus   => Nexus(Configuration.nexusCredetials)
       case BobbyKeys.Maven   => Some(Maven)
     }
