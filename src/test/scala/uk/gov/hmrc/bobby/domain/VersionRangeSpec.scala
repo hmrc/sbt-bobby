@@ -154,6 +154,18 @@ class VersionRangeSpec extends FlatSpec with Matchers {
     VersionRange("[*-SNAPSHOT]").includes(Version("1.0.0")) shouldBe false
   }
 
+  it should "build string that contains inclusive lower-bound and upper-bound" in {
+    VersionRange("[1.2.0,1.3.0]").toString shouldBe "[1.2.0,1.3.0]"
+  }
+
+  it should "build string that contains wildcard" in {
+    VersionRange("[*-SNAPSHOT]").toString shouldBe "[*-SNAPSHOT]"
+  }
+
+  it should "build string that contains non-inclusive lower-bound and upper-bound" in {
+    VersionRange("(1.2.0,1.3.0)").toString shouldBe "(1.2.0,1.3.0)"
+  }
+
   it should "throw exception when qualifier is not defined" in {
     intercept[IllegalArgumentException] {
       VersionRange("[*-]")

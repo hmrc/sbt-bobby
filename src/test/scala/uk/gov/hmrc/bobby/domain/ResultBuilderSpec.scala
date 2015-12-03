@@ -52,7 +52,10 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = Seq(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-    ResultBuilder.calculate(projectDependencies, deprecated, None).head.level shouldBe ERROR
+    val message = ResultBuilder.calculate(projectDependencies, deprecated, None).head
+
+    message.level shouldBe ERROR
+    message.shortTabularOutput(3) shouldBe "[*-SNAPSHOT]"
   }
 
   it should "not return error for valid dependencies that don't include snapshots" in {
@@ -111,8 +114,8 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     messages.head.longTabularOutput(0) shouldBe "ERROR"
     messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
     messages.head.longTabularOutput(2) shouldBe "3.2.0"
-    messages.head.longTabularOutput(4) shouldBe "2000-01-01"
-    messages.head.longTabularOutput(5) shouldBe "the reason"
+    messages.head.longTabularOutput(5) shouldBe "2000-01-01"
+    messages.head.longTabularOutput(6) shouldBe "the reason"
   }
 
   it should "show a ERROR message for a dependency which has a newer version in a repository AND is a mandatory upgrade now" in {
@@ -180,6 +183,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val messages = ResultBuilder.calculate(projectDependencies, deprecated, Some(repoDependencies))
 
     messages.head.level shouldBe WARN
+    messages.head.shortTabularOutput should contain ("(,4.0.0]")
     messages.head.shortTabularOutput should contain ("3.2.1")
     messages.head.shortTabularOutput should contain("3.8.0")
     messages.head.shortTabularOutput should not contain "4.0.0"

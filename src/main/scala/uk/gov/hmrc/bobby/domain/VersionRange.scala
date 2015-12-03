@@ -35,6 +35,17 @@ case class VersionRange(lowerBound: Option[Version],
       val ubRange = upperBound.fold(true)(ub => version.isBefore(ub) || (upperBoundInclusive && ub.equals(version)))
       lbRange && ubRange
     }
+  }
+
+  override def toString():String={
+    if (qualifierStartsWith.isDefined) {
+      s"[*-${qualifierStartsWith.get}]"
+    } else {
+      val start = if (lowerBoundInclusive) "[" else "("
+      val end   = if (upperBoundInclusive) "]" else ")"
+
+      start + lowerBound.map(_.toString).getOrElse("")  + "," + upperBound.map(_.toString).getOrElse("") + end
+    }
 
   }
 }

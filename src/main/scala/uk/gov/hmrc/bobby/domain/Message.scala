@@ -25,8 +25,8 @@ import uk.gov.hmrc.bobby.domain.MessageLevels.{WARN, ERROR, INFO}
 import scala.util.{Failure, Try}
 
 object Message{
-  val tabularHeader      = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline", "Reason")
-  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Latest Version", "Deadline")
+  val tabularHeader      = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline", "Reason")
+  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline")
 
   implicit object MessageOrdering extends Ordering[Message] {
     def compare(a:Message, b:Message) = a.level compare b.level
@@ -71,6 +71,7 @@ case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version
     level.toString,
     moduleName,
     module.revision,
+    deprecationInfoO.map(_.range.toString()).getOrElse("-"),
     latestRevisionT.map(_.toString).getOrElseWith(_.getMessage),
     deadline.map(_.toString).getOrElse("-")
   )
