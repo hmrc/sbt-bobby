@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.bobby
 
+// as described in http://stackoverflow.com/a/4186090/599068
 object NativeJsonHelpers {
   class CC[T] { def unapply(a:Any):Option[T] = Some(a.asInstanceOf[T]) }
 
