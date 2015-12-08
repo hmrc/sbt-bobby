@@ -27,6 +27,10 @@ resolvers += Resolver.url(
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 ```
 
+Then call the 'validate' command:
+
+```sbt validate```
+
 #### Outdated Dependencies
 
 To prevent outdated dependencies from being used by your project, create a blacklist of version ranges. 
@@ -84,7 +88,6 @@ The blacklist must be a json with a list of rows where:
 | [1.5.0,)       | x >= 1.5.0                            |
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
 
-
 ###### JSON output file
 Bobby can be configured to output results to a structured JSON file. To enable this feature provide an output filepath using the 
 optional output-file parameter in your ~/.sbt/bobby.conf file. The file path could be relative or absolute.
@@ -92,6 +95,13 @@ optional output-file parameter in your ~/.sbt/bobby.conf file. The file path cou
 ```properties
 output-file = bobby-output.json
 ```
+
+## Developing ##
+
+* The TestProject is useful for executing the SbtBobby plugin from source against a test project. CD into the directory 
+and run ```sbt validate```
+ 
+* Bobby uses [scripted](http://eed3si9n.com/testing-sbt-plugins) tests which are executed with ```sbt scripted```
 
 ## License ##
  
