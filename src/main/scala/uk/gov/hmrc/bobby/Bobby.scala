@@ -35,7 +35,6 @@ object Bobby {
   private val logger = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
-
   val blackListModuleOrgs = Set(
     "com.typesafe.play",
     "com.kenshoo",
