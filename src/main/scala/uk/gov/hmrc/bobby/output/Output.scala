@@ -23,7 +23,7 @@ object Output {
 
   val logger = ConsoleLogger()
 
-  def outputMessages(messages:List[Message], jsonFilePath:String, textFilePath:String): Unit ={
+  def outputMessages(messages: List[Message], jsonFilePath: String, textFilePath: String): Unit = {
 
     outputMessagesToConsole(messages)
     new JsonOutingFileWriter(jsonFilePath).outputMessagesToJsonFile(messages)

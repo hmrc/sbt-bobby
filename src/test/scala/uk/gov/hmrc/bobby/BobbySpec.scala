@@ -42,7 +42,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     val blacklisted: Set[String] = Set("com.typesafe.play")
 
-    Bobby.prepareDependencies(mods, blacklisted) shouldBe Seq(auth)
+    Bobby.filterDependencies(mods, blacklisted) shouldBe Seq(auth)
   }
 
   it should "order messages correctly" in {

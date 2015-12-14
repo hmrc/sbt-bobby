@@ -25,34 +25,43 @@ object ResultBuilder {
 
   val logger = ConsoleLogger()
 
-  def calculate(projectDependencies:Seq[ModuleID],
-                deprecatedDependencies: Seq[DeprecatedDependency],
-                latestRepoDependencies:Option[Map[ModuleID, Try[Version]]]): List[Message]={
+  def calculate(projectLibraries: Seq[ModuleID], projectPlugins: Seq[ModuleID], latestRepoLibraries: Option[Map[ModuleID, Try[Version]]], deprecatedDependencies: DeprecatedDependencies): List[Message] = {
 
-    val mandatoryMessages = checkMandatoryDependencies(deprecatedDependencies, projectDependencies)
+    val pluginMessages = checkMandatoryMessages(deprecatedDependencies.plugins, projectPlugins)
+    val libMessages = libraryMessages(projectLibraries, latestRepoLibraries, deprecatedDependencies.libs)
 
-    val repositoryMessages = latestRepoDependencies.map { ld =>
+    (pluginMessages ::: libMessages).sortBy(_.moduleName)
+
+  }
+
+  private def libraryMessages(projectLibraries: Seq[ModuleID], latestRepoLibraries: Option[Map[ModuleID, Try[Version]]], deprecatedLibraries: List[DeprecatedDependency]): List[Message] = {
+    val mandatoryLibMessages = checkMandatoryMessages(deprecatedLibraries, projectLibraries)
+    val repositoryMessages = latestRepoLibraries.map { ld =>
       calculateRepositoryResults(ld)
     }.getOrElse(List.empty[Message])
 
     val repoOnlyMessages = repositoryMessages.filterNot { m =>
-      mandatoryMessages.map(_.moduleName).contains(m.moduleName) }
+      mandatoryLibMessages.map(_.moduleName).contains(m.moduleName)
+    }
 
 
-    val (mandatoryAndRepoMessages, mandatoryOnlyMessages) = mandatoryMessages.partition { m =>
-        repositoryMessages.map(_.moduleName).contains(m.moduleName) }
+    val (mandatoryAndRepoMessages, mandatoryOnlyMessages) = mandatoryLibMessages.partition { m =>
+      repositoryMessages.map(_.moduleName).contains(m.moduleName)
+    }
 
 
     val updatedMandatoryAndRepoMessages = mandatoryAndRepoMessages
-      .map { m => m -> repositoryMessages.find(_.moduleName == m.moduleName)}
-      .collect { case (mm, Some(rm)) => mm.copy(latestRevisionT = rm.latestRevisionT)}
+      .map { m => m -> repositoryMessages.find(_.moduleName == m.moduleName) }
+      .collect { case (mm, Some(rm)) => mm.copy(latestRevisionT = rm.latestRevisionT) }
 
     repoOnlyMessages ++ mandatoryOnlyMessages ++ updatedMandatoryAndRepoMessages
   }
 
-  def checkMandatoryDependencies(excludes: Seq[DeprecatedDependency], projectVersions: Seq[ModuleID]): List[Message] = {
+  def checkMandatoryMessages(excludes: Seq[DeprecatedDependency], projectVersions: Seq[ModuleID]): List[Message] = {
+    val isValid = DependencyChecker.isDependencyValid(excludes) _
+
     projectVersions.toList.flatMap { module =>
-      DependencyChecker.isDependencyValid(excludes)(Dependency(module.organization, module.name), Version(module.revision)) match {
+      isValid(Dependency(module.organization, module.name), Version(module.revision)) match {
         case MandatoryFail(exclusion) =>
           Some(new Message(DependencyUnusable, module, Failure(new Exception("(check repo)")), Some(exclusion)))
 
@@ -67,13 +76,13 @@ object ResultBuilder {
 
   def calculateRepositoryResults(latestRevisions: Map[ModuleID, Try[Version]]): List[Message] = {
     latestRevisions.toList.flatMap {
-      case (module, f @ Failure(ex)) =>
+      case (module, f@Failure(ex)) =>
         Some(new Message(UnknownVersion, module, f, None))
 
       case (module, Success(latestRevision)) if latestRevision.isAfter(Version(module.revision)) =>
         Some(new Message(NewVersionAvailable, module, Success(latestRevision), None))
 
-      case a @ _ =>
+      case a@_ =>
         None
     }
   }

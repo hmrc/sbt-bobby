@@ -18,7 +18,7 @@ package uk.gov.hmrc
 
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.Bobby
+import uk.gov.hmrc.bobby.{ProjectPlugin, Bobby}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -38,7 +38,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val jsonOutputFileOverride = SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
   }
 
-
   import BobbyKeys._
 
   override lazy val projectSettings = Seq(
@@ -57,6 +56,7 @@ object SbtBobbyPlugin extends AutoPlugin {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
       Bobby.validateDependencies(
         libraryDependencies.value,
+        ProjectPlugin.plugins(buildStructure.value),
         scalaVersion.value,
         repositories.value,
         checkForLatest.value,

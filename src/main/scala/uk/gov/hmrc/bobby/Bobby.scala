@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import org.joda.time.LocalDate
-import sbt.{ConsoleLogger, ModuleID}
+import sbt._
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
@@ -28,40 +28,41 @@ import uk.gov.hmrc.bobby.repos.Repositories
 
 import scala.util.Try
 
-class BobbyValidationFailedException(message:String) extends RuntimeException(message)
+class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
 object Bobby {
 
   private val logger = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
-  val blackListModuleOrgs = Set(
+  val ignoredOrgs = Set(
     "com.typesafe.play",
     "com.kenshoo",
     "com.codahale.metrics",
     "org.scala-lang"
   )
 
-  def validateDependencies(
-                            dependencies: Seq[ModuleID],
-                            scalaVersion: String,
-                            reposValue: Seq[Repo],
-                            checkForLatest: Boolean,
-                            deprecatedDependenciesUrl: Option[URL] = None,
-                            jsonOutputFileOverride: Option[String] = None,
-                            isSbtProject: Boolean = false) = {
+  def validateDependencies(libraries: Seq[ModuleID],
+                           plugins: Seq[ModuleID],
+                           scalaVersion: String,
+                           reposValue: Seq[Repo],
+                           checkForLatest: Boolean,
+                           deprecatedDependenciesUrl: Option[URL] = None,
+                           jsonOutputFileOverride: Option[String] = None,
+                           isSbtProject: Boolean = false) = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
+
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
-    val prepared = prepareDependencies(dependencies, blackListModuleOrgs)
+    val filteredLibraries = filterDependencies(libraries, ignoredOrgs)
 
-    val latestRevisionsO = if(checkForLatest) {
-      Some(findLatestVersions(scalaVersion, reposValue, prepared))
+    val latestLibraryRevisionsO = if (checkForLatest) {
+      Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
     } else None
 
-    val messages = ResultBuilder.calculate(prepared, config.loadDeprecatedDependencies, latestRevisionsO)
+    val messages = ResultBuilder.calculate(filteredLibraries, plugins, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 
@@ -74,16 +75,16 @@ object Bobby {
     getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
   }
 
-  private[bobby] def prepareDependencies(dependencies: Seq[ModuleID], blackListModuleOrgs: Set[String]): Seq[ModuleID] = {
+  private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] = {
     compactDependencies(dependencies)
-      .filterNot(m => blackListModuleOrgs.contains(m.organization))
+      .filterNot(m => ignoreList.contains(m.organization))
   }
 
   private[bobby] def getLatestRepoRevisions(
                                              scalaVersion: String,
                                              compacted: Seq[ModuleID],
                                              repoSearch: RepoSearch
-                                           ): Map[ModuleID, Try[Version]] = {
+                                             ): Map[ModuleID, Try[Version]] = {
     compacted.par.map { module =>
       module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
     }.seq.toMap
@@ -98,6 +99,8 @@ object Bobby {
       .map(_._2.head)
       .toSeq
   }
+
+
 }
 
 

@@ -20,32 +20,40 @@ import java.net.URL
 
 import org.joda.time.LocalDate
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.domain.{Dependency, DeprecatedDependency, VersionRange}
+import uk.gov.hmrc.bobby.domain._
 
 import scala.io.Source
 import scala.util.parsing.json.JSON
 
-object Configuration{
+object Configuration {
 
-  val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
+  val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
   val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
 
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
-  def parseConfig(jsonConfig: String): Seq[DeprecatedDependency] = {
+  def parseConfig(jsonConfig: String): List[DeprecatedDependency] = {
     import uk.gov.hmrc.bobby.NativeJsonHelpers._
 
-    for {
-      Some(L(list)) <- List(JSON.parseFull(jsonConfig))
-      MS(map) <- list
-      organisation <- map.get("organisation")
-      name <- map.get("name")
-      range <- map.get("range")
-      reason <- map.get("reason")
-      fromString <- map.get("from")
-      fromDate = LocalDate.parse(fromString)
-    } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate)
+    (for (M(map) <- JSON.parseFull(jsonConfig)) yield {
+      (for {
+        (S(key), L(list)) <- map
+        typ = DependencyType(key)
+        if typ != Unknown
+      } yield {
+          for {
+            MS(mapS) <- list
+            organisation <- mapS.get("organisation")
+            name <- mapS.get("name")
+            range <- mapS.get("range")
+            reason <- mapS.get("reason")
+            fromString <- mapS.get("from")
+            fromDate = LocalDate.parse(fromString)
+          } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
+        }).toList.flatten
+    }).getOrElse(List.empty)
+
   }
 
   val nexusCredetials: Option[NexusCredentials] = {
@@ -71,28 +79,28 @@ object Configuration{
 }
 
 class Configuration(
-                     url:Option[URL] = None,
-                     jsonOutputFileOverride:Option[String]
-                   ) {
+                     url: Option[URL] = None,
+                     jsonOutputFileOverride: Option[String]
+                     ) {
 
   import Configuration._
 
   val timeout = 3000
   val logger = ConsoleLogger()
 
-  val bobbyConfigFile  = System.getProperty("user.home") + "/.sbt/bobby.conf"
+  val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
   val jsonOutputFile: String = (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
   val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
 
 
-  def loadDeprecatedDependencies: Seq[DeprecatedDependency] = {
+  def loadDeprecatedDependencies: DeprecatedDependencies = {
 
-    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map{ u => new URL(u) }
+    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u => new URL(u) }
 
     bobbyConfig.fold {
       logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
-      Seq.empty[DeprecatedDependency]
+      DeprecatedDependencies.EMPTY
     } { c =>
       try {
         logger.info(s"[bobby] loading deprecated dependency list from $c")
@@ -101,11 +109,12 @@ class Configuration(
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
 
-        Configuration.parseConfig(Source.fromInputStream(inputStream).mkString)
+        DeprecatedDependencies(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
+
       } catch {
         case e: Exception =>
           logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
-          Seq.empty
+          DeprecatedDependencies.EMPTY
       }
     }
   }

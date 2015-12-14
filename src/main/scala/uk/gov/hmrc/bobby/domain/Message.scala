@@ -24,22 +24,29 @@ import uk.gov.hmrc.bobby.domain.MessageLevels.{WARN, ERROR, INFO}
 
 import scala.util.{Failure, Try}
 
-object Message{
-  val tabularHeader      = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline", "Reason")
+
+sealed trait Result
+
+case object UnknownVersion extends Result
+
+case object NewVersionAvailable extends Result
+
+case object DependencyNearlyUnusable extends Result
+
+case object DependencyUnusable extends Result
+
+
+object Message {
+  val tabularHeader = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline", "Reason")
   val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline")
 
   implicit object MessageOrdering extends Ordering[Message] {
-    def compare(a:Message, b:Message) = a.level compare b.level
+    def compare(a: Message, b: Message) = a.level compare b.level
   }
+
 }
 
-sealed trait Result
-case object UnknownVersion extends Result
-case object NewVersionAvailable extends Result
-case object DependencyNearlyUnusable extends Result
-case object DependencyUnusable extends Result
-
-case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version], deprecationInfoO: Option[DeprecatedDependency]){
+case class Message(result: Result, module: ModuleID, latestRevisionT: Try[Version], deprecationInfoO: Option[DeprecatedDependency]) {
 
   val deprecationReason = deprecationInfoO.map(_.reason).getOrElse("-")
   val deprecationFrom = deprecationInfoO.map(_.from).getOrElse("-")
@@ -47,27 +54,27 @@ case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version
 
   val moduleName = s"${module.organization}.${module.name}"
 
-  val deadline:Option[LocalDate] = deprecationInfoO.map(_.from)
+  val deadline: Option[LocalDate] = deprecationInfoO.map(_.from)
 
   val (level, tabularMessage) = result match {
-    case UnknownVersion           => (INFO, s"Unable to get a latestRelease number for '${module.toString()}'")
-    case NewVersionAvailable      => (INFO, "A new version is available")
+    case UnknownVersion => (INFO, s"Unable to get a latestRelease number for '${module.toString()}'")
+    case NewVersionAvailable => (INFO, "A new version is available")
     case DependencyNearlyUnusable => (WARN, deprecationReason)
-    case DependencyUnusable       => (ERROR, deprecationReason)
+    case DependencyUnusable => (ERROR, deprecationReason)
   }
 
-  val jsonMessage:String = result match {
-    case UnknownVersion           => s"Unable to get a latestRelease number for '${module.toString()}'"
-    case NewVersionAvailable      => s"${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '$latestRevision'"
+  val jsonMessage: String = result match {
+    case UnknownVersion => s"Unable to get a latestRelease number for '${module.toString()}'"
+    case NewVersionAvailable => s"${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '$latestRevision'"
     case DependencyNearlyUnusable => s"${module.organization}.${module.name} ${module.revision} is deprecated: '$deprecationReason'. To be updated by $deprecationFrom to version $latestRevision"
-    case DependencyUnusable       => deprecationReason
+    case DependencyUnusable => deprecationReason
   }
 
   def isError: Boolean = level.equals(MessageLevels.ERROR)
 
   def rawJson = s"""{ "level" : "${level.name}", "message" : "$jsonMessage" }"""
 
-  def shortTabularOutput:Seq[String] = Seq(
+  def shortTabularOutput: Seq[String] = Seq(
     level.toString,
     moduleName,
     module.revision,
@@ -76,7 +83,7 @@ case class Message(result:Result, module: ModuleID, latestRevisionT: Try[Version
     deadline.map(_.toString).getOrElse("-")
   )
 
-  def longTabularOutput:Seq[String] = shortTabularOutput :+ tabularMessage
+  def longTabularOutput: Seq[String] = shortTabularOutput :+ tabularMessage
 
   def logOutput: (String, String) = level.name -> jsonMessage
 
