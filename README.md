@@ -2,7 +2,7 @@
 
 #Overview
 
-Bobby is an Sbt plugin that prevents outdated dependencies and plugins from being used by your project.
+Bobby is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
 #Background
 It can be hard to ensure that distributed teams upgrade to the latest version of a dependency. 
