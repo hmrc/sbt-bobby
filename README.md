@@ -5,10 +5,8 @@
 Bobby is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
 #Background
-It can be hard to ensure that distributed teams upgrade to the latest version of a dependency. 
-This is a problem when there are security fixes or other reasons to require a library to be upgraded. 
+It can be hard to ensure that distributed teams do not use versions of dependencies that may contain bugs or security flaws. Bobby provides the capability to fail builds which reference such outdated dependencies. 
 
-Bobby provides the capability to fail builds which have outdated dependencies. 
 Ideally communications will be in place to ensure updates happen but Bobby acts as a safety net of last resort.
 
 Bobby also checks your projects' dependency versions against the latest available.
