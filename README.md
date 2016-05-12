@@ -148,7 +148,7 @@ output-file = bobby-output.json
 
 ## Developing ##
 
-* The test-project folder contains a simple test projectis useful for executing the SbtBobby plugin from source against a test project. CD into the directory and run ```sbt validate```. It can also be debugged by doing ```sbt -jvm-debug 5005 validate```
+* The test-project folder contains a simple test project is useful for executing the sbt-bobby plugin from source against a test project. CD into the directory and run ```sbt validate```. It can also be debugged by doing ```sbt -jvm-debug 5005 validate```
  
 * Bobby uses [scripted](http://eed3si9n.com/testing-sbt-plugins) tests which are executed with ```sbt scripted```
 
