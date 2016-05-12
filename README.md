@@ -16,8 +16,6 @@ If undefined it skips this step
 
 Bobby is automatically run for you on ci-dev, there is no need to explicitly add it to your project. Bobby works by checking against a blacklist of dependencies (known as rules), and will fail a build if it finds any dependencies in your build that match the versions/version ranges in this list.
 
-On Jenkins, Bobby sources it's config remotely. There are seperate rule lists for ci-open and ci-dev/build. Open rules can be found at https://github.com/hmrc/bobby-open-config. Details for internal tools can be found in confluence. 
-
 Bobby will write out a summary table to the console, as well as generating report artifcats ```bobby-report.json``` and ```bobby-report.html```. This report tells you of any rule violations that are preventing your job from building, as well as highlight any dependencies that are not on the latest version that you should optionally upgrade.
 
 An example output looks like this:
@@ -70,6 +68,8 @@ Bobby config is an array of JSON objects of the form:
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
 
 #How do I change the rules used by Jenkins?
+
+On Jenkins, Bobby sources it's config remotely. There are seperate rule lists for ci-open and ci-dev/build. Open rules can be found at https://github.com/hmrc/bobby-open-config. Details for internal tools can be found in confluence. 
 
 Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests to both bobby config repositories, and once merged the new rules will take effect immediately. 
 
