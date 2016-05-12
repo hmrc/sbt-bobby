@@ -33,7 +33,8 @@ object Output {
   private def outputMessagesToConsole(messages: List[Message]): Unit = {
     val model = buildTabularOutputModel(messages)
 
-    logger.info("[bobby] Bobby info and warnings. See bobby report artefact for more info.")
+    logger.info("[bobby] Bobby info and warnings. See bobby report artefact for more details. For more information " +
+      "and documentation regarding bobby, please see the README at https://github.com/hmrc/sbt-bobby")
 
     Tabulator.formatAsStrings(Message.shortTabularHeader +: model).foreach { log =>
       logger.info(log)
