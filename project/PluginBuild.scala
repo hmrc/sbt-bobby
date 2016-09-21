@@ -37,6 +37,7 @@ object PluginBuild extends Build {
         "commons-codec" % "commons-codec" % "1.10",
         "joda-time" % "joda-time" % "2.9.1",
         "org.joda" % "joda-convert" % "1.8.1",
+        "com.typesafe" % "config" % "1.3.0",
         "com.typesafe.play" %% "play-json" % "2.3.10" % "test",
         "org.scalatest" %% "scalatest" % "2.2.4" % "test",
         "org.pegdown" % "pegdown" % "1.5.0" % "test"
