@@ -18,35 +18,30 @@ package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 
-
 sealed trait DependencyType
 
 object DependencyType {
-
   def apply(s: String): DependencyType = s match {
+    case "assets" => Asset
     case "plugins" => Plugin
     case "libraries" => Library
     case _ => Unknown
   }
-
-
-
 }
 
-
-case object Library extends DependencyType
-
+case object Asset extends DependencyType
 case object Plugin extends DependencyType
+case object Library extends DependencyType
 case object Unknown extends DependencyType
 
 case class DeprecatedDependency(dependency: Dependency, range: VersionRange, reason: String, from: LocalDate, _type: DependencyType)
 
 case class DeprecatedDependencies(dependencies: List[DeprecatedDependency] = List.empty) {
-  lazy val (plugins, libs) = dependencies.partition(_._type == Plugin)
+  val assets = dependencies.filter(_._type == Asset)
+  val plugins = dependencies.filter(_._type == Plugin)
+  val libs = dependencies.filter(_._type == Library)
 }
 
 object DeprecatedDependencies {
-
   val EMPTY = DeprecatedDependencies()
-
 }
