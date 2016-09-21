@@ -18,7 +18,6 @@ package uk.gov.hmrc.bobby.conf
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.{Library, DeprecatedDependency, VersionRange}
 
 class ConfigurationSpec extends FlatSpec with Matchers {

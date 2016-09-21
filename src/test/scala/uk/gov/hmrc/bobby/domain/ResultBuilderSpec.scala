@@ -42,7 +42,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectLibs = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(projectLibs, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectLibs, Seq.empty, None, None, deprecated)
 
     messages.head.level shouldBe ERROR
   }
@@ -50,7 +50,14 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
   it should "return error if a plugin is in the exclude range" in {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth-plugin", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth-plugin", "3.2.1"))
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
+    messages.head.level shouldBe ERROR
+  }
+
+  it should "return error if assets is in the exclude range" in {
+    val deprecated = dependencies(deprecatedNow("", "assets-frontend", "[3.2.1]", dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
     messages.head.level shouldBe ERROR
   }
 
@@ -58,7 +65,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -66,7 +73,15 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
+    messages shouldBe 'empty
+  }
+
+  it should "not return error if assets is not in the exclude range" in {
+    val deprecated = dependencies(deprecatedNow("", "assets-frontend", "[3.2.1]", dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.2"))
+
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -75,7 +90,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
 
     messages.head.level shouldBe ERROR
     messages.head.shortTabularOutput(3) shouldBe "[*-SNAPSHOT]"
@@ -86,7 +101,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
 
     messages.head.level shouldBe ERROR
     messages.head.shortTabularOutput(3) shouldBe "[*-SNAPSHOT]"
@@ -97,7 +112,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val deprecated = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
     messages shouldBe 'empty
 
   }
@@ -107,11 +122,10 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val deprecated = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
     messages shouldBe 'empty
 
   }
-
 
   it should "return error if one of several dependencies is in the exclude range" in {
 
@@ -122,15 +136,20 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectPlugins = Seq(
       new ModuleID("uk.gov.hmrc", "data-stream-plugin", "0.2.1"))
 
+    val projectAssets = Seq(
+      new ModuleID("", "assets-frontend", "0.2.1"))
 
     val deprecated = dependencies(
       deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"),
       deprecatedSoon("uk.gov.hmrc", "data-stream", "(,4.0.0]"),
-      deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)", dependencyType = Plugin)
+      deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)", dependencyType = Plugin),
+      deprecatedSoon("", "assets-frontend", "(,0.3.0]", dependencyType = Asset)
     )
 
-    val messages = ResultBuilder.calculate(projectLibraries, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(projectAssets, projectLibraries, projectPlugins, None, None, deprecated)
     messages.map(_.level).toSet shouldBe Set(WARN, ERROR)
+    messages.count(_.level == WARN) shouldBe 2
+    messages.count(_.level == ERROR) shouldBe 1
   }
 
   it should "not return error for libraries in the exclude range but not applicable yet" in {
@@ -138,7 +157,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -147,7 +166,15 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
+    messages.head.level shouldBe WARN
+  }
+
+  it should "not return error for assets in the exclude range but not applicable yet" in {
+    val deprecated = dependencies(deprecatedSoon("", "assets-frontend", "[3.2.1]", dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -156,7 +183,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -165,17 +192,24 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
     messages shouldBe 'empty
   }
 
+  it should "not return error for mandatory assets which are superseded" in {
+    val deprecated = dependencies(deprecatedNow("", "assets-frontend", "[3.2.1]", dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.2"))
+
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
+    messages shouldBe 'empty
+  }
 
   it should "produce warning message for mandatory libraries which will be enforced in the future" in {
 
     val deprecated = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -184,7 +218,16 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]", dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
+    messages.head.level shouldBe WARN
+  }
+
+    it should "produce warning message for mandatory assets which will be enforced in the future" in {
+
+    val deprecated = dependencies(deprecatedSoon("", "assets-frontend", "(,4.0.0]", dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.0"))
+
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -193,7 +236,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1)))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, None, deprecated)
 
     messages.head.longTabularOutput(0) shouldBe "ERROR"
     messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
@@ -207,11 +250,26 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val deprecated = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1), dependencyType = Plugin))
     val projectPlugins = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, Seq.empty, projectPlugins, None, None, deprecated)
 
     val pluginMessage = messages.head
     pluginMessage.longTabularOutput(0) shouldBe "ERROR"
     pluginMessage.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
+    pluginMessage.longTabularOutput(2) shouldBe "3.2.0"
+    pluginMessage.longTabularOutput(5) shouldBe "2000-01-01"
+    pluginMessage.longTabularOutput(6) shouldBe "the reason"
+  }
+
+  it should "produce error message for mandatory assets which are currently been enforced" in {
+
+    val deprecated = dependencies(deprecatedNow("", "assets-frontend", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1), dependencyType = Asset))
+    val projectPlugins = Seq(new ModuleID("", "assets-frontend", "3.2.0"))
+
+    val messages = ResultBuilder.calculate(projectPlugins, Seq.empty, Seq.empty, None, None, deprecated)
+
+    val pluginMessage = messages.head
+    pluginMessage.longTabularOutput(0) shouldBe "ERROR"
+    pluginMessage.longTabularOutput(1) shouldBe ".assets-frontend"
     pluginMessage.longTabularOutput(2) shouldBe "3.2.0"
     pluginMessage.longTabularOutput(5) shouldBe "2000-01-01"
     pluginMessage.longTabularOutput(6) shouldBe "the reason"
@@ -223,7 +281,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
     messages.head.longTabularOutput(0) shouldBe "ERROR"
   }
 
@@ -232,7 +290,20 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe WARN
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("4.3.0")
+  }
+
+  it should "show a WARN message for assets which have a newer version in a repository AND is a mandatory upgrade soon" in {
+    val deprecated = dependencies(deprecatedSoon("", "assets-frontend", "(,4.0.0]", dependencyType = Asset))
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Success(Version("4.3.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
 
     messages.size shouldBe 1
     messages.head.level shouldBe WARN
@@ -245,7 +316,20 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
+
+    messages.size shouldBe 1
+    messages.head.level shouldBe INFO
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("3.3.0")
+  }
+
+  it should "show an INFO message for assets which has a newer version in a repository" in {
+    val deprecated = DeprecatedDependencies.EMPTY
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Success(Version("3.3.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
 
     messages.size shouldBe 1
     messages.head.level shouldBe INFO
@@ -258,7 +342,17 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.2.1")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
+
+    messages shouldBe 'empty
+  }
+
+  it should "not show a message if assets is up-to-date" in {
+    val deprecated = DeprecatedDependencies.EMPTY
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Success(Version("3.2.1")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
 
     messages shouldBe 'empty
   }
@@ -268,7 +362,19 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Failure(new Exception("not-found")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
+
+    messages.head.level shouldBe INFO
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("not-found")
+  }
+
+  it should "show an INFO message for assets for which the latest nexus revision is unknown and show 'not-found' in the results table" in {
+    val deprecated = DeprecatedDependencies.EMPTY
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Failure(new Exception("not-found")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
 
     messages.head.level shouldBe INFO
     messages.head.shortTabularOutput should contain("3.2.1")
@@ -280,7 +386,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.8.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
 
     messages.head.level shouldBe WARN
     messages.head.shortTabularOutput should contain("(,4.0.0]")
@@ -289,14 +395,40 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     messages.head.shortTabularOutput should not contain "4.0.0"
   }
 
-  it should "not show an eariler version of a mandatory library if the latest was not found in a repository" in {
+  it should "show an WARN message for assets which will be deprecated soon AND has a newer version in a repository" in {
+    val deprecated = dependencies(deprecatedSoon("", "assets-frontend", "(,4.0.0]", dependencyType = Asset))
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Success(Version("3.8.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
+
+    messages.head.level shouldBe WARN
+    messages.head.shortTabularOutput should contain("(,4.0.0]")
+    messages.head.shortTabularOutput should contain("3.2.1")
+    messages.head.shortTabularOutput should contain("3.8.0")
+    messages.head.shortTabularOutput should not contain "4.0.0"
+  }
+
+  it should "not show an earlier version of a mandatory library if the latest was not found in a repository" in {
     val deprecated = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
     val projectDependencies = Seq(new ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies = Map(new ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("1.0.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Seq.empty, projectDependencies, Seq.empty, None, Some(repoDependencies), deprecated)
 
     messages.head.shortTabularOutput should not contain "1.0.0"
     messages.head.shortTabularOutput should not contain "3.1.0"
   }
+
+  it should "not show an earlier version of a mandatory asset if the latest was not found in a repository" in {
+    val deprecated = dependencies(deprecatedSoon("", "assets-frontend", "(,4.0.0]", dependencyType = Asset))
+    val projectDependencies = Seq(new ModuleID("", "assets-frontend", "3.2.1"))
+    val repoDependencies = Map(new ModuleID("", "assets-frontend", "3.2.1") -> Success(Version("1.0.0")))
+
+    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Seq.empty, Some(repoDependencies), None, deprecated)
+
+    messages.head.shortTabularOutput should not contain "1.0.0"
+    messages.head.shortTabularOutput should not contain "3.1.0"
+  }
+
 }
