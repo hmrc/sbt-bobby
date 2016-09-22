@@ -147,9 +147,7 @@ class ResultBuilderSpec extends FlatSpec with Matchers {
     )
 
     val messages = ResultBuilder.calculate(projectAssets, projectLibraries, projectPlugins, None, None, deprecated)
-    messages.map(_.level).toSet shouldBe Set(WARN, ERROR)
-    messages.count(_.level == WARN) shouldBe 2
-    messages.count(_.level == ERROR) shouldBe 1
+    messages.map(_.level) shouldBe Seq(WARN, ERROR, WARN)
   }
 
   it should "not return error for libraries in the exclude range but not applicable yet" in {
