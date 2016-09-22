@@ -1,0 +1,11 @@
+{
+  "assets": [
+    {
+      "organisation": "",
+      "name": "assets-frontend",
+      "range": "[1.225.0]",
+      "reason": "expires",
+      "from": "2099-01-01"
+    }
+  ]
+}
