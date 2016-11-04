@@ -22,8 +22,6 @@ import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.MessageBuilder._
 import uk.gov.hmrc.bobby.domain._
 
-
-
 class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
 
     "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
@@ -40,6 +38,15 @@ class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
       rows.size shouldBe 2
       (rows.head \ "level").as[String] shouldBe "ERROR"
       (rows.head \ "message").as[String] shouldBe "-"
+
+      val rowData: JsValue = (rows.head \ "data").as[JsValue]
+      (rowData \ "name").as[String] shouldBe "name"
+      (rowData \ "organisation").as[String] shouldBe "org"
+      (rowData \ "revision").as[String] shouldBe "0.0.0"
+      (rowData \ "result").as[String] shouldBe "DependencyUnusable"
+      (rowData \ "deprecationFrom").as[String] shouldBe "-"
+      (rowData \ "deprecationReason").as[String] shouldBe "-"
+      (rowData \ "latestRevision").as[String] shouldBe "-"
 
       (rows(1) \ "level").as[String] shouldBe "WARN"
     }
