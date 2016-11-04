@@ -18,11 +18,10 @@ package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.Helpers
-import Helpers._
-import uk.gov.hmrc.bobby.domain.MessageLevels.{WARN, ERROR, INFO}
+import uk.gov.hmrc.bobby.Helpers._
+import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 
-import scala.util.{Failure, Try}
+import scala.util.Try
 
 
 sealed trait Result
@@ -72,7 +71,19 @@ case class Message(result: Result, module: ModuleID, latestRevisionT: Try[Versio
 
   def isError: Boolean = level.equals(MessageLevels.ERROR)
 
-  def rawJson = s"""{ "level" : "${level.name}", "message" : "$jsonMessage" }"""
+  def rawJson =
+    s"""{ "level" : "${level.name}",
+       |  "message" : "$jsonMessage",
+       |  "data": {
+       |    "organisation" : "${module.organization}",
+       |    "name" : "${module.name}",
+       |    "revision" : "${module.revision}",
+       |    "result" : "$result",
+       |    "deprecationFrom" : "$deprecationFrom",
+       |    "deprecationReason" : "$deprecationReason",
+       |    "latestRevision" : "$latestRevision"
+       |  }
+       |}""".stripMargin
 
   def shortTabularOutput: Seq[String] = Seq(
     level.toString,
