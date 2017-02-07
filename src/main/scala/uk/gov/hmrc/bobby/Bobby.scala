@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.bobby
 
-import java.net.URL
-
-import org.joda.time.LocalDate
 import sbt._
+import java.net.URL
+import scala.util.Try
+import com.typesafe.config.ConfigFactory
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
-import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.conf.{ApplicationConfig, Configuration}
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.{Output, JsonOutingFileWriter, Tabulator, TextOutingFileWriter}
 import uk.gov.hmrc.bobby.repos.Repositories
-
-import scala.util.Try
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
@@ -42,6 +40,16 @@ object Bobby {
     "org.scala-lang"
   )
 
+  val assetsDependencies = {
+    val appConf = ConfigFactory.parseFile(new File("conf/application.conf"))
+    val applicationConfig = new ApplicationConfig(appConf)
+    val assetsFrontendVersion = applicationConfig.assetsFrontendVersion
+
+    if (assetsFrontendVersion.isDefined) {
+      Seq(ModuleID("", "assets-frontend", assetsFrontendVersion.get))
+    } else Seq.empty[ModuleID]
+  }
+
   def validateDependencies(libraries: Seq[ModuleID],
                            plugins: Seq[ModuleID],
                            scalaVersion: String,
@@ -53,16 +61,19 @@ object Bobby {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
     val filteredLibraries = filterDependencies(libraries, ignoredOrgs)
 
     val latestLibraryRevisionsO = if (checkForLatest) {
-      Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
+      Some(findLatestVersions(Some(scalaVersion), reposValue, filteredLibraries))
     } else None
 
-    val messages = ResultBuilder.calculate(filteredLibraries, plugins, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
+    val latestAssetsRevision = if (checkForLatest) {
+      Some(findLatestVersions(None, reposValue, assetsDependencies))
+    } else None
+
+    val messages = ResultBuilder.calculate(assetsDependencies, filteredLibraries, plugins, latestAssetsRevision, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 
@@ -70,7 +81,7 @@ object Bobby {
       throw new BobbyValidationFailedException("See previous bobby output for more information")
   }
 
-  def findLatestVersions(scalaVersion: String, repositoriesToCheck: Seq[Repo], prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
+  def findLatestVersions(scalaVersion: Option[String], repositoriesToCheck: Seq[Repo], prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
     val repoSearch = Repositories.buildAggregateRepositories(repositoriesToCheck)
     getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
   }
@@ -81,12 +92,12 @@ object Bobby {
   }
 
   private[bobby] def getLatestRepoRevisions(
-                                             scalaVersion: String,
+                                             scalaVersion: Option[String],
                                              compacted: Seq[ModuleID],
                                              repoSearch: RepoSearch
                                              ): Map[ModuleID, Try[Version]] = {
     compacted.par.map { module =>
-      module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
+      module -> repoSearch.findLatestRevision(module, scalaVersion)
     }.seq.toMap
   }
 
@@ -99,6 +110,5 @@ object Bobby {
       .map(_._2.head)
       .toSeq
   }
-
 
 }

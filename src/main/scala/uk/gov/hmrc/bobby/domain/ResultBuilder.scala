@@ -25,13 +25,13 @@ object ResultBuilder {
 
   val logger = ConsoleLogger()
 
-  def calculate(projectLibraries: Seq[ModuleID], projectPlugins: Seq[ModuleID], latestRepoLibraries: Option[Map[ModuleID, Try[Version]]], deprecatedDependencies: DeprecatedDependencies): List[Message] = {
+  def calculate(assetsDependencies: Seq[ModuleID], projectLibraries: Seq[ModuleID], projectPlugins: Seq[ModuleID], latestAssetsRevision: Option[Map[ModuleID, Try[Version]]], latestRepoLibraries: Option[Map[ModuleID, Try[Version]]], deprecatedDependencies: DeprecatedDependencies): List[Message] = {
 
+    val assetsMessages = libraryMessages(assetsDependencies, latestAssetsRevision, deprecatedDependencies.assets)
     val pluginMessages = checkMandatoryMessages(deprecatedDependencies.plugins, projectPlugins)
     val libMessages = libraryMessages(projectLibraries, latestRepoLibraries, deprecatedDependencies.libs)
 
-    (pluginMessages ::: libMessages).sortBy(_.moduleName)
-
+    (assetsMessages ::: pluginMessages ::: libMessages).sortBy(_.moduleName)
   }
 
   private def libraryMessages(projectLibraries: Seq[ModuleID], latestRepoLibraries: Option[Map[ModuleID, Try[Version]]], deprecatedLibraries: List[DeprecatedDependency]): List[Message] = {

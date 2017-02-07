@@ -18,8 +18,7 @@ package uk.gov.hmrc.bobby.conf
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{Library, DeprecatedDependency, VersionRange}
+import uk.gov.hmrc.bobby.domain.{Asset, Library, Plugin, VersionRange}
 
 class ConfigurationSpec extends FlatSpec with Matchers {
 
@@ -28,8 +27,11 @@ class ConfigurationSpec extends FlatSpec with Matchers {
     val c = Configuration.parseConfig(
       """
         |{
+        |"assets":[
+        | { "organisation" : "", "name" : "some-assets", "range" : "(,1.0.0)", "reason" : "1.0.0 is outdated", "from" : "2015-01-02" }
+        |],
         |"libraries":[
-        |   { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
+        | { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
         |],
         |"plugins": [
         | { "organisation" : "uk.gov.hmrc", "name" : "some-plugin", "range" : "(,1.0.0)", "reason" : "1.0.0 is outdated", "from" : "2015-01-02" }
@@ -40,9 +42,17 @@ class ConfigurationSpec extends FlatSpec with Matchers {
         |}
       """.stripMargin)
 
-    c should have size 2
+    c should have size 3
 
-    val (libs, plugins) = c.partition(_._type == Library)
+    val libs = c.filter(_._type == Library)
+    val assets = c.filter(_._type == Asset)
+    val plugins = c.filter(_._type == Plugin)
+
+    assets.head.dependency.organisation shouldBe ""
+    assets.head.dependency.name shouldBe "some-assets"
+    assets.head.range shouldBe VersionRange("(,1.0.0)")
+    assets.head.reason shouldBe "1.0.0 is outdated"
+    assets.head.from shouldBe new LocalDate(2015, 1, 2)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.head.dependency.name shouldBe "some-frontend"

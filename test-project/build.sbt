@@ -10,7 +10,6 @@ resolvers += Resolver.bintrayRepo("hmrc", "releases")
 deprecatedDependenciesUrl := Some(file("dependencies.json").toURL)
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "1.2.0",
   "org.pegdown" % "pegdown" % "1.3.0",
   "org.jsoup" % "jsoup" % "1.6.0",
   "uk.gov.hmrc" %% "play-reactivemongo" % "3.2.0",
@@ -23,7 +22,6 @@ libraryDependencies ++= Seq(
   "uk.gov.hmrc" %% "frontend-bootstrap" % "1.2.1",
   "uk.gov.hmrc" %% "play-partials" % "1.6.0",
   "uk.gov.hmrc" %% "play-authorised-frontend" % "1.2.0",
-  "uk.gov.hmrc" %% "play-config" % "1.0.0",
   "uk.gov.hmrc" %% "play-json-logger" % "1.0.0",
   "uk.gov.hmrc" %% "play-ui" % "1.11.0",
   "uk.gov.hmrc" %% "url-builder" % "0.6.0",

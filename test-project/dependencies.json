@@ -1,4 +1,13 @@
 {
+  "assets": [
+    {
+      "organisation": "*",
+      "name": "assets-frontend",
+      "range": "[1.225.0]",
+      "reason": "deprecated",
+      "from": "2010-09-30"
+    }
+  ],
   "libraries": [
     {
       "organisation": "*",

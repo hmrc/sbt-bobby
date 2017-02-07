@@ -54,6 +54,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     validate := {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
+
       Bobby.validateDependencies(
         libraryDependencies.value,
         ProjectPlugin.plugins(buildStructure.value),
