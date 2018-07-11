@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,14 @@ object Repositories {
   }
 
   def buildRepos(repos:Seq[Repo]):Seq[Option[RepoSearch]]={
-    repos map {
-      case BobbyKeys.Bintray => Some(HmrcBintray)
-      case BobbyKeys.Nexus   => Nexus(Configuration.nexusCredetials)
-      case BobbyKeys.Maven   => Some(Maven)
+    repos flatMap {
+      case BobbyKeys.Bintray => Seq(Some(HmrcBintray))
+      case BobbyKeys.Nexus   => Seq(Nexus(Configuration.nexusCredetials))
+      case BobbyKeys.Maven   => Seq(Some(Maven))
+      case BobbyKeys.Artifactory => Seq(
+        Configuration.artifactoryUri.map(new HmrcArtifactory(_)),
+        Configuration.artifactoryUri.map(new ThirdPartyArtifactory(_))
+      )
     }
   }
 

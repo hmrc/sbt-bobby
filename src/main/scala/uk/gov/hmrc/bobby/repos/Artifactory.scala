@@ -18,28 +18,42 @@ package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 
-import sbt.ModuleID
+import sbt.{CrossVersion, ModuleID}
 import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 import uk.gov.hmrc.bobby.{Helpers, Http}
 
-import scala.util.{Failure, Try}
+import scala.util.Try
 import scala.xml.XML
 
-object HmrcBintray extends RepoSearch {
+class HmrcArtifactory(val baseUrl: String) extends Artifactory {
+  override val repository: String = "hmrc-releases"
+}
 
-  val repoName = "Bintray"
+class ThirdPartyArtifactory(val baseUrl: String) extends Artifactory {
+  override val repository: String = "third-party-maven-releases"
+}
+
+trait Artifactory extends RepoSearch {
+
+  override val repoName = "Artifactory"
+
+  val baseUrl: String
+
+  val repository: String
 
   def latestVersion(xmlString: String): Option[Version] = {
 
     (XML.loadString(xmlString) \ "versioning" \ "latest")
       .headOption.map(_.text.trim)
-      .map { Version.apply }
+      .map {
+        Version.apply
+      }
   }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL = {
-    val moduleNameSuffix = scalaVersion.map { sv => s"_$sv"}.getOrElse("")
-
-    new URL(s"https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml")
+    val moduleNameSuffix = if (versionInformation.crossVersion == CrossVersion.Disabled) "" else scalaVersion.map { sv => s"_$sv" }.getOrElse("")
+    val url = s"$baseUrl/$repository/${versionInformation.organization.replaceAll("\\.", "/")}/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml"
+    new URL(url)
   }
 
   def query(url: URL): Try[Option[Version]] = {
@@ -52,15 +66,9 @@ object HmrcBintray extends RepoSearch {
   override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
     import Helpers._
 
-    versionInformation.organization match {
-
-      case "uk.gov.hmrc" => {
-        query(buildSearchUrl(versionInformation, scalaVersion)).flatMap{ ov =>
-          ov.toTry(new Exception("didn't find version in Bintray"))
-        }
-      }
-
-      case _ => Failure(new Exception("(non-hmrc)"))
+    query(buildSearchUrl(versionInformation, scalaVersion)).flatMap { ov =>
+      ov.toTry(new Exception(s"didn't find version in $repoName"))
     }
+
   }
 }

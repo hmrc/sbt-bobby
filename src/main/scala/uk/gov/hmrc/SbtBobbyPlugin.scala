@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package uk.gov.hmrc
 
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.{ProjectPlugin, Bobby}
+import uk.gov.hmrc.bobby.{Bobby, ProjectPlugin}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -28,6 +28,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     sealed trait Repo
     object Bintray extends Repo
+    object Artifactory extends Repo
     object Nexus extends Repo
     object Maven extends Repo
 
@@ -48,7 +49,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
     parallelExecution in GlobalScope := true,
 
-    repositories := Seq(Nexus, Bintray),
+    repositories := Seq(Artifactory, Bintray),
 
     checkForLatest := true,
 
