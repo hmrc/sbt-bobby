@@ -23,7 +23,7 @@ import sbt._
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{Output, JsonOutingFileWriter, Tabulator, TextOutingFileWriter}
+import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, Output, Tabulator, TextOutingFileWriter}
 import uk.gov.hmrc.bobby.repos.Repositories
 
 import scala.util.Try
@@ -32,7 +32,7 @@ class BobbyValidationFailedException(message: String) extends RuntimeException(m
 
 object Bobby {
 
-  private val logger = ConsoleLogger()
+  private val logger         = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
   val ignoredOrgs = Set(
@@ -42,17 +42,17 @@ object Bobby {
     "org.scala-lang"
   )
 
-  def validateDependencies(libraries: Seq[ModuleID],
-                           plugins: Seq[ModuleID],
-                           scalaVersion: String,
-                           reposValue: Seq[Repo],
-                           checkForLatest: Boolean,
-                           deprecatedDependenciesUrl: Option[URL] = None,
-                           jsonOutputFileOverride: Option[String] = None,
-                           isSbtProject: Boolean = false) = {
+  def validateDependencies(
+    libraries: Seq[ModuleID],
+    plugins: Seq[ModuleID],
+    scalaVersion: String,
+    reposValue: Seq[Repo],
+    checkForLatest: Boolean,
+    deprecatedDependenciesUrl: Option[URL] = None,
+    jsonOutputFileOverride: Option[String] = None,
+    isSbtProject: Boolean                  = false) = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
-
 
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
@@ -62,7 +62,8 @@ object Bobby {
       Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
     } else None
 
-    val messages = ResultBuilder.calculate(filteredLibraries, plugins, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
+    val messages =
+      ResultBuilder.calculate(filteredLibraries, plugins, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 
@@ -70,26 +71,29 @@ object Bobby {
       throw new BobbyValidationFailedException("See previous bobby output for more information")
   }
 
-  def findLatestVersions(scalaVersion: String, repositoriesToCheck: Seq[Repo], prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
+  def findLatestVersions(
+    scalaVersion: String,
+    repositoriesToCheck: Seq[Repo],
+    prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
     val repoSearch = Repositories.buildAggregateRepositories(repositoriesToCheck)
     getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
   }
 
-  private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] = {
+  private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] =
     compactDependencies(dependencies)
       .filterNot(m => ignoreList.contains(m.organization))
-  }
 
   private[bobby] def getLatestRepoRevisions(
-                                             scalaVersion: String,
-                                             compacted: Seq[ModuleID],
-                                             repoSearch: RepoSearch
-                                             ): Map[ModuleID, Try[Version]] = {
-    compacted.par.map { module =>
-      module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
-    }.seq.toMap
-  }
-
+    scalaVersion: String,
+    compacted: Seq[ModuleID],
+    repoSearch: RepoSearch
+  ): Map[ModuleID, Try[Version]] =
+    compacted.par
+      .map { module =>
+        module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
+      }
+      .seq
+      .toMap
 
   private[bobby] def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
     def orgAndName(d: ModuleID) = s"${d.organization}.${d.name}"
@@ -99,6 +103,5 @@ object Bobby {
       .map(_._2.head)
       .toSeq
   }
-
 
 }

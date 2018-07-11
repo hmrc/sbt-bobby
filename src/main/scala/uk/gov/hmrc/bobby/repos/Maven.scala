@@ -26,32 +26,29 @@ import scala.xml.{NodeSeq, XML}
 import uk.gov.hmrc.bobby.Helpers._
 
 //TODO retry without scala version for java libraries
-object Maven extends RepoSearch{
-  
+object Maven extends RepoSearch {
+
   import Version._
 
   val repoName = "Maven"
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
-    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion))).flatMap{ ov =>
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
+    query(buildSearchUrl(getSearchTerms(versionInformation, scalaVersion))).flatMap { ov =>
       ov.toTry(new Exception("(try Bintray)"))
     }
-  }
 
-
-  def buildSearchUrl(searchQuery: String) = s"http://search.maven.org/solrsearch/select?q=$searchQuery%22&core=gav&rows=20&wt=xml"
+  def buildSearchUrl(searchQuery: String) =
+    s"http://search.maven.org/solrsearch/select?q=$searchQuery%22&core=gav&rows=20&wt=xml"
 
   private def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
     val scalaSuffix = maybeScalaVersion.map(s => "_" + s) getOrElse ""
     s"g:%22${versionInformation.organization}%22%20AND%20a:%22${versionInformation.name}$scalaSuffix"
   }
 
-
-  def parseVersions(xml: NodeSeq): Seq[Version] = {
-    (xml \ "result" \ "doc" \ "str" )
+  def parseVersions(xml: NodeSeq): Seq[Version] =
+    (xml \ "result" \ "doc" \ "str")
       .filter(n => (n \ "@name").text.trim == "v")
       .map(v => Version(v.text.trim))
-  }
 
   private def query(url: String): Try[Option[Version]] = Try {
     parseVersions(XML.load(new URL(url)))

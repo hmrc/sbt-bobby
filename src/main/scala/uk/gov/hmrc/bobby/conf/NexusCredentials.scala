@@ -20,5 +20,6 @@ case class NexusCredentials(host: String, username: String, password: String) {
 
   import java.net.URLEncoder.encode
 
-  def buildSearchUrl(searchQuery: String) = s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@${host}/service/local/lucene/search?a=$searchQuery"
+  def buildSearchUrl(searchQuery: String) =
+    s"https://${encode(username, "UTF-8")}:${encode(password, "UTF-8")}@$host/service/local/lucene/search?a=$searchQuery"
 }

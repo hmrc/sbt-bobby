@@ -16,43 +16,39 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{TryValues, FlatSpec, Matchers}
+import org.scalatest.{FlatSpec, Matchers, TryValues}
 import sbt.ModuleID
 
 import scala.util.{Failure, Success, Try}
 
-
 class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
 
   val timeRepo = new RepoSearch {
-    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
+    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
       if (versionInformation.name == "time")
         Success(Version("3.2.1"))
       else
         Failure(new Exception("error"))
-    }
 
     override def repoName: String = "timeRepo"
   }
 
   val timeRepo2 = new RepoSearch {
-    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
+    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
       if (versionInformation.name == "time")
         Success(Version("4.0.0"))
       else
         Failure(new Exception("error"))
-    }
 
     override def repoName: String = "timeRepo"
   }
 
   val domainRepo = new RepoSearch {
-    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
+    override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
       if (versionInformation.name == "domain")
         Success(Version("3.0.0"))
       else
         Failure(new Exception("error"))
-    }
 
     override def repoName: String = "domainRepo"
 
@@ -60,27 +56,26 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
 
   "AggregateRepoSearch" should "find the most recent version" in {
 
-      val aggregateSearch = new AggregateRepoSearch {
-        override def repoName: String = "test"
+    val aggregateSearch = new AggregateRepoSearch {
+      override def repoName: String = "test"
 
-        override def repos: Seq[RepoSearch] = Seq(timeRepo2, timeRepo)
-      }
-
-      aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("4.0.0"))
+      override def repos: Seq[RepoSearch] = Seq(timeRepo2, timeRepo)
     }
 
-  "AggregateRepoSearch" should  "look in two repositories to find a dependency" in {
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("4.0.0"))
+  }
 
-      val aggregateSearch = new AggregateRepoSearch {
-        override def repoName: String = "test"
+  "AggregateRepoSearch" should "look in two repositories to find a dependency" in {
 
-        override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
-      }
+    val aggregateSearch = new AggregateRepoSearch {
+      override def repoName: String = "test"
 
-
-      aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("3.2.1"))
-      aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None) shouldBe Success(Version("3.0.0"))
-      aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None).isFailure shouldBe true
+      override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
     }
+
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None)            shouldBe Success(Version("3.2.1"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None)          shouldBe Success(Version("3.0.0"))
+    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None).isFailure shouldBe true
+  }
 
 }

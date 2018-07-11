@@ -23,14 +23,15 @@ import uk.gov.hmrc.bobby.Helpers
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.RepoSearch
 
-import scala.util.{Success, Failure, Try}
+import scala.util.{Failure, Success, Try}
 import scala.xml.{NodeSeq, XML}
 
-
 object Nexus {
-  def apply(credentials: Option[NexusCredentials]): Option[Nexus] = credentials.map(c => new Nexus {
-    override val nexus: NexusCredentials = c
-  })
+  def apply(credentials: Option[NexusCredentials]): Option[Nexus] =
+    credentials.map(c =>
+      new Nexus {
+        override val nexus: NexusCredentials = c
+    })
 }
 
 trait Nexus extends RepoSearch {
@@ -44,7 +45,7 @@ trait Nexus extends RepoSearch {
 
   val nexus: NexusCredentials
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
     import Helpers._
 
     versionInformation.organization match {
@@ -52,7 +53,7 @@ trait Nexus extends RepoSearch {
       case "uk.gov.hmrc" => Failure(new Exception("(hmrc-lib)"))
 
       case _ => {
-        executeQuery(versionInformation, scalaVersion).flatMap{ ov =>
+        executeQuery(versionInformation, scalaVersion).flatMap { ov =>
           val nonScalaVersionResult: Try[Option[Version]] = (scalaVersion, ov) match {
 
             case (Some(_), None) => {
@@ -67,9 +68,8 @@ trait Nexus extends RepoSearch {
     }
   }
 
-  def executeQuery(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] ={
+  def executeQuery(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Option[Version]] =
     queryNexus(nexus.buildSearchUrl(getSearchTerms(versionInformation, scalaVersion)))
-  }
 
   def parseVersions(xml: NodeSeq): Seq[Version] = {
     val nodes = xml \ "data" \ "artifact" \ "version"
@@ -83,11 +83,10 @@ trait Nexus extends RepoSearch {
       .headOption
   }
 
-  def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String = {
+  def getSearchTerms(versionInformation: ModuleID, maybeScalaVersion: Option[String]): String =
     maybeScalaVersion match {
-      case Some(sv) => s"${versionInformation.name}_${sv}&g=${versionInformation.organization}"
+      case Some(sv) => s"${versionInformation.name}_$sv&g=${versionInformation.organization}"
       case None     => s"${versionInformation.name}&g=${versionInformation.organization}"
     }
-  }
 
 }

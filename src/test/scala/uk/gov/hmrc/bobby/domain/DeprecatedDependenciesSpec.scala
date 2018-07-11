@@ -17,22 +17,31 @@
 package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
-import org.scalatest.{Matchers, FlatSpec, WordSpec}
+import org.scalatest.{FlatSpec, Matchers, WordSpec}
 
-class DeprecatedDependenciesSpec extends FlatSpec with Matchers{
-
+class DeprecatedDependenciesSpec extends FlatSpec with Matchers {
 
   "DeprecatedDependencies" should "filter plugin and lib dependencies" in {
 
     val now = new LocalDate()
     val dependencies: List[DeprecatedDependency] = List(
-      DeprecatedDependency(Dependency("uk.gov.hmrc", "some-service"), VersionRange("(,1.0.0]"), "testing", now, Library),
-      DeprecatedDependency(Dependency("uk.gov.hmrc", "some-service"), VersionRange("(,1.0.0]"), "testing", now, Library),
+      DeprecatedDependency(
+        Dependency("uk.gov.hmrc", "some-service"),
+        VersionRange("(,1.0.0]"),
+        "testing",
+        now,
+        Library),
+      DeprecatedDependency(
+        Dependency("uk.gov.hmrc", "some-service"),
+        VersionRange("(,1.0.0]"),
+        "testing",
+        now,
+        Library),
       DeprecatedDependency(Dependency("uk.gov.hmrc", "some-service"), VersionRange("(,1.0.0]"), "testing", now, Plugin)
     )
     val deps = DeprecatedDependencies(dependencies)
 
-    deps.libs should be(dependencies.take(2))
+    deps.libs    should be(dependencies.take(2))
     deps.plugins should be(dependencies.takeRight(1))
   }
 

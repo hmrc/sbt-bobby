@@ -20,19 +20,24 @@ import org.scalatest.{FlatSpec, Matchers, OptionValues}
 import sbt.{CrossVersion, ModuleID}
 import uk.gov.hmrc.bobby.domain.Version
 
-
-class ArtifactorySpec extends FlatSpec with Matchers with OptionValues{
+class ArtifactorySpec extends FlatSpec with Matchers with OptionValues {
 
   "Artifactory build search url" should "build the Artifactory URL including scala version" in {
-    new HmrcArtifactory("https://somehost").buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0", crossVersion = CrossVersion.binary), Some("2.11")).toString shouldBe "https://somehost/hmrc-releases/uk/gov/hmrc/time_2.11/maven-metadata.xml"
+    new HmrcArtifactory("https://somehost")
+      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0", crossVersion = CrossVersion.binary), Some("2.11"))
+      .toString shouldBe "https://somehost/hmrc-releases/uk/gov/hmrc/time_2.11/maven-metadata.xml"
   }
 
   "Artifactory build search url" should "build the Artifactory URL not including scala version" in {
-    new HmrcArtifactory("https://somehost").buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None).toString shouldBe "https://somehost/hmrc-releases/uk/gov/hmrc/time/maven-metadata.xml"
+    new HmrcArtifactory("https://somehost")
+      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None)
+      .toString shouldBe "https://somehost/hmrc-releases/uk/gov/hmrc/time/maven-metadata.xml"
   }
 
   "Artifactory search" should "not return search results for a non-hmrc library" in {
-    new ThirdPartyArtifactory("https://somehost").buildSearchUrl(ModuleID("non.hmrc", "x", "0.1"), None).toString shouldBe "https://somehost/third-party-maven-releases/non/hmrc/x/maven-metadata.xml"
+    new ThirdPartyArtifactory("https://somehost")
+      .buildSearchUrl(ModuleID("non.hmrc", "x", "0.1"), None)
+      .toString shouldBe "https://somehost/third-party-maven-releases/non/hmrc/x/maven-metadata.xml"
   }
 
   "Artifactory search" should "get versions from Artifactory search results" in {

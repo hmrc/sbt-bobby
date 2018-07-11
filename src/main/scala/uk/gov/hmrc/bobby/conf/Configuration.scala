@@ -27,7 +27,7 @@ import scala.util.parsing.json.JSON
 
 object Configuration {
 
-  val credsFile = System.getProperty("user.home") + "/.sbt/.credentials"
+  val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
   val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
 
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
@@ -42,16 +42,16 @@ object Configuration {
         typ = DependencyType(key)
         if typ != Unknown
       } yield {
-          for {
-            MS(mapS) <- list
-            organisation <- mapS.get("organisation")
-            name <- mapS.get("name")
-            range <- mapS.get("range")
-            reason <- mapS.get("reason")
-            fromString <- mapS.get("from")
-            fromDate = LocalDate.parse(fromString)
-          } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
-        }).toList.flatten
+        for {
+          MS(mapS)     <- list
+          organisation <- mapS.get("organisation")
+          name         <- mapS.get("name")
+          range        <- mapS.get("range")
+          reason       <- mapS.get("reason")
+          fromString   <- mapS.get("from")
+          fromDate = LocalDate.parse(fromString)
+        } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
+      }).toList.flatten
     }).getOrElse(List.empty)
 
   }
@@ -60,8 +60,8 @@ object Configuration {
     val ncf = new ConfigFile(credsFile)
 
     for {
-      host <- ncf.get("host")
-      user <- ncf.get("user")
+      host     <- ncf.get("host")
+      user     <- ncf.get("user")
       password <- ncf.get("password")
 
     } yield NexusCredentials(host, user, password)
@@ -71,7 +71,7 @@ object Configuration {
     val bncf = new ConfigFile(bintrayCredsFile)
 
     for {
-      user <- bncf.get("user")
+      user     <- bncf.get("user")
       password <- bncf.get("password")
 
     } yield BintrayCredentials(user, password)
@@ -81,27 +81,30 @@ object Configuration {
 }
 
 class Configuration(
-                     url: Option[URL] = None,
-                     jsonOutputFileOverride: Option[String]
-                     ) {
+  url: Option[URL] = None,
+  jsonOutputFileOverride: Option[String]
+) {
 
   import Configuration._
 
   val timeout = 3000
-  val logger = ConsoleLogger()
+  val logger  = ConsoleLogger()
 
   val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
-  val jsonOutputFile: String = (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
+  val jsonOutputFile: String =
+    (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
   val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
-
 
   def loadDeprecatedDependencies: DeprecatedDependencies = {
 
-    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u => new URL(u) }
+    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u =>
+      new URL(u)
+    }
 
     bobbyConfig.fold {
-      logger.warn(s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
+      logger.warn(
+        s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
       DeprecatedDependencies.EMPTY
     } { c =>
       try {

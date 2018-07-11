@@ -21,13 +21,13 @@ import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
 
-class NexusSpec extends FlatSpec with Matchers with OptionValues{
+class NexusSpec extends FlatSpec with Matchers with OptionValues {
 
   object NexusUnderTest extends Nexus {
-    override val nexus: NexusCredentials = NexusCredentials("","","")
+    override val nexus: NexusCredentials = NexusCredentials("", "", "")
   }
 
-  private val moduleId: ModuleID = (new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
+  private val moduleId: ModuleID           = (new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
   private val scalaVersion: Option[String] = Some("2.11")
 
   it should "construct nexus search query parameters which in the Scala version if provided" ignore {
@@ -47,7 +47,7 @@ class NexusSpec extends FlatSpec with Matchers with OptionValues{
   }
 
   "Nexus lucene client" should "get versions from Nexus search results" in {
-    NexusUnderTest.parseVersions(xml) shouldBe Seq(Version(2,2,3, Some(Right("SNAP1"))), Version(2,2,2))
+    NexusUnderTest.parseVersions(xml) shouldBe Seq(Version(2, 2, 3, Some(Right("SNAP1"))), Version(2, 2, 2))
   }
 
   val xml = <searchNGResponse>

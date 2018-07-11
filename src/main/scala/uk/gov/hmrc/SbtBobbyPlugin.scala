@@ -32,27 +32,25 @@ object SbtBobbyPlugin extends AutoPlugin {
     object Nexus extends Repo
     object Maven extends Repo
 
-    lazy val validate = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
+    lazy val validate     = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
     lazy val repositories = SettingKey[Seq[Repo]]("repositories", "The repositories to check, in order")
-    lazy val checkForLatest = SettingKey[Boolean]("checkForLatest", "Check against various repositories to compare project dependency versions agains latest available")
-    lazy val deprecatedDependenciesUrl = SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
-    lazy val jsonOutputFileOverride = SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
+    lazy val checkForLatest = SettingKey[Boolean](
+      "checkForLatest",
+      "Check against various repositories to compare project dependency versions agains latest available")
+    lazy val deprecatedDependenciesUrl =
+      SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
+    lazy val jsonOutputFileOverride =
+      SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
   }
 
   import BobbyKeys._
 
   override lazy val projectSettings = Seq(
-
     deprecatedDependenciesUrl := None,
-
     jsonOutputFileOverride := None,
-
     parallelExecution in GlobalScope := true,
-
     repositories := Seq(Artifactory, Bintray),
-
     checkForLatest := true,
-
     validate := {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
       Bobby.validateDependencies(
@@ -63,7 +61,8 @@ object SbtBobbyPlugin extends AutoPlugin {
         checkForLatest.value,
         deprecatedDependenciesUrl.value,
         jsonOutputFileOverride.value,
-        isSbtProject)
+        isSbtProject
+      )
     }
   )
 }

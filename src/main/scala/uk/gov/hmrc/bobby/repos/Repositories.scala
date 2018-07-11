@@ -26,25 +26,24 @@ object Repositories {
 
   private val logger = ConsoleLogger()
 
-  def buildAggregateRepositories(repositories:Seq[Repo]):AggregateRepoSearch ={
+  def buildAggregateRepositories(repositories: Seq[Repo]): AggregateRepoSearch =
     new AggregateRepoSearch() {
-      val repoName = "aggregate"
+      val repoName                        = "aggregate"
       override val repos: Seq[RepoSearch] = buildRepos(repositories).flatten
 
       logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(", ")}")
     }
-  }
 
-  def buildRepos(repos:Seq[Repo]):Seq[Option[RepoSearch]]={
+  def buildRepos(repos: Seq[Repo]): Seq[Option[RepoSearch]] =
     repos flatMap {
       case BobbyKeys.Bintray => Seq(Some(HmrcBintray))
       case BobbyKeys.Nexus   => Seq(Nexus(Configuration.nexusCredetials))
       case BobbyKeys.Maven   => Seq(Some(Maven))
-      case BobbyKeys.Artifactory => Seq(
-        Configuration.artifactoryUri.map(new HmrcArtifactory(_)),
-        Configuration.artifactoryUri.map(new ThirdPartyArtifactory(_))
-      )
+      case BobbyKeys.Artifactory =>
+        Seq(
+          Configuration.artifactoryUri.map(new HmrcArtifactory(_)),
+          Configuration.artifactoryUri.map(new ThirdPartyArtifactory(_))
+        )
     }
-  }
 
 }

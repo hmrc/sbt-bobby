@@ -33,7 +33,7 @@ class BobbySpec extends FlatSpec with Matchers {
   }
 
   it should "prepare dependencies by removing any on a blacklist" in {
-    val auth = ModuleID("uk.gov.hmrc","auth", "3.2.0")
+    val auth = ModuleID("uk.gov.hmrc", "auth", "3.2.0")
 
     val mods = Seq(
       auth,

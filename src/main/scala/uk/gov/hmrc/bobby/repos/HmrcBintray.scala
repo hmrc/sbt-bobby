@@ -29,25 +29,26 @@ object HmrcBintray extends RepoSearch {
 
   val repoName = "Bintray"
 
-  def latestVersion(xmlString: String): Option[Version] = {
-
-    (XML.loadString(xmlString) \ "versioning" \ "latest")
-      .headOption.map(_.text.trim)
+  def latestVersion(xmlString: String): Option[Version] =
+    (XML.loadString(xmlString) \ "versioning" \ "latest").headOption
+      .map(_.text.trim)
       .map { Version.apply }
-  }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL = {
-    val moduleNameSuffix = scalaVersion.map { sv => s"_$sv"}.getOrElse("")
+    val moduleNameSuffix = scalaVersion
+      .map { sv =>
+        s"_$sv"
+      }
+      .getOrElse("")
 
-    new URL(s"https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml")
+    new URL(
+      s"https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml")
   }
 
-  def query(url: URL): Try[Option[Version]] = {
-
+  def query(url: URL): Try[Option[Version]] =
     Http.get(url.toString).map { res =>
       latestVersion(res)
     }
-  }
 
   override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
     import Helpers._
@@ -55,7 +56,7 @@ object HmrcBintray extends RepoSearch {
     versionInformation.organization match {
 
       case "uk.gov.hmrc" => {
-        query(buildSearchUrl(versionInformation, scalaVersion)).flatMap{ ov =>
+        query(buildSearchUrl(versionInformation, scalaVersion)).flatMap { ov =>
           ov.toTry(new Exception("didn't find version in Bintray"))
         }
       }

@@ -25,17 +25,19 @@ import scala.io.Source
 class ConfigFile(fileName: String) {
   val logger = ConsoleLogger()
 
-  if(!new File(fileName).exists()){
-      logger.warn(s"Supplied configuration file '$fileName' does not exist.")
+  if (!new File(fileName).exists()) {
+    logger.warn(s"Supplied configuration file '$fileName' does not exist.")
   }
-
 
   private val kvMap: Map[String, String] = {
     try {
-      Source.fromFile(fileName)
-        .getLines().toSeq
+      Source
+        .fromFile(fileName)
+        .getLines()
+        .toSeq
         .map(_.split("="))
-        .map { case Array(key, value) => key.trim -> value.trim}.toMap
+        .map { case Array(key, value) => key.trim -> value.trim }
+        .toMap
     } catch {
       case e: Exception =>
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")

@@ -23,7 +23,7 @@ object Helpers {
   implicit class RichOption[A](opt: Option[A]) {
     def toTry(onNone: Exception): Try[A] = opt match {
       case Some(a) => Success(a)
-      case None => Failure(onNone)
+      case None    => Failure(onNone)
     }
   }
 

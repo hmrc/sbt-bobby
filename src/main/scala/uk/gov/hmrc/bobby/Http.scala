@@ -22,8 +22,7 @@ import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 object Http {
-  def get[A](url: String): Try[String] = {
-
+  def get[A](url: String): Try[String] =
     Try {
       val con = new URL(url).openConnection().asInstanceOf[HttpURLConnection]
 
@@ -37,8 +36,10 @@ object Http {
 
       resultStatus match {
         case s if s >= 200 && s < 300 => Success(resultBody)
-        case _@e => Failure(new scala.Exception(s"Didn't get expected status code when reading from Bintray. Got status ${resultStatus}: ${resultBody}"))
+        case _ @e =>
+          Failure(
+            new scala.Exception(
+              s"Didn't get expected status code when reading from Bintray. Got status $resultStatus: $resultBody"))
       }
     }.flatten
-  }
 }

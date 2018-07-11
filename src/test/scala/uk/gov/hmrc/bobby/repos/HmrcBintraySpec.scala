@@ -23,15 +23,18 @@ import uk.gov.hmrc.bobby.domain.Version
 
 import scala.util.Failure
 
-
-class HmrcBintraySpec extends FlatSpec with Matchers with OptionValues{
+class HmrcBintraySpec extends FlatSpec with Matchers with OptionValues {
 
   "Bintray build search url" should "build the Bintray URL including scala version" in {
-    HmrcBintray.buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), Some("2.11")).toString shouldBe "https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/time_2.11/maven-metadata.xml"
+    HmrcBintray
+      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), Some("2.11"))
+      .toString shouldBe "https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/time_2.11/maven-metadata.xml"
   }
 
   "Bintray build search url" should "build the Bintray URL not including scala version" in {
-    HmrcBintray.buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None).toString shouldBe "https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/time/maven-metadata.xml"
+    HmrcBintray
+      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0"), None)
+      .toString shouldBe "https://bintray.com/artifact/download/hmrc/releases/uk/gov/hmrc/time/maven-metadata.xml"
   }
 
   "Bintray search" should "not return search results for a non-hmrc library" in {

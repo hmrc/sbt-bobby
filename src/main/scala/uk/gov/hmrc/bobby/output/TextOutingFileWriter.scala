@@ -23,7 +23,7 @@ import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.Message
 
-class TextOutingFileWriter(filepath:String) {
+class TextOutingFileWriter(filepath: String) {
 
   private val logger = ConsoleLogger()
 
@@ -34,9 +34,10 @@ class TextOutingFileWriter(filepath:String) {
 
   def renderText(messages: List[Message]): String = {
 
-    val messageModel = messages
-      .sorted
-      .map { m => m.longTabularOutput }
+    val messageModel = messages.sorted
+      .map { m =>
+        m.longTabularOutput
+      }
 
     Tabulator.format(Message.tabularHeader +: messageModel)
   }
@@ -62,24 +63,24 @@ object Tabulator {
   def formatAsStrings(table: Seq[Seq[Any]]): Seq[String] = table match {
     case Seq() => Seq()
     case _ =>
-      val sizes = for (row <- table) yield (for (cell <- row) yield if (cell == null) 0 else cell.toString.length)
+      val sizes    = for (row <- table) yield (for (cell <- row) yield if (cell == null) 0 else cell.toString.length)
       val colSizes = for (col <- sizes.transpose) yield col.max
-      val rows = for (row <- table) yield formatRow(row, colSizes)
+      val rows     = for (row <- table) yield formatRow(row, colSizes)
       formatRows(rowSeparator(colSizes), rows)
   }
 
-  def formatRows(rowSeparator: String, rows: Seq[String]): Seq[String] = rowSeparator ::
-    rows.head ::
+  def formatRows(rowSeparator: String, rows: Seq[String]): Seq[String] =
     rowSeparator ::
-    rows.tail.toList :::
-    rowSeparator ::
-    List()
-
+      rows.head ::
+      rowSeparator ::
+      rows.tail.toList :::
+      rowSeparator ::
+      List()
 
   def formatRow(row: Seq[Any], colSizes: Seq[Int]) = {
     val cells = (for ((item, size) <- row.zip(colSizes)) yield if (size == 0) "" else ("%" + -size + "s").format(item))
     cells.mkString("| ", " | ", " |")
   }
 
-  def rowSeparator(colSizes: Seq[Int]) = colSizes map { "-" * _ } mkString("+-", "-+-", "-+")
+  def rowSeparator(colSizes: Seq[Int]) = colSizes map { "-" * _ } mkString ("+-", "-+-", "-+")
 }

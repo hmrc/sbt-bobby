@@ -18,16 +18,14 @@ package uk.gov.hmrc.bobby.domain
 
 object MessageLevels {
 
-  sealed abstract class Level(
-                                val order: Int,
-                                val name: String) extends Ordered[Level] {
+  sealed abstract class Level(val order: Int, val name: String) extends Ordered[Level] {
 
     def compare(that: Level) = this.order - that.order
 
     override def toString = name
   }
 
-  def compare(a:Level, b:Level):Boolean = a.compare(b) < 0
+  def compare(a: Level, b: Level): Boolean = a.compare(b) < 0
 
   case object ERROR extends Level(0, "ERROR")
   case object WARN extends Level(1, "WARN")

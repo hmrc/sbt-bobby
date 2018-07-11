@@ -22,26 +22,30 @@ import uk.gov.hmrc.bobby.Helpers
 import scala.util.{Failure, Success, Try}
 import Helpers._
 
-trait AggregateRepoSearch extends RepoSearch{
+trait AggregateRepoSearch extends RepoSearch {
 
   val log = ConsoleLogger()
 
-  def repos:Seq[RepoSearch]
+  def repos: Seq[RepoSearch]
 
-  def findBestMatch(seq:Seq[Try[Version]]):Try[Version]={
-    seq.collect { case Success(v) => v }
+  def findBestMatch(seq: Seq[Try[Version]]): Try[Version] =
+    seq
+      .collect { case Success(v) => v }
       .sortWith((a, b) => a.compareTo(b) < 0)
       .reverse
       .headOption
       .toTry(new Exception("(Not found)"))
-  }
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]={
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
     val latestVersions: Seq[Try[Version]] = repos.map { r =>
       val latestVersion = r.findLatestRevision(versionInformation, scalaVersion)
       latestVersion match {
-        case Success(v) => log.debug(s"[bobby] found ${versionInformation.organization}.${versionInformation.name}.${v.toString} in ${r.repoName}")
-        case Failure(e) => log.debug(s"[bobby] Didn't find ${versionInformation.organization}.${versionInformation.name} in ${r.repoName}, reason: ${e.getMessage}")
+        case Success(v) =>
+          log.debug(
+            s"[bobby] found ${versionInformation.organization}.${versionInformation.name}.${v.toString} in ${r.repoName}")
+        case Failure(e) =>
+          log.debug(
+            s"[bobby] Didn't find ${versionInformation.organization}.${versionInformation.name} in ${r.repoName}, reason: ${e.getMessage}")
       }
 
       latestVersion

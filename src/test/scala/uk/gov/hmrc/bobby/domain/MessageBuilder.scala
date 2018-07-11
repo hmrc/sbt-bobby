@@ -20,9 +20,9 @@ import sbt.ModuleID
 
 import scala.util.Failure
 
-object MessageBuilder{
+object MessageBuilder {
 
-  def makeMessage(result:Result) =
+  def makeMessage(result: Result) =
     new Message(result, new ModuleID("org", "name", "0.0.0"), Failure(new Exception("ex")), None)
 
 }

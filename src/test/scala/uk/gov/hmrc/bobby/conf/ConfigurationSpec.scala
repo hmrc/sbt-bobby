@@ -44,16 +44,16 @@ class ConfigurationSpec extends FlatSpec with Matchers {
     val (libs, plugins) = c.partition(_._type == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
-    libs.head.dependency.name shouldBe "some-frontend"
-    libs.head.range shouldBe VersionRange("(,7.4.1)")
-    libs.head.reason shouldBe "7.4.1 has important security fixes"
-    libs.head.from shouldBe new LocalDate(2015, 1, 1)
+    libs.head.dependency.name         shouldBe "some-frontend"
+    libs.head.range                   shouldBe VersionRange("(,7.4.1)")
+    libs.head.reason                  shouldBe "7.4.1 has important security fixes"
+    libs.head.from                    shouldBe new LocalDate(2015, 1, 1)
 
     plugins.head.dependency.organisation shouldBe "uk.gov.hmrc"
-    plugins.head.dependency.name shouldBe "some-plugin"
-    plugins.head.range shouldBe VersionRange("(,1.0.0)")
-    plugins.head.reason shouldBe "1.0.0 is outdated"
-    plugins.head.from shouldBe new LocalDate(2015, 1, 2)
+    plugins.head.dependency.name         shouldBe "some-plugin"
+    plugins.head.range                   shouldBe VersionRange("(,1.0.0)")
+    plugins.head.reason                  shouldBe "1.0.0 is outdated"
+    plugins.head.from                    shouldBe new LocalDate(2015, 1, 2)
 
   }
 
@@ -72,20 +72,18 @@ class ConfigurationSpec extends FlatSpec with Matchers {
     val (libs, plugins) = c.partition(_._type == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
-    libs.head.dependency.name shouldBe "some-frontend"
-    libs.head.range shouldBe VersionRange("(,7.4.1)")
-    libs.head.reason shouldBe "7.4.1 has important security fixes"
-    libs.head.from shouldBe new LocalDate(2015, 1, 1)
-
+    libs.head.dependency.name         shouldBe "some-frontend"
+    libs.head.range                   shouldBe VersionRange("(,7.4.1)")
+    libs.head.reason                  shouldBe "7.4.1 has important security fixes"
+    libs.head.from                    shouldBe new LocalDate(2015, 1, 1)
 
     libs.last.dependency.organisation shouldBe "uk.gov.hmrc"
-    libs.last.dependency.name shouldBe "some-service"
-    libs.last.range shouldBe VersionRange("[8.0.0, 8.4.1]")
-    libs.last.reason shouldBe "Versions between 8.0.0 and 8.4.1 have a bug"
-    libs.last.from shouldBe new LocalDate(2015, 3, 1)
+    libs.last.dependency.name         shouldBe "some-service"
+    libs.last.range                   shouldBe VersionRange("[8.0.0, 8.4.1]")
+    libs.last.reason                  shouldBe "Versions between 8.0.0 and 8.4.1 have a bug"
+    libs.last.from                    shouldBe new LocalDate(2015, 3, 1)
 
     plugins shouldBe 'isEmpty
   }
-
 
 }

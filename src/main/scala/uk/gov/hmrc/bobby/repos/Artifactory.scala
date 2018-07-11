@@ -41,27 +41,31 @@ trait Artifactory extends RepoSearch {
 
   val repository: String
 
-  def latestVersion(xmlString: String): Option[Version] = {
-
-    (XML.loadString(xmlString) \ "versioning" \ "latest")
-      .headOption.map(_.text.trim)
+  def latestVersion(xmlString: String): Option[Version] =
+    (XML.loadString(xmlString) \ "versioning" \ "latest").headOption
+      .map(_.text.trim)
       .map {
         Version.apply
       }
-  }
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL = {
-    val moduleNameSuffix = if (versionInformation.crossVersion == CrossVersion.Disabled) "" else scalaVersion.map { sv => s"_$sv" }.getOrElse("")
-    val url = s"$baseUrl/$repository/${versionInformation.organization.replaceAll("\\.", "/")}/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml"
+    val moduleNameSuffix =
+      if (versionInformation.crossVersion == CrossVersion.Disabled) ""
+      else
+        scalaVersion
+          .map { sv =>
+            s"_$sv"
+          }
+          .getOrElse("")
+    val url =
+      s"$baseUrl/$repository/${versionInformation.organization.replaceAll("\\.", "/")}/${versionInformation.name}$moduleNameSuffix/maven-metadata.xml"
     new URL(url)
   }
 
-  def query(url: URL): Try[Option[Version]] = {
-
+  def query(url: URL): Try[Option[Version]] =
     Http.get(url.toString).map { res =>
       latestVersion(res)
     }
-  }
 
   override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
     import Helpers._

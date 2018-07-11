@@ -23,7 +23,7 @@ import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.Message
 
-class JsonOutingFileWriter(val filepath:String) {
+class JsonOutingFileWriter(val filepath: String) {
 
   private val logger = ConsoleLogger()
 
@@ -36,7 +36,7 @@ class JsonOutingFileWriter(val filepath:String) {
 
   def renderJson(messages: List[Message]): String = {
 
-    val outputMessages = messages.map(_.rawJson )
+    val outputMessages = messages.map(_.rawJson)
 
     s"""{
       | "results" : [

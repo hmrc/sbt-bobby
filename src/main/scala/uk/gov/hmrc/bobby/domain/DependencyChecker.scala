@@ -23,30 +23,39 @@ object DependencyChecker {
 
   val logger = ConsoleLogger()
 
-  def isDependencyValid(excludes: Seq[DeprecatedDependency])(dependency: Dependency, version: Version): DependencyCheckResult = {
+  def isDependencyValid(
+    excludes: Seq[DeprecatedDependency])(dependency: Dependency, version: Version): DependencyCheckResult = {
     val filtered = excludes.filter(dd => {
       (dd.dependency.organisation.equals(dependency.organisation) || dd.dependency.organisation.equals("*")) &&
-        (dd.dependency.name.equals(dependency.name) || dd.dependency.name.equals("*"))
+      (dd.dependency.name.equals(dependency.name) || dd.dependency.name.equals("*"))
     })
 
     val now = new LocalDate()
 
-    val fails = filtered.filter { exclude =>
-      exclude.range.includes(version) && (exclude.from.isBefore(now) || exclude.from.isEqual(now))
-    }.sortBy(_.from.toDate)
+    val fails = filtered
+      .filter { exclude =>
+        exclude.range.includes(version) && (exclude.from.isBefore(now) || exclude.from.isEqual(now))
+      }
+      .sortBy(_.from.toDate)
 
-    val warns = filtered.filter { exclude =>
-      exclude.range.includes(version) && exclude.from.isAfter(now)
-    }.sortBy(_.from.toDate)
+    val warns = filtered
+      .filter { exclude =>
+        exclude.range.includes(version) && exclude.from.isAfter(now)
+      }
+      .sortBy(_.from.toDate)
 
-    val failO = fails.headOption.map { dep => MandatoryFail(dep) }
+    val failO = fails.headOption.map { dep =>
+      MandatoryFail(dep)
+    }
 
-    val warnO = warns.headOption.map { dep => MandatoryWarn(dep) }
+    val warnO = warns.headOption.map { dep =>
+      MandatoryWarn(dep)
+    }
 
     (failO, warnO) match {
-      case(Some(fail), _)    => fail
-      case(None, Some(warn)) => warn
-      case(None, None)       => OK
+      case (Some(fail), _)    => fail
+      case (None, Some(warn)) => warn
+      case (None, None)       => OK
     }
   }
 }

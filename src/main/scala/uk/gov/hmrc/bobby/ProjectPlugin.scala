@@ -18,7 +18,6 @@ package uk.gov.hmrc.bobby
 
 import sbt._
 
-
 //
 // heavily influenced by https://github.com/jozic/sbt-about-plugins/blob/master/src/main/scala/com/github/sbt/aboutplugins/AboutPluginsPlugin.scala.
 //
@@ -29,39 +28,37 @@ object ProjectPlugin {
 
   def plugins(build: BuildStructure): Seq[ModuleID] = {
 
-    val pluginNamesAndLoaders = build.units.values.map {
-      u =>
-        val pNames = u.unit.plugins.detected.autoPlugins.map(_.name).toList ::: u.unit.plugins.detected.plugins.names.toList
-        (pNames, u.unit.plugins.loader)
+    val pluginNamesAndLoaders = build.units.values.map { u =>
+      val pNames = u.unit.plugins.detected.autoPlugins.map(_.name).toList ::: u.unit.plugins.detected.plugins.names
+        .toList
+      (pNames, u.unit.plugins.loader)
     }.toSeq
 
     val pluginArtifactPaths: Seq[(String, String)] = for {
       (names, loader) <- pluginNamesAndLoaders
-      name <- names
-      source <- Option(Class.forName(name, true, loader).getProtectionDomain.getCodeSource)
-      location <- Option(source.getLocation)
+      name            <- names
+      source          <- Option(Class.forName(name, true, loader).getProtectionDomain.getCodeSource)
+      location        <- Option(source.getLocation)
     } yield (name, location.getPath)
 
     val reports: Seq[UpdateReport] = build.units.values.flatMap(un => un.unit.plugins.pluginData.report).toSeq
 
-    reports.flatMap {
-      report =>
-        val moduleReports: Map[ModuleID, Seq[(Artifact, File)]] = (for {
-          configReport <- report.configurations
-          moduleReport <- configReport.modules
-        } yield moduleReport.module -> moduleReport.artifacts).toMap
+    reports.flatMap { report =>
+      val moduleReports: Map[ModuleID, Seq[(Artifact, File)]] = (for {
+        configReport <- report.configurations
+        moduleReport <- configReport.modules
+      } yield moduleReport.module -> moduleReport.artifacts).toMap
 
-        for {
-          (name, artifactPath) <- pluginArtifactPaths
-          (module, artifacts) <- moduleReports
-          if artifacts.exists {
-            case (_, file) =>
-              artifactPath == file.getPath
-          }
-        } yield module
+      for {
+        (name, artifactPath) <- pluginArtifactPaths
+        (module, artifacts)  <- moduleReports
+        if artifacts.exists {
+          case (_, file) =>
+            artifactPath == file.getPath
+        }
+      } yield module
     }
 
   }
-
 
 }

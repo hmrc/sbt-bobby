@@ -1,4 +1,3 @@
-
 val location = file("..").toURI
 
 val sbtBobby = RootProject(location)

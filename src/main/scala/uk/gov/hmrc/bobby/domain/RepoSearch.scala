@@ -20,19 +20,17 @@ import sbt.ModuleID
 
 import scala.util.{Failure, Success, Try}
 
-trait RepoSearch{
+trait RepoSearch {
 
-  def repoName:String
+  def repoName: String
 
-  def shortenScalaVersion(scalaVersion: String): String = {
+  def shortenScalaVersion(scalaVersion: String): String =
     scalaVersion.split('.') match {
       case Array(major, minor, _*) => major + "." + minor
     }
-  }
 
-  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] = {
-    search(versionInformation, scalaVersion.map{ shortenScalaVersion })
-  }
+  def findLatestRevision(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
+    search(versionInformation, scalaVersion.map { shortenScalaVersion })
 
-  def search(versionInformation: ModuleID, scalaVersion: Option[String]):Try[Version]
+  def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version]
 }

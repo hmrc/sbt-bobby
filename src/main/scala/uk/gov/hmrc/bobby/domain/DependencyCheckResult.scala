@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.bobby.domain
 
-
 sealed trait DependencyCheckResult {
-  def fail:Boolean
+  def fail: Boolean
 }
 
-trait Fail extends DependencyCheckResult { val fail = true}
-trait Pass extends DependencyCheckResult { val fail = false}
+trait Fail extends DependencyCheckResult { val fail = true }
+trait Pass extends DependencyCheckResult { val fail = false }
 
-case class MandatoryFail(exclusion:DeprecatedDependency) extends DependencyCheckResult with Fail
-case class MandatoryWarn(exclusion:DeprecatedDependency) extends DependencyCheckResult with Pass
-case class NexusHasNewer(latest:String) extends DependencyCheckResult with Pass
+case class MandatoryFail(exclusion: DeprecatedDependency) extends DependencyCheckResult with Fail
+case class MandatoryWarn(exclusion: DeprecatedDependency) extends DependencyCheckResult with Pass
+case class NexusHasNewer(latest: String) extends DependencyCheckResult with Pass
 object NotFoundInNexus extends DependencyCheckResult with Pass
 object OK extends DependencyCheckResult with Pass
