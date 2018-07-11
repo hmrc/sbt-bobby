@@ -2,4 +2,4 @@ leakDetectionExemptions:
  - ruleId: 'ip_addresses'
    filePaths:
       - '/src/test/scala/uk/gov/hmrc/bobby/domain/VersionSpec.scala'
-      - '/src/test/scala/uk/gov/hmrc/bobby/repos/NexusSpec.scal'
+      - '/src/test/scala/uk/gov/hmrc/bobby/repos/NexusSpec.scala'
