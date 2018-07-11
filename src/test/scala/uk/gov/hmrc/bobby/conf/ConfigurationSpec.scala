@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package uk.gov.hmrc.bobby.conf
 
 import org.joda.time.LocalDate
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{Library, DeprecatedDependency, VersionRange}
+import uk.gov.hmrc.bobby.domain.{Library, VersionRange}
 
 class ConfigurationSpec extends FlatSpec with Matchers {
 
