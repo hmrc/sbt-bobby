@@ -1,10 +1,10 @@
 [![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby) [ ![Download](https://api.bintray.com/packages/hmrc/sbt-plugin-releases/sbt-bobby/images/download.svg) ](https://bintray.com/hmrc/sbt-plugin-releases/sbt-bobby/_latestVersion) [![Stories in Ready](https://badge.waffle.io/hmrc/sbt-bobby.png?label=ready&title=Ready)](https://waffle.io/hmrc/sbt-bobby)
 
-#Overview
+# Overview
 
 Bobby is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
-#Background
+# Background
 It can be hard to ensure that distributed teams do not use versions of dependencies that may contain bugs or security flaws. Bobby provides the capability to fail builds which reference such outdated dependencies. Ideally communications will be in place to ensure updates happen but Bobby acts as a safety net of last resort.
 
 Bobby also checks your projects' dependency versions against the latest available.
@@ -12,7 +12,7 @@ If a newer one is available it suggests to use it without failing the build.
 The current version looks into nexus for this, using what is defined in ~/.sbt/.credentials. 
 If undefined it skips this step
 
-#When will Bobby fail a build?
+# When will Bobby fail a build?
 
 Bobby is automatically run for you on ci-dev, there is no need to explicitly add it to your project. Bobby works by checking against a blacklist of dependencies (known as rules), and will fail a build if it finds any dependencies in your build that match the versions/version ranges in this list.
 
@@ -36,7 +36,7 @@ An example output looks like this:
 +-------+------------------------------------+--------------+----------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
 
-#How are rules configured?
+# How are rules configured?
 
 Bobby config is an array of JSON objects of the form:
 ```
@@ -67,7 +67,7 @@ Bobby config is an array of JSON objects of the form:
 | [1.5.0,)       | x >= 1.5.0                            |
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
 
-#How do I change the rules used by Jenkins?
+# How do I change the rules used by Jenkins?
 
 On Jenkins, Bobby sources it's config remotely. There are seperate rule lists for ci-open and ci-dev/build. Open rules can be found at https://github.com/hmrc/bobby-open-config. Details for internal tools can be found in confluence. 
 
@@ -75,7 +75,7 @@ Anyone working on the Tax Platform can add/change bobby rules. We accept pull re
 
 An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-open-config/commit/4f8428a87145cd9480337d516d4424a7aa584207
 
-#How to use Bobby on your local builds
+# How to use Bobby on your local builds
 
 In your `~/.sbt/0.13/plugins/build.sbt`, set:
 ```scala
@@ -90,7 +90,7 @@ Then call the 'validate' command:
 
 ```sbt validate```
 
-#Providing custom rules
+# Providing custom rules
 
 If you want to prevent outdated dependencies from being used by your project outside of HMRC, you can create a blacklist of version ranges in the following format:
 
