@@ -26,8 +26,10 @@ object Version {
     val vv    = toVer(split.lift(0).getOrElse("0"))
     val boq   = toBoq(split.lift(1))
 
-    if (vv == (0, 0, 0)) Version(0, 0, 0, Some(Right(st)))
-    else Version(vv._1, vv._2, vv._3, boq)
+    vv match {
+      case (0, 0, 0) => Version(0, 0, 0, Some(Right(st)))
+      case _ => Version(vv._1, vv._2, vv._3, boq)
+    }
   }
 
   def toVer(v: String): (Int, Int, Int) = {
