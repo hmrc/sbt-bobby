@@ -72,8 +72,6 @@ object VersionRange {
   // (1.0.0]   x <= 1.0.0  WHY IS THE COMMA NOT MANDATORY?
   // [,1.0.0]  x <= 1.0.0  WHY IS THIS NOT ALLOWED?
 
-  implicit def toVersion(v: String): Version = Version(v)
-
   val ValidFixedVersion          = """^\[(\d+\.\d+.\d+)\]""".r
   val ValidVersionRangeLeftOpen  = """^\(,?(\d+\.\d+.\d+)[\]\)]""".r
   val ValidVersionRangeRightOpen = """^[\[\(](\d+\.\d+.\d+),[\]\)]""".r
@@ -82,11 +80,11 @@ object VersionRange {
 
   def apply(range: String): VersionRange =
     range.replaceAll(" ", "") match {
-      case ValidFixedVersion(v)          => VersionRange(Some(v), true, Some(v), true)
-      case ValidVersionRangeLeftOpen(v)  => VersionRange(None, false, Some(v), range.endsWith("]"))
-      case ValidVersionRangeRightOpen(v) => VersionRange(Some(v), range.startsWith("["), None, false)
+      case ValidFixedVersion(v)          => VersionRange(Some(Version(v)), true, Some(Version(v)), true)
+      case ValidVersionRangeLeftOpen(v)  => VersionRange(None, false, Some(Version(v)), range.endsWith("]"))
+      case ValidVersionRangeRightOpen(v) => VersionRange(Some(Version(v)), range.startsWith("["), None, false)
       case ValidVersionRangeBetween(v1, v2) =>
-        VersionRange(Some(v1), range.startsWith("["), Some(v2), range.endsWith("]"))
+        VersionRange(Some(Version(v1)), range.startsWith("["), Some(Version(v2)), range.endsWith("]"))
       case Qualifier(q) if q.length() > 1 => VersionRange(None, false, None, false, Some(q))
       case _                              => throw new IllegalArgumentException(s"'$range' is not a valid range expression")
     }
