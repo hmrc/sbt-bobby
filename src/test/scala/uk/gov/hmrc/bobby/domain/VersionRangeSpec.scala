@@ -165,6 +165,11 @@ class VersionRangeSpec extends FlatSpec with Matchers {
     VersionRange("(1.2.0,1.3.0)").toString shouldBe "(1.2.0,1.3.0)"
   }
 
+  it should "understand play cross compiled libraries and ignore play suffixes" in {
+    VersionRange("[1.0.0, 1.0.0]").includes(Version("1.0.0-play-25")) shouldBe true
+    VersionRange("[1.0.0, 1.0.0]").includes(Version("1.0.0-play-26")) shouldBe true
+  }
+
   it should "throw exception when qualifier is not defined" in {
     intercept[IllegalArgumentException] {
       VersionRange("[*-]")

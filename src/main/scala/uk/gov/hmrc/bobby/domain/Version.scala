@@ -24,10 +24,12 @@ object Version {
 
     val split = st.split("[-_]", 2)
     val vv    = toVer(split.lift(0).getOrElse("0"))
-    val boq   = toBoq(split.lift(1))
+    val boq   = toBuildOrQualifier(ignorePlaySuffixForCrossCompiledLibs(split.lift(1)))
 
-    if (vv == (0, 0, 0)) Version(0, 0, 0, Some(Right(st)))
-    else Version(vv._1, vv._2, vv._3, boq)
+    val foo =
+      if (vv == (0, 0, 0)) Version(0, 0, 0, Some(Right(st)))
+      else Version(vv._1, vv._2, vv._3, boq)
+    foo
   }
 
   def toVer(v: String): (Int, Int, Int) = {
@@ -40,8 +42,15 @@ object Version {
       (elem.lift(0).getOrElse("0").toInt, elem.lift(1).getOrElse("0").toInt, elem.lift(2).getOrElse("0").toInt)
     else (0, 0, 0)
   }
-  def toBoq(boqStOpt: Option[String]): Option[Either[Long, String]] =
+
+  def toBuildOrQualifier(boqStOpt: Option[String]): Option[Either[Long, String]] =
     boqStOpt.map(boqSt => if (isAllDigits(boqSt)) Left(boqSt.toLong) else Right(boqSt))
+
+  def ignorePlaySuffixForCrossCompiledLibs(maybeQualifier: Option[String]): Option[String] =
+    maybeQualifier.flatMap {
+      case s if s.contains("play-2") => None
+      case s                         => Some(s)
+    }
 
   def comparator(v1: Version, v2: Version): Boolean = v1.isAfter(v2)
 
@@ -60,11 +69,9 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
 
   def isAfter(version: Version) = this.compareTo(version) > 0
 
-  lazy val boqFormatted = buildOrQualifier.map { boqE =>
-    boqE match {
-      case Left(num) => num.toString
-      case Right(st) => st
-    }
+  lazy val boqFormatted = buildOrQualifier.map {
+    case Left(num) => num.toString
+    case Right(st) => st
   }
 
   override def toString = s"$major.$minor.$revision${boqFormatted.map(b => "-" + b).getOrElse("")}"
