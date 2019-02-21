@@ -69,11 +69,11 @@ Bobby config is an array of JSON objects of the form:
 
 # How do I change the rules used by Jenkins?
 
-On Jenkins, Bobby sources it's config remotely. There are seperate rule lists for ci-open and ci-dev/build. Open rules can be found at https://github.com/hmrc/bobby-open-config. Details for internal tools can be found in confluence. 
+On Jenkins, Bobby sources it's config remotely. Current rules can be found in the following project https://github.com/hmrc/bobby-config (available only for people in the HMRC org on github). 
 
 Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests to both bobby config repositories, and once merged the new rules will take effect immediately. 
 
-An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-open-config/commit/4f8428a87145cd9480337d516d4424a7aa584207
+An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-config/commit/f1b1b180cde857d64e3b1c2fb5322bc400c18c8a
 
 # How to use Bobby on your local builds
 
