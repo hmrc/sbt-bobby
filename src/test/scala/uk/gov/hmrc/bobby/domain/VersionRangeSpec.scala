@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-class VersionRangeSpec extends FlatSpec with Matchers {
+class VersionRangeSpec extends AnyFlatSpec with Matchers {
 
   "A VersionRange" should "read (,1.0] as 'x <= 1.0'" in {
 

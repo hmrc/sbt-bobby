@@ -17,13 +17,14 @@
 package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 
 import scala.util.{Failure, Success}
 
-class ResultBuilderSpec extends FlatSpec with Matchers {
+class ResultBuilderSpec extends AnyFlatSpec with Matchers {
 
   def deprecatedSoon(
     org: String,

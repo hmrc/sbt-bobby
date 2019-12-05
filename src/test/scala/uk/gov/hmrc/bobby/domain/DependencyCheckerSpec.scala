@@ -17,11 +17,10 @@
 package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-//case class DependencyCheckerUnderTest(override val excludes: Seq[DeprecatedDependency]) extends DependencyChecker
-
-class DependencyCheckerSpec extends FlatSpec with Matchers {
+class DependencyCheckerSpec extends AnyFlatSpec with Matchers {
 
   val dc = DependencyChecker
 

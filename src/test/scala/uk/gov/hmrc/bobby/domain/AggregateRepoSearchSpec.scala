@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.scalatest.{TryValues}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import sbt.ModuleID
 
 import scala.util.{Failure, Success, Try}
 
-class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
+class AggregateRepoSearchSpec extends AnyFlatSpec with Matchers with TryValues {
 
   val timeRepo = new RepoSearch {
     override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =

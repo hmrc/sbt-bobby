@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.{OptionValues}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import sbt.{CrossVersion, ModuleID}
 import uk.gov.hmrc.bobby.domain.Version
 
-class ArtifactorySpec extends FlatSpec with Matchers with OptionValues {
+class ArtifactorySpec extends AnyFlatSpec with Matchers with OptionValues {
 
   "Artifactory build search url" should "build the Artifactory URL including scala version" in {
     new HmrcArtifactory("https://somehost")

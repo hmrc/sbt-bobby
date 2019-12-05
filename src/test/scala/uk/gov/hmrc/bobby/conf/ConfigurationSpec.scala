@@ -17,10 +17,11 @@
 package uk.gov.hmrc.bobby.conf
 
 import org.joda.time.LocalDate
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import uk.gov.hmrc.bobby.domain.{Library, VersionRange}
 
-class ConfigurationSpec extends FlatSpec with Matchers {
+class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
   "The Configuration parser" should "read a well formatted json file with plugins and libraries and ignore anything else" in {
 

@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.{OptionValues}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
 
-class NexusSpec extends FlatSpec with Matchers with OptionValues {
+class NexusSpec extends AnyFlatSpec with Matchers with OptionValues {
 
   object NexusUnderTest extends Nexus {
     override val nexus: NexusCredentials = NexusCredentials("", "", "")

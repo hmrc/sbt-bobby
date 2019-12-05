@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-class VersionSpec extends FlatSpec with Matchers {
+class VersionSpec extends AnyFlatSpec with Matchers {
 
   implicit def toLeft(i: Int) = Left(i)
 
