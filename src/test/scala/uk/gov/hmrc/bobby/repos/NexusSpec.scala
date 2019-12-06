@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{OptionValues}
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 import uk.gov.hmrc.bobby.domain.Version
@@ -29,7 +29,7 @@ class NexusSpec extends AnyFlatSpec with Matchers with OptionValues {
     override val nexus: NexusCredentials = NexusCredentials("", "", "")
   }
 
-  private val moduleId: ModuleID           = (new ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
+  private val moduleId: ModuleID           = ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT")
   private val scalaVersion: Option[String] = Some("2.11")
 
   it should "construct nexus search query parameters which in the Scala version if provided" ignore {

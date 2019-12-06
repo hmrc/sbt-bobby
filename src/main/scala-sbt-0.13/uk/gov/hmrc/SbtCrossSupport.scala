@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc
 
-import sbt.ModuleID
+import sbt.LoadedBuildUnit
 
-import scala.util.Failure
+object SbtCrossSupport {
+  // Resolve the correct location of the class depending on the sbt version
+  type BuildStructure = sbt.BuildStructure
 
-object MessageBuilder {
-
-  def makeMessage(result: Result) =
-    new Message(result, ModuleID("org", "name", "0.0.0"), Failure(new Exception("ex")), None)
-
+  // Retrieve all plugin names. For sbt 0.13 this includes non-auto plugins
+  def pluginNames(buildUnit: LoadedBuildUnit) =
+    buildUnit.unit.plugins.detected.autoPlugins.map(_.name).toList :::
+      buildUnit.unit.plugins.detected.autoPlugins.map(_.name).toList
 }

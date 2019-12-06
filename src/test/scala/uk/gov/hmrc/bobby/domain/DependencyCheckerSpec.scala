@@ -28,8 +28,7 @@ class DependencyCheckerSpec extends AnyFlatSpec with Matchers {
     val d = Dependency("uk.gov.hmrc", "some-service")
     val deps: List[DeprecatedDependency] =
       List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1), Library))
-    dc.isDependencyValid(
-      List(DeprecatedDependency(d, VersionRange("(,1.0.0]"), "testing", new LocalDate().minusDays(1), Library)))(
+    dc.isDependencyValid(deps)(
       d,
       Version("2.0.0")) shouldBe OK
   }

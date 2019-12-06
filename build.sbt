@@ -1,6 +1,7 @@
 val pluginName = "sbt-bobby"
 
 lazy val root = (project in file("."))
+  .enablePlugins(SbtPlugin)
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
   .settings(
     majorVersion := 0,
@@ -9,7 +10,8 @@ lazy val root = (project in file("."))
   .settings(
     sbtPlugin := true,
     name := pluginName,
-    scalaVersion := "2.10.7",
+    scalaVersion := "2.12.10",
+    crossSbtVersions := Vector("0.13.18", "1.3.4"),
     libraryDependencies ++= Seq(
       "commons-codec"         % "commons-codec" % "1.13",
       "joda-time"             % "joda-time"     % "2.9.9",
@@ -19,5 +21,5 @@ lazy val root = (project in file("."))
       "com.vladsch.flexmark"  % "flexmark-all"  % "0.35.10" % Test
     )
   )
-  .settings(ScriptedPlugin.scriptedSettings: _*)
-  .settings(scriptedLaunchOpts += s"-Dproject.version=${version.value}")
+//  .settings(ScriptedPlugin.scriptedSettings: _*)
+//  .settings(scriptedLaunchOpts += s"-Dproject.version=${version.value}")

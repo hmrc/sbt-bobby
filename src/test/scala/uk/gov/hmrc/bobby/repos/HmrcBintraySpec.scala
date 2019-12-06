@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{OptionValues}
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.conf.BintrayCredentials
 import uk.gov.hmrc.bobby.domain.Version
-
-import scala.util.Failure
 
 class HmrcBintraySpec extends AnyFlatSpec with Matchers with OptionValues {
 
