@@ -17,6 +17,7 @@
 package uk.gov.hmrc
 
 import sbt.LoadedBuildUnit
+import sbt.CrossVersion
 
 object SbtCrossSupport {
   // Resolve the correct location of the class depending on the sbt version
@@ -25,5 +26,7 @@ object SbtCrossSupport {
   // Retrieve all plugin names. For sbt 0.13 this includes non-auto plugins
   def pluginNames(buildUnit: LoadedBuildUnit) =
     buildUnit.unit.plugins.detected.autoPlugins.map(_.name).toList :::
-      buildUnit.unit.plugins.detected.autoPlugins.map(_.name).toList
+      buildUnit.unit.plugins.detected.plugins.names.toList
+
+  def crossVersionDisabled: CrossVersion = CrossVersion.Disabled
 }

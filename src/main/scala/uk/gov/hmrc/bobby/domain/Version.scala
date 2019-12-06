@@ -20,22 +20,21 @@ object Version {
 
   private def isAllDigits(x: String) = x forall Character.isDigit
 
-  def apply(st: String): Version = {
-
-    val split = st.split("[-_]", 2)
-    val vv    = toVer(split.lift(0).getOrElse("0"))
+  def apply(versionString: String): Version = {
+    val split = versionString.split("[-_]", 2)
+    val versionNumberParts = toVer(split.headOption.getOrElse("0"))
     val boq   = toBuildOrQualifier(ignorePlaySuffixForCrossCompiledLibs(split.lift(1)))
 
-    val foo =
-      if (vv == (0, 0, 0)) Version(0, 0, 0, Some(Right(st)))
-      else Version(vv._1, vv._2, vv._3, boq)
-    foo
+    versionNumberParts match {
+      case (0, 0, 0) => Version(0, 0, 0, Some(Right(versionString)))
+      case _ => Version(versionNumberParts._1, versionNumberParts._2, versionNumberParts._3, boq)
+    }
   }
 
   def toVer(v: String): (Int, Int, Int) = {
     val elem = v.split('.')
     if (elem.forall(x => isAllDigits(x)) &&
-        elem.size <= 3 &&
+        elem.length <= 3 &&
         !v.startsWith(".") &&
         !v.endsWith(".") &&
         !v.contains(".."))
