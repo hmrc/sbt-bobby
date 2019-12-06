@@ -7,7 +7,7 @@ import sbt.IO._
 
 jsonOutputFileOverride := Some("/tmp/bobby-json-out.json")
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.12.10"
 
 libraryDependencies := Seq("uk.gov.hmrc" %% "play-health" % "0.1.0", "uk.gov.hmrc" %% "play-filters" % "0.1.0")
 

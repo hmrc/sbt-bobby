@@ -19,7 +19,9 @@ lazy val root = (project in file("."))
       "com.typesafe.play"     %% "play-json"    % "2.6.14"  % Test,
       "org.scalatest"         %% "scalatest"    % "3.1.0"   % Test,
       "com.vladsch.flexmark"  % "flexmark-all"  % "0.35.10" % Test
-    )
+    ),
+    scriptedLaunchOpts := { scriptedLaunchOpts.value ++
+      Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
+    scriptedBufferLog := false
   )
-//  .settings(ScriptedPlugin.scriptedSettings: _*)
-//  .settings(scriptedLaunchOpts += s"-Dproject.version=${version.value}")
