@@ -4,7 +4,7 @@ lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
   .settings(
-    majorVersion := 0,
+    majorVersion := 1,
     makePublicallyAvailableOnBintray := true
   )
   .settings(
