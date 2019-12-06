@@ -105,7 +105,7 @@ import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
 ```
 Then point to the current config:
 ```
-deprecatedDependenciesUrl := Some(new URL("deprecated-dependencies.json")),
+deprecatedDependenciesUrl := Some(new URL("path to your bobby rules/deprecated dependencis file")),
 ```
 
 Then call the 'validate' command:
