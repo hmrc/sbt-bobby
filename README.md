@@ -133,7 +133,7 @@ If you want to prevent outdated dependencies from being used by your project out
 
 Once this is done, tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
-```properties
+```
 deprecated-dependencies = https://some-url/deprecated-dependencies.json
 deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 ```
@@ -142,7 +142,7 @@ deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 Bobby can be configured to output results to a structured JSON file. To enable this feature provide an output filepath using the 
 optional output-file parameter in your ~/.sbt/bobby.conf file. The file path could be relative or absolute.
 
-```properties
+```
 output-file = bobby-output.json
 ```
 

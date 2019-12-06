@@ -3,7 +3,7 @@ enablePlugins(SbtBobbyPlugin)
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys._
 import sbt.IO._
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.12.10"
 
 resolvers += Resolver.bintrayRepo("hmrc", "releases")
 
