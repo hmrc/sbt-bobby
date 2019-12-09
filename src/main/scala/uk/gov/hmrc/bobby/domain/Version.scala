@@ -16,30 +16,36 @@
 
 package uk.gov.hmrc.bobby.domain
 
+import scala.util.Try
+
 object Version {
 
   private def isAllDigits(x: String) = x forall Character.isDigit
 
   def apply(versionString: String): Version = {
     val split = versionString.split("[-_]", 2)
-    val versionNumberParts = toVer(split.headOption.getOrElse("0"))
+    val versionNumberParts = toVer(split.headOption.getOrElse("0.0.0"))
     val boq   = toBuildOrQualifier(ignorePlaySuffixForCrossCompiledLibs(split.lift(1)))
 
     versionNumberParts match {
       case (0, 0, 0) => Version(0, 0, 0, Some(Right(versionString)))
-      case _ => Version(versionNumberParts._1, versionNumberParts._2, versionNumberParts._3, boq)
+      case (maj, min, patch) => Version(maj, min, patch, boq)
     }
   }
 
   def toVer(v: String): (Int, Int, Int) = {
-    val elem = v.split('.')
-    if (elem.forall(x => isAllDigits(x)) &&
-        elem.length <= 3 &&
-        !v.startsWith(".") &&
-        !v.endsWith(".") &&
-        !v.contains(".."))
-      (elem.lift(0).getOrElse("0").toInt, elem.lift(1).getOrElse("0").toInt, elem.lift(2).getOrElse("0").toInt)
-    else (0, 0, 0)
+    val version1Regex = """(\d+)""".r
+    val version2Regex = """(\d+)\.(\d+)""".r
+    val version3Regex = """(\d+)\.(\d+)\.(\d+)""".r
+
+    def toInt(str: String) = Try(str.toInt).getOrElse(0)
+
+    v match {
+      case version1Regex(major) => (toInt(major), 0, 0)
+      case version2Regex(major, minor) => (toInt(major), toInt(minor), 0)
+      case version3Regex(major, minor, patch) => (toInt(major), toInt(minor), toInt(patch))
+      case _ => (0,0,0)
+    }
   }
 
   def toBuildOrQualifier(boqStOpt: Option[String]): Option[Either[Long, String]] =
