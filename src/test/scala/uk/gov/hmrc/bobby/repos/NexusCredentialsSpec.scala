@@ -18,12 +18,13 @@ package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import uk.gov.hmrc.bobby.conf.NexusCredentials
 
 import scala.util.Try
 
-class NexusCredentialsSpec extends FlatSpec with Matchers {
+class NexusCredentialsSpec extends AnyFlatSpec with Matchers {
 
   "buildsearchUrl" should
     "build valid URL" in {

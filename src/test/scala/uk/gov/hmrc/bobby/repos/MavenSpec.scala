@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.{OptionValues}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import uk.gov.hmrc.bobby.domain.Version
 
-class MavenSpec extends FlatSpec with Matchers with OptionValues {
+class MavenSpec extends AnyFlatSpec with Matchers with OptionValues {
 
   "Maven search" should "get versions from Maven search results" in {
     Maven.parseVersions(xml) shouldBe Seq(Version(3, 0, 0, Some(Right("M1"))), Version(2, 2, 4))

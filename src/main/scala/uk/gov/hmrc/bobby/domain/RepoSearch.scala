@@ -18,7 +18,7 @@ package uk.gov.hmrc.bobby.domain
 
 import sbt.ModuleID
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 trait RepoSearch {
 

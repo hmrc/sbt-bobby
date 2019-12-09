@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.bobby.output
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import play.api.libs.json._
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.MessageBuilder._
 import uk.gov.hmrc.bobby.domain._
 
-class JsonOutputFileWriterSpec extends FlatSpec with Matchers {
+class JsonOutputFileWriterSpec extends AnyFlatSpec with Matchers {
 
   "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
     val jsonOutputFileWriter: JsonOutingFileWriter = new JsonOutingFileWriter(Configuration.defaultJsonOutputFile)

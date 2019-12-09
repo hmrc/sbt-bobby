@@ -1,5 +1,11 @@
 resolvers += Resolver.url("hmrc-sbt-plugin-releases", url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(
   Resolver.ivyStylePatterns)
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-bobby"      % sys.props("project.version"))
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "1.0.0")
+// This dependency being present should cause a warning from bobby
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.2.0")
+
+sys.props.get("plugin.version") match {
+  case Some(x) => addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % x)
+  case _ => sys.error("""|The system property 'plugin.version' is not defined.
+                         |Specify this property using the scriptedLaunchOpts -D.""".stripMargin)
+}

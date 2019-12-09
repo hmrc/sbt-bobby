@@ -18,12 +18,11 @@ package uk.gov.hmrc.bobby
 
 import java.net.URL
 
-import org.joda.time.LocalDate
 import sbt._
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{JsonOutingFileWriter, Output, Tabulator, TextOutingFileWriter}
+import uk.gov.hmrc.bobby.output.Output
 import uk.gov.hmrc.bobby.repos.Repositories
 
 import scala.util.Try

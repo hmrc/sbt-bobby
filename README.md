@@ -77,13 +77,35 @@ An example commit is as follows. Note that we should always try to stick to one 
 
 # How to use Bobby on your local builds
 
-In your `~/.sbt/0.13/plugins/build.sbt`, set:
+### Sbt 1.x
+
+Since major version 2, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
+
+| Sbt version | Plugin version |
+| ----------- | -------------- |
+| `0.13.x`    | `any`          |
+| `>= 1.x`    | `>= 2.x`       |
+
+In your project/plugins.sbt file:
+
 ```scala
 resolvers += Resolver.url(
   "hmrc-sbt-plugin-releases",
     url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
+```
+
+Then in your `build.sbt` you need to tell `sbt-bobby` where the configuration rules are.
+
+First add the required imports:
+```
+import java.net.URL
+import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
+```
+Then point to the current config:
+```
+deprecatedDependenciesUrl := Some(new URL("path to your bobby rules/deprecated dependencis file")),
 ```
 
 Then call the 'validate' command:
@@ -133,7 +155,7 @@ If you want to prevent outdated dependencies from being used by your project out
 
 Once this is done, tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
-```properties
+```
 deprecated-dependencies = https://some-url/deprecated-dependencies.json
 deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 ```
@@ -142,7 +164,7 @@ deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 Bobby can be configured to output results to a structured JSON file. To enable this feature provide an output filepath using the 
 optional output-file parameter in your ~/.sbt/bobby.conf file. The file path could be relative or absolute.
 
-```properties
+```
 output-file = bobby-output.json
 ```
 
@@ -150,7 +172,7 @@ output-file = bobby-output.json
 
 * The test-project folder contains a simple test project is useful for executing the sbt-bobby plugin from source against a test project. CD into the directory and run ```sbt validate```. It can also be debugged by doing ```sbt -jvm-debug 5005 validate```
  
-* Bobby uses [scripted](http://eed3si9n.com/testing-sbt-plugins) tests which are executed with ```sbt scripted```
+* Bobby uses [scripted](https://www.scala-sbt.org/1.x/docs/Testing-sbt-plugins.html) tests which are executed with ```sbt scripted```
 
 ## License ##
  

@@ -16,15 +16,17 @@
 
 package uk.gov.hmrc.bobby.repos
 
-import org.scalatest.{FlatSpec, Matchers, OptionValues}
+import org.scalatest.OptionValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import sbt.{CrossVersion, ModuleID}
 import uk.gov.hmrc.bobby.domain.Version
 
-class ArtifactorySpec extends FlatSpec with Matchers with OptionValues {
+class ArtifactorySpec extends AnyFlatSpec with Matchers with OptionValues {
 
   "Artifactory build search url" should "build the Artifactory URL including scala version" in {
     new HmrcArtifactory("https://somehost")
-      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0", crossVersion = CrossVersion.binary), Some("2.11"))
+      .buildSearchUrl(ModuleID("uk.gov.hmrc", "time", "1.2.0").withCrossVersion(crossVersion = CrossVersion.binary), Some("2.11"))
       .toString shouldBe "https://somehost/hmrc-releases/uk/gov/hmrc/time_2.11/maven-metadata.xml"
   }
 

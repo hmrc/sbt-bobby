@@ -20,7 +20,6 @@ import java.io.File
 import java.nio.file.Files
 
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain.Message
 
 class JsonOutingFileWriter(val filepath: String) {

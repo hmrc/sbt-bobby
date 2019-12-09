@@ -18,7 +18,8 @@ package uk.gov.hmrc.bobby.repos
 
 import java.net.URL
 
-import sbt.{CrossVersion, ModuleID}
+import sbt.ModuleID
+import uk.gov.hmrc.SbtCrossSupport
 import uk.gov.hmrc.bobby.domain.{RepoSearch, Version}
 import uk.gov.hmrc.bobby.{Helpers, Http}
 
@@ -50,7 +51,7 @@ trait Artifactory extends RepoSearch {
 
   def buildSearchUrl(versionInformation: ModuleID, scalaVersion: Option[String]): URL = {
     val moduleNameSuffix =
-      if (versionInformation.crossVersion == CrossVersion.Disabled) ""
+      if (versionInformation.crossVersion == SbtCrossSupport.crossVersionDisabled) ""
       else
         scalaVersion
           .map { sv =>

@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.bobby
 
-import sbt._
+import sbt.{Artifact, File, ModuleID, UpdateReport}
+import uk.gov.hmrc.SbtCrossSupport
+import uk.gov.hmrc.SbtCrossSupport.BuildStructure
 
 //
 // heavily influenced by https://github.com/jozic/sbt-about-plugins/blob/master/src/main/scala/com/github/sbt/aboutplugins/AboutPluginsPlugin.scala.
@@ -29,8 +31,7 @@ object ProjectPlugin {
   def plugins(build: BuildStructure): Seq[ModuleID] = {
 
     val pluginNamesAndLoaders = build.units.values.map { u =>
-      val pNames = u.unit.plugins.detected.autoPlugins.map(_.name).toList ::: u.unit.plugins.detected.plugins.names
-        .toList
+      val pNames = SbtCrossSupport.pluginNames(u)
       (pNames, u.unit.plugins.loader)
     }.toSeq
 

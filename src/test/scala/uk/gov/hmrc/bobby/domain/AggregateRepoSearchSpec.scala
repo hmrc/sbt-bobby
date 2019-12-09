@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.scalatest.{FlatSpec, Matchers, TryValues}
+import org.scalatest.TryValues
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
 
 import scala.util.{Failure, Success, Try}
 
-class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
+class AggregateRepoSearchSpec extends AnyFlatSpec with Matchers with TryValues {
 
   val timeRepo = new RepoSearch {
     override def search(versionInformation: ModuleID, scalaVersion: Option[String]): Try[Version] =
@@ -62,7 +64,7 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
       override def repos: Seq[RepoSearch] = Seq(timeRepo2, timeRepo)
     }
 
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("4.0.0"))
+    aggregateSearch.search(ModuleID("uk.gov.hmrc", "time", "3.2.1"), None) shouldBe Success(Version("4.0.0"))
   }
 
   "AggregateRepoSearch" should "look in two repositories to find a dependency" in {
@@ -73,9 +75,9 @@ class AggregateRepoSearchSpec extends FlatSpec with Matchers with TryValues {
       override def repos: Seq[RepoSearch] = Seq(timeRepo, domainRepo)
     }
 
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "time", "3.2.1"), None)            shouldBe Success(Version("3.2.1"))
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None)          shouldBe Success(Version("3.0.0"))
-    aggregateSearch.search(new ModuleID("uk.gov.hmrc", "email", "1.2.1"), None).isFailure shouldBe true
+    aggregateSearch.search(ModuleID("uk.gov.hmrc", "time", "3.2.1"), None)            shouldBe Success(Version("3.2.1"))
+    aggregateSearch.search(ModuleID("uk.gov.hmrc", "domain", "3.0.0"), None)          shouldBe Success(Version("3.0.0"))
+    aggregateSearch.search(ModuleID("uk.gov.hmrc", "email", "1.2.1"), None).isFailure shouldBe true
   }
 
 }

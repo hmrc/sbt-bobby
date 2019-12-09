@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.bobby
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain._
 import MessageLevels.{ERROR, INFO, WARN}
 import MessageBuilder._
 
-class BobbySpec extends FlatSpec with Matchers {
+class BobbySpec extends AnyFlatSpec with Matchers {
 
   it should "compact dependencies by using one dependnecy when more than one has the " in {
     val mods = Seq(
-      ModuleID("uk.gov.hmrc", "auth", "3.2.0", configurations = Some("test")),
+      ModuleID("uk.gov.hmrc", "auth", "3.2.0").withConfigurations(Some("test")),
       ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
     Bobby.compactDependencies(mods).size shouldBe 1
@@ -37,7 +38,7 @@ class BobbySpec extends FlatSpec with Matchers {
 
     val mods = Seq(
       auth,
-      ModuleID("com.typesafe.play", "play-ws", "6.2.0", None)
+      ModuleID("com.typesafe.play", "play-ws", "6.2.0")
     )
 
     val blacklisted: Set[String] = Set("com.typesafe.play")

@@ -17,9 +17,10 @@
 package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
-import org.scalatest.{FlatSpec, Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-class DeprecatedDependenciesSpec extends FlatSpec with Matchers {
+class DeprecatedDependenciesSpec extends AnyFlatSpec with Matchers {
 
   "DeprecatedDependencies" should "filter plugin and lib dependencies" in {
 

@@ -36,7 +36,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val repositories = SettingKey[Seq[Repo]]("repositories", "The repositories to check, in order")
     lazy val checkForLatest = SettingKey[Boolean](
       "checkForLatest",
-      "Check against various repositories to compare project dependency versions agains latest available")
+      "Check against various repositories to compare project dependency versions against latest available")
     lazy val deprecatedDependenciesUrl =
       SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
     lazy val jsonOutputFileOverride =
