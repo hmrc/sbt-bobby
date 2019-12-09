@@ -79,12 +79,12 @@ An example commit is as follows. Note that we should always try to stick to one 
 
 ### Sbt 1.x
 
-Since major version 2, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
+Since major version 1, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
 
 | Sbt version | Plugin version |
 | ----------- | -------------- |
 | `0.13.x`    | `any`          |
-| `>= 1.x`    | `>= 2.x`       |
+| `>= 1.x`    | `>= 1.x`       |
 
 In your project/plugins.sbt file:
 
@@ -105,12 +105,15 @@ import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
 ```
 Then point to the current config:
 ```
-deprecatedDependenciesUrl := Some(new URL("path to your bobby rules/deprecated dependencis file")),
+deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
 ```
 
 Then call the 'validate' command:
 
 ```sbt validate```
+
+> Alternatively you can add a `bobby.conf` file and set the location there: 
+> `deprecated-dependencies=path to your bobby rules file`
 
 # Providing custom rules
 
