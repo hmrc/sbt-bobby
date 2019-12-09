@@ -29,7 +29,7 @@ object Version {
 
     versionNumberParts match {
       case (0, 0, 0) => Version(0, 0, 0, Some(Right(versionString)))
-      case (maj, min, patch) => Version(maj, min, patch, boq)
+      case (major, minor, patch) => Version(major, minor, patch, boq)
     }
   }
 
