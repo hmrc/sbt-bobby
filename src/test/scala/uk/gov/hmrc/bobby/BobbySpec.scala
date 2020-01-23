@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import MessageBuilder._
 
 class BobbySpec extends AnyFlatSpec with Matchers {
 
-  it should "compact dependencies by using one dependnecy when more than one has the " in {
+  it should "compact dependencies by using one dependency when more than one has the " in {
     val mods = Seq(
       ModuleID("uk.gov.hmrc", "auth", "3.2.0").withConfigurations(Some("test")),
       ModuleID("uk.gov.hmrc", "auth", "3.2.0"))

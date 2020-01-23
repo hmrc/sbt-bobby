@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import uk.gov.hmrc.bobby.domain.Message
 class JsonOutingFileWriter(val filepath: String) {
 
   private val logger = ConsoleLogger()
-
-//  val filepath: String
 
   def outputMessagesToJsonFile(messages: List[Message]) = {
     logger.debug("[bobby] Output file set to: " + filepath)
