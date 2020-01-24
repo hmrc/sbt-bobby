@@ -12,6 +12,10 @@ lazy val root = (project in file("."))
     name := pluginName,
     scalaVersion := "2.12.10",
     crossSbtVersions := Vector("0.13.18", "1.3.4"),
+    // Use the code from the sbt-dependency-graph plugin as if it was a standard library dependency
+    // We use the plugin to resolve the complete module graph for the purpose of validating bobby
+    // rule violations across transitive dependencies
+    addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
     libraryDependencies ++= Seq(
       "commons-codec"         % "commons-codec" % "1.14",
       "joda-time"             % "joda-time"     % "2.10.5",

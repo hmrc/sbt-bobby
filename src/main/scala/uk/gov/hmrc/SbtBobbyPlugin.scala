@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc
 
+import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.{Bobby, ProjectPlugin}
+import uk.gov.hmrc.bobby.{Bobby, GraphOps, ProjectPlugin}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -44,6 +45,7 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
   import BobbyKeys._
+  import net.virtualvoid.sbt.graph.DependencyGraphKeys._
 
   override lazy val projectSettings = Seq(
     deprecatedDependenciesUrl := None,
@@ -53,16 +55,30 @@ object SbtBobbyPlugin extends AutoPlugin {
     checkForLatest := true,
     validate := {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
-      Bobby.validateDependencies(
-        libraryDependencies.value,
-        ProjectPlugin.plugins(buildStructure.value),
-        scalaVersion.value,
-        repositories.value,
-        checkForLatest.value,
-        deprecatedDependenciesUrl.value,
-        jsonOutputFileOverride.value,
-        isSbtProject
-      )
+
+      // Construct a complete module graph, piggy-backing off `sbt-dependency-graph`
+      val g: ModuleGraph = GraphOps.pruneEvicted((Compile / moduleGraph).value)
+      // Remove the '_2.11' suffixes etc from the artefact names
+      val gClean = GraphOps.stripScalaVersionSuffix(g)
+      // Retrieve just the resolved module IDs
+      val sbtModuleIDs = GraphOps.topoSort(GraphOps.transpose(gClean))
+
+      val localDependencies = libraryDependencies.value
+      val transitiveDependendencies = sbtModuleIDs.map(id => ModuleID(id.organisation, id.name, id.version)) //Convert to standard sbt ModuleIDs
+      val pluginDependencies = ProjectPlugin.plugins(buildStructure.value)
+
+      Seq(localDependencies, transitiveDependendencies).foreach { deps =>
+        Bobby.validateDependencies(
+          deps,
+          pluginDependencies,
+          scalaVersion.value,
+          repositories.value,
+          checkForLatest.value,
+          deprecatedDependenciesUrl.value,
+          jsonOutputFileOverride.value,
+          isSbtProject
+        )
+      }
     }
   )
 }
