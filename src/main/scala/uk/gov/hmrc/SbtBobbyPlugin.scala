@@ -57,7 +57,7 @@ object SbtBobbyPlugin extends AutoPlugin {
       val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
 
       // Construct a complete module graph, piggy-backing off `sbt-dependency-graph`
-      val g: ModuleGraph = GraphOps.pruneEvicted((Compile / moduleGraph).value)
+      val g: ModuleGraph = GraphOps.pruneEvicted((moduleGraph in Compile).value)
       // Remove the '_2.11' suffixes etc from the artefact names
       val gClean = GraphOps.stripScalaVersionSuffix(g)
       // Retrieve just the resolved module IDs

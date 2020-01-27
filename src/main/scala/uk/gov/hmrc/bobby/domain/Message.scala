@@ -35,8 +35,8 @@ case object DependencyUnusable extends Result
 
 object Message {
   val tabularHeader =
-    Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline", "Reason")
-  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline")
+    Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Latest Version", "Effective From", "Reason")
+  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Latest Version", "Effective From")
 
   implicit object MessageOrdering extends Ordering[Message] {
     def compare(a: Message, b: Message) = a.level compare b.level
