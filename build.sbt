@@ -17,12 +17,14 @@ lazy val root = (project in file("."))
     // rule violations across transitive dependencies
     addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
     libraryDependencies ++= Seq(
-      "commons-codec"         % "commons-codec" % "1.14",
-      "joda-time"             % "joda-time"     % "2.10.5",
-      "org.joda"              % "joda-convert"  % "2.2.1",
-      "com.typesafe.play"     %% "play-json"    % "2.6.14"  % Test,
-      "org.scalatest"         %% "scalatest"    % "3.1.0"   % Test,
-      "com.vladsch.flexmark"  % "flexmark-all"  % "0.35.10" % Test
+      "commons-codec"         % "commons-codec"               % "1.14",
+      "joda-time"             % "joda-time"                   % "2.10.5",
+      "org.joda"              % "joda-convert"                % "2.2.1",
+      "com.typesafe.play"     %% "play-json"                  % "2.6.14"        % Test,
+      "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,
+      "com.vladsch.flexmark"  % "flexmark-all"                % "0.35.10"       % Test,
+      "org.scalacheck"        %% "scalacheck"                 % "1.14.3"        % Test,
+      "org.scalatestplus"     %% "scalatestplus-scalacheck"   % "3.1.0.0-RC2"   % Test
     ),
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)

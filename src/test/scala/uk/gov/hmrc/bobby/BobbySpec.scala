@@ -25,7 +25,7 @@ import MessageBuilder._
 
 class BobbySpec extends AnyFlatSpec with Matchers {
 
-  it should "compact dependencies by using one dependency when more than one has the " in {
+  it should "compact dependencies by only including them once if declared in multiple configurations" in {
     val mods = Seq(
       ModuleID("uk.gov.hmrc", "auth", "3.2.0").withConfigurations(Some("test")),
       ModuleID("uk.gov.hmrc", "auth", "3.2.0"))

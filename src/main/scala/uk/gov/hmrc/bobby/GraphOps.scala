@@ -20,20 +20,15 @@ import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
 
 // Modified from https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
 object GraphOps {
+
   /**
-   * Make the arrows go in the opposite direction.
-   *
-   * @param g
-   * @return
+   * Make the arrows go in the opposite direction (reverse the direction of all edges)
    */
   def transpose(g: ModuleGraph): ModuleGraph =
     g.copy(edges = g.edges.map { case (from, to) => (to, from) })
 
   /**
-   * Topological sort a ModuleGraph.
-   *
-   * @param g
-   * @return
+   * Topological sort a ModuleGraph, returning just the sequence of ModuleId's
    */
   def topoSort(g: ModuleGraph): Seq[ModuleId] = {
     def removeNodes(g: ModuleGraph, nodesForRemovalIds: Seq[ModuleId]): ModuleGraph = {
@@ -43,10 +38,12 @@ object GraphOps {
       ModuleGraph(updatedNodes, updatedEdges)
     }
 
+    // Recursively builds a list of ModuleIDs in sequence starting from the nodes, chopping off the nodes
+    // and making a new graph, then repeating.
     def go(curGraph: ModuleGraph, acc: Seq[ModuleId]): Seq[ModuleId] = {
       if (curGraph.nodes.isEmpty) acc
       else {
-        val roots = curGraph.roots.map(_.id)
+        val roots = curGraph.roots.map(_.id).sortBy(_.name)
         go(removeNodes(curGraph, roots), acc ++ roots)
       }
     }
@@ -55,6 +52,8 @@ object GraphOps {
   }
 
   /**
+   * Remove any edges that point to evicted dependencies.
+   *
    * Ivy (and sbt-dependency-graph) gives us a DAG containing
    * evicted modules, but not the evicted modules' dependencies
    * (unless those sub-dependencies are used by a non-evicted module,

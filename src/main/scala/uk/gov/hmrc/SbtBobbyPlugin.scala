@@ -60,25 +60,24 @@ object SbtBobbyPlugin extends AutoPlugin {
       val g: ModuleGraph = GraphOps.pruneEvicted((moduleGraph in Compile).value)
       // Remove the '_2.11' suffixes etc from the artefact names
       val gClean = GraphOps.stripScalaVersionSuffix(g)
-      // Retrieve just the resolved module IDs
+      // Retrieve just the resolved module IDs, in topologically sorted order
       val sbtModuleIDs = GraphOps.topoSort(GraphOps.transpose(gClean))
 
       val localDependencies = libraryDependencies.value
       val transitiveDependendencies = sbtModuleIDs.map(id => ModuleID(id.organisation, id.name, id.version)) //Convert to standard sbt ModuleIDs
       val pluginDependencies = ProjectPlugin.plugins(buildStructure.value)
 
-      Seq(localDependencies, transitiveDependendencies).foreach { deps =>
-        Bobby.validateDependencies(
-          deps,
-          pluginDependencies,
-          scalaVersion.value,
-          repositories.value,
-          checkForLatest.value,
-          deprecatedDependenciesUrl.value,
-          jsonOutputFileOverride.value,
-          isSbtProject
-        )
-      }
+      Bobby.validateDependencies(
+        localDependencies,
+        transitiveDependendencies,
+        pluginDependencies,
+        scalaVersion.value,
+        repositories.value,
+        checkForLatest.value,
+        deprecatedDependenciesUrl.value,
+        jsonOutputFileOverride.value,
+        isSbtProject
+      )
     }
   )
 }
