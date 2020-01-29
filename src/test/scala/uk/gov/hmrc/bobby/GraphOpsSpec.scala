@@ -25,6 +25,21 @@ import uk.gov.hmrc.bobby.Generators._
 
 class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
+  object deps {
+    val A = ModuleId("A", "a", "v1")
+    val B = ModuleId("B", "b", "v1")
+    val C = ModuleId("C", "c", "v1")
+    val D = ModuleId("D", "d", "v1")
+    val E = ModuleId("E", "e", "v1")
+    val F = ModuleId("F", "f", "v1")
+    val G = ModuleId("G", "g", "v1")
+    val H = ModuleId("H", "h", "v1")
+    val I = ModuleId("I", "i", "v1")
+    val J = ModuleId("J", "j", "v1")
+    val K = ModuleId("K", "k", "v1")
+  }
+  import deps._
+
   "stripScalaVersionSuffix" should "remove the scala suffix" in {
     forAll(moduleGen(_moduleIdGen = moduleIdGen(_nameGen = Gen.oneOf("auth_2.10", "auth_2.11", "auth_2.12")))) { module =>
       val stripped = GraphOps.stripScalaVersionSuffix(ModuleGraph(Seq(module), Seq.empty))
@@ -59,64 +74,44 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
   }
 
   "topoSort" should "do a basic sort a->b" in {
-    val a = ModuleId("A", "a", "v1")
-    val b = ModuleId("B", "b", "v1")
-    val graph = ModuleGraph(nodes = Seq(Module(a), Module(b)),
-      edges = Seq((a,b))
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
+      edges = Seq((A,B))
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(a,b)
+    topoSorted shouldBe Seq(A,B)
   }
 
   it should "do a basic sort b->a" in {
-    val a = ModuleId("A", "a", "v1")
-    val b = ModuleId("B", "b", "v1")
-    val graph = ModuleGraph(nodes = Seq(Module(a), Module(b)),
-      edges = Seq((b,a))
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
+      edges = Seq((B,A))
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(b,a)
+    topoSorted shouldBe Seq(B,A)
   }
 
   it should "do a basic sort a->b->c" in {
-    val a = ModuleId("A", "a", "v1")
-    val b = ModuleId("B", "b", "v1")
-    val c = ModuleId("C", "c", "v1")
-    val graph = ModuleGraph(nodes = Seq(Module(a), Module(b), Module(c)),
-      edges = Seq((a,b), (b,c))
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
+      edges = Seq((A,B), (B,C))
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(a, b, c)
+    topoSorted shouldBe Seq(A, B, C)
   }
 
   it should "do a basic sort a->c->b" in {
-    val a = ModuleId("A", "a", "v1")
-    val b = ModuleId("B", "b", "v1")
-    val c = ModuleId("C", "c", "v1")
-    val graph = ModuleGraph(nodes = Seq(Module(a), Module(b), Module(c)),
-      edges = Seq((a,c), (c,b))
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
+      edges = Seq((A,C), (C,B))
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(a, c, b)
+    topoSorted shouldBe Seq(A, C, B)
   }
 
   it should "do a complex sort a->b, c->e->d (->a), g->h, j->k->i->f" in {
-    val a = ModuleId("A", "a", "v1")
-    val b = ModuleId("B", "b", "v1")
-    val c = ModuleId("C", "c", "v1")
-    val d = ModuleId("D", "d", "v1")
-    val e = ModuleId("E", "e", "v1")
-    val f = ModuleId("F", "f", "v1")
-    val g = ModuleId("G", "g", "v1")
-    val h = ModuleId("H", "h", "v1")
-    val i = ModuleId("I", "i", "v1")
-    val j = ModuleId("J", "j", "v1")
-    val k = ModuleId("K", "k", "v1")
-    val graph = ModuleGraph(nodes = Seq(Module(a), Module(b), Module(c), Module(d), Module(e), Module(f), Module(g), Module(h), Module(i), Module(j),Module(k)),
-      edges = Seq((a,b), (c,e), (e,d), (g,h), (j,k), (k,i), (i,f), (d,a))
+
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C), Module(D), Module(E), Module(F), Module(G), Module(H), Module(I), Module(J),Module(K)),
+      edges = Seq((A,B), (C,E), (E,D), (G,H), (J,K), (K,I), (I,F), (D,A))
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(c,g,j,e,h,k,d,i,a,f,b)
+    topoSorted shouldBe Seq(C,G,J,E,H,K,D,I,A,F,B)
   }
 
   it should "always have the roots first" in {
@@ -125,6 +120,46 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
       val roots = moduleGraph.roots.sortBy(_.id.name)
 
       topoSorted.take(roots.length) shouldBe roots.map(_.id)
+    }
+  }
+
+  "dependencyMap" should "map basic a->b" in {
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
+      edges = Seq((A,B))
+    )
+    val map = GraphOps.reverseDependencyMap(graph, Seq(A,B))
+    map shouldBe Map(B -> Seq(A), A -> Seq.empty)
+  }
+
+  it should "map with indirect edges a->b->c" in {
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
+      edges = Seq((A,B), (B,C))
+    )
+    val map = GraphOps.reverseDependencyMap(graph, Seq(A,B,C))
+    map shouldBe Map(C -> Seq(B, A), B -> Seq(A), A -> Seq.empty)
+  }
+
+  it should "map with a complex graph" in {
+    forAll(moduleGraphGen()) { graph =>
+
+      val pruned = GraphOps.pruneEvicted(graph)
+
+      // Get the nodes of the graph
+      val nodes = pruned.nodes.map(_.id)
+
+      // Build the reverse dependency map, via sbt-dependency-graph
+      val sbtDepGraphReverseMap = pruned.reverseDependencyMap
+
+      // Build the richer reverse dependency graph
+      val map = GraphOps.reverseDependencyMap(pruned, nodes)
+
+      // For every node in the graph, the list of connected nodes should match with the head from sbt-dependency-graph
+      nodes.map { id =>
+        val fullPathBackToRoot = map.getOrElse(id, Seq.empty)
+        val partialPathBackToRoot = sbtDepGraphReverseMap.getOrElse(id, Seq.empty).map(_.id)
+
+        fullPathBackToRoot.headOption shouldBe partialPathBackToRoot.headOption
+      }
     }
   }
 

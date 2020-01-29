@@ -54,7 +54,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated  = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectLibs = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(projectLibs, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectLibs, Seq.empty, None, deprecated)
 
     messages.head.level shouldBe ERROR
   }
@@ -62,7 +62,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
   it should "return error if a plugin is in the exclude range" in {
     val deprecated     = dependencies(deprecatedNow("uk.gov.hmrc", "auth-plugin", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth-plugin", "3.2.1"))
-    val messages       = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages       = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages.head.level shouldBe ERROR
   }
 
@@ -70,7 +70,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated          = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -78,7 +78,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated     = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -87,10 +87,10 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated          = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
 
     messages.head.level                 shouldBe ERROR
-    messages.head.shortTabularOutput(3) shouldBe "[*-SNAPSHOT]"
+    messages.head.shortTabularOutput(4) shouldBe "[*-SNAPSHOT]"
   }
 
   it should "return error if a plugin is in the exclude range using wildcards for org, name and version number " in {
@@ -98,10 +98,10 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated     = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
 
     messages.head.level                 shouldBe ERROR
-    messages.head.shortTabularOutput(3) shouldBe "[*-SNAPSHOT]"
+    messages.head.shortTabularOutput(4) shouldBe "[*-SNAPSHOT]"
   }
 
   it should "not return error for valid libraries that don't include snapshots" in {
@@ -109,7 +109,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val deprecated          = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
     messages shouldBe 'empty
 
   }
@@ -119,7 +119,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val deprecated     = dependencies(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages shouldBe 'empty
 
   }
@@ -137,7 +137,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
       deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)", dependencyType = Plugin)
     )
 
-    val messages = ResultBuilder.calculate(projectLibraries, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectLibraries, projectPlugins, None, deprecated)
     messages.map(_.level).toSet shouldBe Set(WARN, ERROR)
   }
 
@@ -146,7 +146,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated          = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -155,7 +155,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated     = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -164,7 +164,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated          = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -173,7 +173,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated     = dependencies(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages shouldBe 'empty
   }
 
@@ -182,7 +182,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated          = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -191,7 +191,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val deprecated     = dependencies(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]", dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
     messages.head.level shouldBe WARN
   }
 
@@ -201,13 +201,14 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
       deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1)))
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, None, deprecated)
 
     messages.head.longTabularOutput(0) shouldBe "ERROR"
     messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
-    messages.head.longTabularOutput(2) shouldBe "3.2.0"
-    messages.head.longTabularOutput(5) shouldBe "2000-01-01"
-    messages.head.longTabularOutput(6) shouldBe "the reason"
+    messages.head.longTabularOutput(2) shouldBe ""
+    messages.head.longTabularOutput(3) shouldBe "3.2.0"
+    messages.head.longTabularOutput(6) shouldBe "2000-01-01"
+    messages.head.longTabularOutput(7) shouldBe "the reason"
   }
 
   it should "produce error message for mandatory plugins which are currently been enforced" in {
@@ -222,14 +223,15 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
         dependencyType = Plugin))
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-    val messages = ResultBuilder.calculate(Seq.empty, projectPlugins, None, deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, Seq.empty, projectPlugins, None, deprecated)
 
     val pluginMessage = messages.head
     pluginMessage.longTabularOutput(0) shouldBe "ERROR"
     pluginMessage.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
-    pluginMessage.longTabularOutput(2) shouldBe "3.2.0"
-    pluginMessage.longTabularOutput(5) shouldBe "2000-01-01"
-    pluginMessage.longTabularOutput(6) shouldBe "the reason"
+    pluginMessage.longTabularOutput(2) shouldBe ""
+    pluginMessage.longTabularOutput(3) shouldBe "3.2.0"
+    pluginMessage.longTabularOutput(6) shouldBe "2000-01-01"
+    pluginMessage.longTabularOutput(7) shouldBe "the reason"
   }
 
   it should "show a ERROR message for a library which has a newer version in a repository AND is a mandatory upgrade now" in {
@@ -237,7 +239,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
     messages.head.longTabularOutput(0) shouldBe "ERROR"
   }
 
@@ -246,7 +248,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("4.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages.size                    shouldBe 1
     messages.head.level              shouldBe WARN
@@ -259,7 +261,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.3.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages.size                    shouldBe 1
     messages.head.level              shouldBe INFO
@@ -272,7 +274,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.2.1")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages shouldBe 'empty
   }
@@ -282,7 +284,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Failure(new Exception("not-found")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages.head.level              shouldBe INFO
     messages.head.shortTabularOutput should contain("3.2.1")
@@ -294,7 +296,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("3.8.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages.head.level              shouldBe WARN
     messages.head.shortTabularOutput should contain("(,4.0.0]")
@@ -308,7 +310,7 @@ class ResultBuilderSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
     val repoDependencies    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Success(Version("1.0.0")))
 
-    val messages = ResultBuilder.calculate(projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
+    val messages = ResultBuilder.calculate(Map.empty, projectDependencies, Seq.empty, Some(repoDependencies), deprecated)
 
     messages.head.shortTabularOutput should not contain "1.0.0"
     messages.head.shortTabularOutput should not contain "3.1.0"

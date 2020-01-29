@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby
 
-import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
+import net.virtualvoid.sbt.graph.{GraphTransformations, ModuleGraph, ModuleId}
+import sbt.ModuleID
 
 // Modified from https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
 object GraphOps {
@@ -91,6 +92,26 @@ object GraphOps {
         case (from, to) => stripUnderscore(from) -> stripUnderscore(to)
       }
     )
+  }
+
+  // Build a dependency map which is keyed by the leaves, and contains a linear sequence of nodes that lead to the root that
+  // brought in that particular leaf dependency
+  // The sbt-dependency-graph plugin can build a reverse dependency map but it only considers one level
+  // i.e. if we have a->b->c :
+  // With sbt-dependency-graph we'll get a map: C->B, B->A. i.e. C does not contain the line all the way back to A
+  // With this method, we return a richer map: C->B,A B->A  i.e. each node has all of the connections to get right back to the root
+  def reverseDependencyMap(graph: ModuleGraph, moduleIDs: Seq[ModuleId]): Map[ModuleId, Seq[ModuleId]] = {
+    moduleIDs.map { id =>
+      val localGraph = GraphTransformations.reverseGraphStartingAt(graph, id)
+      val topoSorted = GraphOps.topoSort(localGraph)
+      id -> topoSorted.filterNot(i => i == id) //Filter out the nodes themselves from the ancestry line, i.e. instead of C->C,B,A leave just C->B,A
+    }.toMap
+  }
+
+  def toSbtModuleID(id: ModuleId) = ModuleID(id.organisation, id.name, id.version)
+
+  def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] = {
+    map.map { case (k, v) => toSbtModuleID(k) -> v.map(toSbtModuleID)}
   }
 
 }

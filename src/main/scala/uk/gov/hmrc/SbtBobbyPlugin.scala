@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc
 
-import net.virtualvoid.sbt.graph.ModuleGraph
+import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.{Bobby, GraphOps, ProjectPlugin}
@@ -64,12 +64,17 @@ object SbtBobbyPlugin extends AutoPlugin {
       val sbtModuleIDs = GraphOps.topoSort(GraphOps.transpose(gClean))
 
       val localDependencies = libraryDependencies.value
-      val transitiveDependendencies = sbtModuleIDs.map(id => ModuleID(id.organisation, id.name, id.version)) //Convert to standard sbt ModuleIDs
+      val transitiveDependendencies = sbtModuleIDs
       val pluginDependencies = ProjectPlugin.plugins(buildStructure.value)
 
+      val deps = transitiveDependendencies ++ pluginDependencies.map(id => ModuleId(id.organization, id.name, id.revision))
+
+      val dMap = GraphOps.reverseDependencyMap(gClean, deps)
+
       Bobby.validateDependencies(
+        GraphOps.toSbtDependencyMap(dMap),
         localDependencies,
-        transitiveDependendencies,
+        transitiveDependendencies.map(GraphOps.toSbtModuleID),
         pluginDependencies,
         scalaVersion.value,
         repositories.value,

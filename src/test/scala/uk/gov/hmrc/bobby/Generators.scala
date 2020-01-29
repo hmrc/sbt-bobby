@@ -79,7 +79,8 @@ object Generators {
 
   def moduleGraphGen(): Gen[ModuleGraph] =
     for {
-      nodes <- nonEmptyListOf(moduleGen())
+      num <- chooseNum(1, 100)
+      nodes <- listOfN(num, moduleGen())
       edges <- edgeGen(nodes.map(_.id))
     } yield ModuleGraph(nodes, edges)
 }

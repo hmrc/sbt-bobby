@@ -23,6 +23,6 @@ import scala.util.Failure
 object MessageBuilder {
 
   def makeMessage(result: Result) =
-    new Message(result, ModuleID("org", "name", "0.0.0"), Failure(new Exception("ex")), None)
+    new Message(result, ModuleID("org", "name", "0.0.0"), Seq.empty, Failure(new Exception("ex")), None)
 
 }

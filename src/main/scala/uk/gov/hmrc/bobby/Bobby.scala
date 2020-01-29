@@ -42,6 +42,7 @@ object Bobby {
   )
 
   def validateDependencies(
+    dependencyMap: Map[ModuleID, Seq[ModuleID]],
     localDependencies: Seq[ModuleID],
     transitiveDependencies: Seq[ModuleID],
     pluginDependencies: Seq[ModuleID],
@@ -56,14 +57,14 @@ object Bobby {
 
     val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
 
-    val filteredLibraries = filterDependencies(localDependencies ++ transitiveDependencies, ignoredOrgs)
+    val filteredLibraries = filterDependencies(transitiveDependencies, ignoredOrgs)
 
     val latestLibraryRevisionsO = if (checkForLatest) {
       Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
     } else None
 
     val messages =
-      ResultBuilder.calculate(filteredLibraries, pluginDependencies, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
+      ResultBuilder.calculate(dependencyMap, filteredLibraries, pluginDependencies, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
 
     Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
 

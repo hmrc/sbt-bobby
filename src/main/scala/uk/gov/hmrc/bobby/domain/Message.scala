@@ -35,8 +35,8 @@ case object DependencyUnusable extends Result
 
 object Message {
   val tabularHeader =
-    Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Latest Version", "Effective From", "Reason")
-  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Latest Version", "Effective From")
+    Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Latest Version", "Effective From", "Reason")
+  val shortTabularHeader = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Latest Version", "Effective From")
 
   implicit object MessageOrdering extends Ordering[Message] {
     def compare(a: Message, b: Message) = a.level compare b.level
@@ -47,6 +47,7 @@ object Message {
 case class Message(
   result: Result,
   module: ModuleID,
+  dependencyChain: Seq[ModuleID],
   latestRevisionT: Try[Version],
   deprecationInfoO: Option[DeprecatedDependency]) {
 
@@ -55,6 +56,8 @@ case class Message(
   val latestRevision    = latestRevisionT.getOrElse("-")
 
   val moduleName = s"${module.organization}.${module.name}"
+
+  def buildModuleName(moduleID: ModuleID) = s"${moduleID.organization}.${moduleID.name}"
 
   val deadline: Option[LocalDate] = deprecationInfoO.map(_.from)
 
@@ -90,14 +93,17 @@ case class Message(
        |  }
        |}""".stripMargin
 
-  def shortTabularOutput: Seq[String] = Seq(
-    level.toString,
-    moduleName,
-    module.revision,
-    deprecationInfoO.map(_.range.toString()).getOrElse("-"),
-    latestRevisionT.map(_.toString).getOrElseWith(_.getMessage),
-    deadline.map(_.toString).getOrElse("-")
-  )
+  def shortTabularOutput: Seq[String] = {
+    Seq(
+      level.toString,
+      moduleName,
+      dependencyChain.lastOption.map(buildModuleName).getOrElse(""),
+      module.revision,
+      deprecationInfoO.map(_.range.toString()).getOrElse("-"),
+      latestRevisionT.map(_.toString).getOrElseWith(_.getMessage),
+      deadline.map(_.toString).getOrElse("-")
+    )
+  }
 
   def longTabularOutput: Seq[String] = shortTabularOutput :+ tabularMessage
 
