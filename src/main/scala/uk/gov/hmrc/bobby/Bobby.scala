@@ -25,8 +25,6 @@ import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.Output
 import uk.gov.hmrc.bobby.repos.Repositories
 
-import scala.util.Try
-
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
 object Bobby {
@@ -42,31 +40,30 @@ object Bobby {
   )
 
   def validateDependencies(
-    dependencyMap: Map[ModuleID, Seq[ModuleID]],
-    localDependencies: Seq[ModuleID],
-    transitiveDependencies: Seq[ModuleID],
+    projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
+    projectDependencies: Seq[ModuleID],
     pluginDependencies: Seq[ModuleID],
     scalaVersion: String,
     reposValue: Seq[Repo],
     checkForLatest: Boolean,
-    deprecatedDependenciesUrl: Option[URL] = None,
-    jsonOutputFileOverride: Option[String] = None,
-    isSbtProject: Boolean                  = false) = {
+    bobbyRulesUrl: Option[URL] = None,
+    jsonOutputFileOverride: Option[String] = None): Unit = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
+    val config = new Configuration(bobbyRulesUrl, jsonOutputFileOverride)
 
-    val filteredLibraries = filterDependencies(transitiveDependencies, ignoredOrgs)
+    val filteredLibraries = filterDependencies(projectDependencies, ignoredOrgs)
 
-    val latestLibraryRevisionsO = if (checkForLatest) {
-      Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
-    } else None
+    val latestDiscoveredVersions = if (checkForLatest) {
+      findLatestVersions(scalaVersion, reposValue, filteredLibraries++pluginDependencies)
+    } else Map.empty[ModuleID, Option[Version]]
 
     val messages =
-      ResultBuilder.calculate(dependencyMap, filteredLibraries, pluginDependencies, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
+      BobbyValidator.applyBobbyRules(projectDependencyMap, filteredLibraries, pluginDependencies, latestDiscoveredVersions, config.loadBobbyRules)
 
-    Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
+    Output.outputMessagesToConsole(messages)
+    Output.writeMessagesToFile(messages, config.jsonOutputFile, config.textOutputFile)
 
     if (messages.exists(_.isError))
       throw new BobbyValidationFailedException("See previous bobby output for more information")
@@ -75,7 +72,7 @@ object Bobby {
   def findLatestVersions(
     scalaVersion: String,
     repositoriesToCheck: Seq[Repo],
-    prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
+    prepared: Seq[ModuleID]): Map[ModuleID, Option[Version]] = {
     val repoSearch = Repositories.buildAggregateRepositories(repositoriesToCheck)
     getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
   }
@@ -88,13 +85,13 @@ object Bobby {
     scalaVersion: String,
     compacted: Seq[ModuleID],
     repoSearch: RepoSearch
-  ): Map[ModuleID, Try[Version]] =
+  ): Map[ModuleID, Option[Version]] =
     compacted.par
       .map { module =>
         module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
       }
       .seq
-      .toMap
+      .toMap.mapValues(_.toOption)
 
   private[bobby] def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
     def orgAndName(d: ModuleID) = s"${d.organization}.${d.name}"

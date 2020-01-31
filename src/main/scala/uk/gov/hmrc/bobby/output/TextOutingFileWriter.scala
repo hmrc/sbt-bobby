@@ -19,10 +19,15 @@ package uk.gov.hmrc.bobby.output
 import java.io.File
 import java.nio.file.Files
 
+import fansi.Str
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain.Message
 
 class TextOutingFileWriter(filepath: String) {
+
+  implicit class FansiStr(s: String) {
+    def fansi = Str(s)
+  }
 
   private val logger = ConsoleLogger()
 
@@ -38,7 +43,7 @@ class TextOutingFileWriter(filepath: String) {
         m.longTabularOutput
       }
 
-    Tabulator.format(Message.tabularHeader +: messageModel)
+    Tabulator.format((Message.tabularHeader +: messageModel).map(_.map(_.fansi)))
   }
 
   private def outputToFile(filepath: String, textString: String) = {
@@ -57,18 +62,20 @@ class TextOutingFileWriter(filepath: String) {
 //
 object Tabulator {
 
-  def format(table: Seq[Seq[Any]]): String = formatAsStrings(table).mkString("\n")
+  def format(table: Seq[Seq[fansi.Str]]): String = formatAsStrings(table).mkString("\n")
 
-  def formatAsStrings(table: Seq[Seq[Any]]): Seq[String] = table match {
+  def formatAsStrings(table: Seq[Seq[fansi.Str]]): Seq[String] = table match {
     case Seq() => Seq()
     case _ =>
-      val sizes    = for (row <- table) yield (for (cell <- row) yield if (cell == null) 0 else cell.toString.length)
+      val sizes    = for (row <- table) yield (for (cell <- row) yield if (cell == null) 0 else {
+        cell.length
+      })
       val colSizes = for (col <- sizes.transpose) yield col.max
       val rows     = for (row <- table) yield formatRow(row, colSizes)
-      formatRows(rowSeparator(colSizes), rows)
+      formatRows(fansi.Str(rowSeparator(colSizes)), rows).map(_.render)
   }
 
-  def formatRows(rowSeparator: String, rows: Seq[String]): Seq[String] =
+  def formatRows(rowSeparator: fansi.Str, rows: Seq[fansi.Str]): Seq[fansi.Str] =
     rowSeparator ::
       rows.head ::
       rowSeparator ::
@@ -76,8 +83,8 @@ object Tabulator {
       rowSeparator ::
       List()
 
-  def formatRow(row: Seq[Any], colSizes: Seq[Int]) = {
-    val cells = (for ((item, size) <- row.zip(colSizes)) yield if (size == 0) "" else ("%" + -size + "s").format(item))
+  def formatRow(row: Seq[fansi.Str], colSizes: Seq[Int]): fansi.Str = {
+    val cells = (for ((item, size) <- row.zip(colSizes)) yield if (size == 0) "" else  item + (" " * (size-item.length)))
     cells.mkString("| ", " | ", " |")
   }
 

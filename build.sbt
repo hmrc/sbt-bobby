@@ -20,6 +20,7 @@ lazy val root = (project in file("."))
       "commons-codec"         % "commons-codec"               % "1.14",
       "joda-time"             % "joda-time"                   % "2.10.5",
       "org.joda"              % "joda-convert"                % "2.2.1",
+      "com.lihaoyi"           %% "fansi"                      % "0.2.6",
       "com.typesafe.play"     %% "play-json"                  % "2.6.14"        % Test,
       "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,
       "com.vladsch.flexmark"  % "flexmark-all"                % "0.35.10"       % Test,
@@ -29,5 +30,6 @@ lazy val root = (project in file("."))
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
-    scriptedBufferLog := false
+    scriptedBufferLog := false,
+    useCoursier := false
   )

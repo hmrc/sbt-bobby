@@ -16,28 +16,28 @@
 
 package uk.gov.hmrc.bobby.output
 
+import fansi.{Color, Str}
 import sbt.ConsoleLogger
+import uk.gov.hmrc.bobby.domain.MessageLevels.ERROR
 import uk.gov.hmrc.bobby.domain._
 
 object Output {
 
   val logger = ConsoleLogger()
 
-  def outputMessages(messages: List[Message], jsonFilePath: String, textFilePath: String): Unit = {
-
-    outputMessagesToConsole(messages)
+  def writeMessagesToFile(messages: List[Message], jsonFilePath: String, textFilePath: String): Unit = {
     new JsonOutingFileWriter(jsonFilePath).outputMessagesToJsonFile(messages)
     new TextOutingFileWriter(textFilePath).outputMessagesToTextFile(messages)
   }
 
-  private def outputMessagesToConsole(messages: List[Message]): Unit = {
+  def outputMessagesToConsole(messages: List[Message]): Unit = {
     val model = buildTabularOutputModel(messages)
 
     logger.info(
       "[bobby] Bobby info and warnings. See bobby report artefact for more details. For more information " +
         "and documentation regarding bobby, please see the README at https://github.com/hmrc/sbt-bobby")
 
-    Tabulator.formatAsStrings(Message.shortTabularHeader +: model).foreach { log =>
+    Tabulator.formatAsStrings(Message.shortTabularHeader.map(s => fansi.Str(s)) +: model).foreach { log =>
       logger.info(log)
     }
 
@@ -46,12 +46,26 @@ object Output {
     }
   }
 
-  def buildTabularOutputModel(messages: List[Message]): List[Seq[String]] =
+  implicit class FansiMessage(m: Message) {
+    def fansi: Seq[Str] = {
+      Seq(
+        if(m.level == ERROR) Color.Red(m.level.name) else Color.Cyan(m.level.name),
+        if(m.dependencyChain.isEmpty) Color.Yellow(m.moduleName) else Str(m.moduleName),
+        Str(m.dependencyChain.lastOption.map(m.buildModuleName).getOrElse("")),
+        Str(m.module.revision),
+        Str(m.result.rule.map(_.range.toString()).getOrElse("-")),
+        Str(m.latestVersion.map(_.toString).getOrElse("?")),
+        Str(m.deadline.map(_.toString).getOrElse("-"))
+      )
+    }
+  }
+
+  def buildTabularOutputModel(messages: List[Message]): List[Seq[fansi.Str]] =
     messages
       .sortBy(_.moduleName)
       .sortWith((a, b) => MessageLevels.compare(a.level, b.level))
       .map { m =>
-        m.shortTabularOutput
+        m.fansi
       }
 
   def renderConsoleErrorMessage(text: String): Unit = {

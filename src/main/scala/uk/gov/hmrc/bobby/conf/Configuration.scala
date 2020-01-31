@@ -33,7 +33,7 @@ object Configuration {
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
-  def parseConfig(jsonConfig: String): List[DeprecatedDependency] = {
+  def parseConfig(jsonConfig: String): List[BobbyRule] = {
     import uk.gov.hmrc.bobby.NativeJsonHelpers._
 
     (for (M(map) <- JSON.parseFull(jsonConfig)) yield {
@@ -50,7 +50,7 @@ object Configuration {
           reason       <- mapS.get("reason")
           fromString   <- mapS.get("from")
           fromDate = LocalDate.parse(fromString)
-        } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
+        } yield BobbyRule.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
       }).toList.flatten
     }).getOrElse(List.empty)
 
@@ -96,7 +96,7 @@ class Configuration(
     (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
   val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
 
-  def loadDeprecatedDependencies: DeprecatedDependencies = {
+  def loadBobbyRules: BobbyRules = {
 
     val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u =>
       new URL(u)
@@ -105,7 +105,7 @@ class Configuration(
     bobbyConfig.fold {
       logger.warn(
         s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
-      DeprecatedDependencies.EMPTY
+      BobbyRules.EMPTY
     } { c =>
       try {
         logger.info(s"[bobby] loading deprecated dependency list from $c")
@@ -114,12 +114,12 @@ class Configuration(
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
 
-        DeprecatedDependencies(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
+        BobbyRules(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
 
       } catch {
         case e: Exception =>
           logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
-          DeprecatedDependencies.EMPTY
+          BobbyRules.EMPTY
       }
     }
   }

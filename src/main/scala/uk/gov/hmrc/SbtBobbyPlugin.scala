@@ -45,6 +45,7 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
   import BobbyKeys._
+  import uk.gov.hmrc.bobby.Util._
   import net.virtualvoid.sbt.graph.DependencyGraphKeys._
 
   override lazy val projectSettings = Seq(
@@ -54,34 +55,29 @@ object SbtBobbyPlugin extends AutoPlugin {
     repositories := Seq(Artifactory, Bintray),
     checkForLatest := true,
     validate := {
-      val isSbtProject = thisProject.value.base.getName == "project" // TODO find less crude way of doing this
+      // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
+      val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, ModuleId(organization.value.trim, name.value.trim, version.value.trim))
 
-      // Construct a complete module graph, piggy-backing off `sbt-dependency-graph`
-      val g: ModuleGraph = GraphOps.pruneEvicted((moduleGraph in Compile).value)
-      // Remove the '_2.11' suffixes etc from the artefact names
-      val gClean = GraphOps.stripScalaVersionSuffix(g)
+      // Retrieve the plugin dependencies. It would be nice to generate these in the same way via the full ModuleGraph, however the
+      // sbt UpdateReport in the pluginData is not rich enough. Seems we have the nodes but not the edges.
+      // Instead we just extract the locally added plugins
+      val pluginDependencies = ProjectPlugin.plugins(buildStructure.value).toSet.toList
+
       // Retrieve just the resolved module IDs, in topologically sorted order
-      val sbtModuleIDs = GraphOps.topoSort(GraphOps.transpose(gClean))
+      val projectDependencies = GraphOps.topoSort(GraphOps.transpose(projectDependencyGraph))
 
-      val localDependencies = libraryDependencies.value
-      val transitiveDependendencies = sbtModuleIDs
-      val pluginDependencies = ProjectPlugin.plugins(buildStructure.value)
-
-      val deps = transitiveDependendencies ++ pluginDependencies.map(id => ModuleId(id.organization, id.name, id.revision))
-
-      val dMap = GraphOps.reverseDependencyMap(gClean, deps)
+      // Construct a dependency map from each ModuleId -> Sequential list of transitive ModuleIds that brought it in, the tail being the origin
+      val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
 
       Bobby.validateDependencies(
-        GraphOps.toSbtDependencyMap(dMap),
-        localDependencies,
-        transitiveDependendencies.map(GraphOps.toSbtModuleID),
+        GraphOps.toSbtDependencyMap(dependencyMap), //Use vanilla sbt ModuleIDs
+        projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
         pluginDependencies,
         scalaVersion.value,
         repositories.value,
         checkForLatest.value,
         deprecatedDependenciesUrl.value,
-        jsonOutputFileOverride.value,
-        isSbtProject
+        jsonOutputFileOverride.value
       )
     }
   )

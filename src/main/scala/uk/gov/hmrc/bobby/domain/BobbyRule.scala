@@ -31,23 +31,22 @@ object DependencyType {
 }
 
 case object Library extends DependencyType
-
 case object Plugin extends DependencyType
 case object Unknown extends DependencyType
 
-case class DeprecatedDependency(
+case class BobbyRule(
   dependency: Dependency,
   range: VersionRange,
   reason: String,
   from: LocalDate,
-  _type: DependencyType)
+  `type`: DependencyType)
 
-case class DeprecatedDependencies(dependencies: List[DeprecatedDependency] = List.empty) {
-  lazy val (plugins, libs) = dependencies.partition(_._type == Plugin)
+case class BobbyRules(rules: List[BobbyRule] = List.empty) {
+  lazy val (plugins, libs) = rules.partition(_.`type` == Plugin)
 }
 
-object DeprecatedDependencies {
+object BobbyRules {
 
-  val EMPTY = DeprecatedDependencies()
+  val EMPTY = BobbyRules()
 
 }

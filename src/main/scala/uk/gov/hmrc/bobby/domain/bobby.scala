@@ -16,11 +16,24 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import sbt.ModuleID
+import sbt.librarymanagement.ModuleID
 
-object MessageBuilder {
-
-  def makeMessage(result: BobbyResult) =
-    new Message(result, ModuleID("org", "name", "0.0.0"), Seq.empty, None)
-
+sealed trait BobbyResult {
+  def failed: Boolean
+  def rule: Option[BobbyRule] = None
 }
+
+trait Failed extends BobbyResult { val failed = true }
+trait Passed extends BobbyResult { val failed = false }
+
+case class BobbyViolation(r: BobbyRule) extends BobbyResult() with Failed {
+  override def rule: Option[BobbyRule] = Some(r)
+}
+
+case class BobbyWarning(r: BobbyRule) extends BobbyResult with Passed {
+  override def rule: Option[BobbyRule] = Some(r)
+}
+
+case object BobbyOk extends BobbyResult with Passed
+
+case class BobbyChecked(moduleID: ModuleID, `type`: DependencyType, bobbyResult: BobbyResult)

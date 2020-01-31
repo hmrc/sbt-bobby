@@ -73,6 +73,23 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
     }
   }
 
+  "pruneNodes" should "remove a particular node c in a->b->c" in {
+    val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
+      edges = Seq((A,B), (B,C))
+    )
+    val pruned = GraphOps.pruneNodes(graph, m => m.id == C)
+    pruned.nodes.map(_.id) shouldBe Seq(A, B)
+  }
+
+  it should "remove any arbitrary node" in {
+    forAll(moduleGraphGen()) { graph =>
+      val toPrune = graph.nodes.head
+      val pruned = GraphOps.pruneNodes(graph, m => m.id == toPrune.id)
+      pruned.nodes.map(_.id).contains(toPrune.id) shouldBe false
+      pruned.nodes.size shouldBe graph.nodes.size - 1
+    }
+  }
+
   "topoSort" should "do a basic sort a->b" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
       edges = Seq((A,B))

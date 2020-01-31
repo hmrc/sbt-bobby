@@ -22,6 +22,7 @@ import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain._
 import MessageLevels.{ERROR, INFO, WARN}
 import MessageBuilder._
+import org.joda.time.LocalDate
 
 class BobbySpec extends AnyFlatSpec with Matchers {
 
@@ -47,13 +48,13 @@ class BobbySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "order messages correctly" in {
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", new LocalDate(), Library)
 
     val messages = Seq(
-      makeMessage(UnknownVersion),
-      makeMessage(NewVersionAvailable),
-      makeMessage(DependencyNearlyUnusable),
-      makeMessage(DependencyUnusable))
+      makeMessage(BobbyOk),
+      makeMessage(BobbyWarning(rule)),
+      makeMessage(BobbyViolation(rule)))
 
-    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO, INFO)
+    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
   }
 }

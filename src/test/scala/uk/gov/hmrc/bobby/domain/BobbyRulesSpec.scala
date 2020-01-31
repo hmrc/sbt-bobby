@@ -20,30 +20,30 @@ import org.joda.time.LocalDate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 
-class DeprecatedDependenciesSpec extends AnyFlatSpec with Matchers {
+class BobbyRulesSpec extends AnyFlatSpec with Matchers {
 
-  "DeprecatedDependencies" should "filter plugin and lib dependencies" in {
+  "BobbyRules" should "filter plugin and lib dependencies" in {
 
     val now = new LocalDate()
-    val dependencies: List[DeprecatedDependency] = List(
-      DeprecatedDependency(
+    val rules: List[BobbyRule] = List(
+      BobbyRule(
         Dependency("uk.gov.hmrc", "some-service"),
         VersionRange("(,1.0.0]"),
         "testing",
         now,
         Library),
-      DeprecatedDependency(
+      BobbyRule(
         Dependency("uk.gov.hmrc", "some-service"),
         VersionRange("(,1.0.0]"),
         "testing",
         now,
         Library),
-      DeprecatedDependency(Dependency("uk.gov.hmrc", "some-service"), VersionRange("(,1.0.0]"), "testing", now, Plugin)
+      BobbyRule(Dependency("uk.gov.hmrc", "some-service"), VersionRange("(,1.0.0]"), "testing", now, Plugin)
     )
-    val deps = DeprecatedDependencies(dependencies)
+    val deps = BobbyRules(rules)
 
-    deps.libs    should be(dependencies.take(2))
-    deps.plugins should be(dependencies.takeRight(1))
+    deps.libs    should be(rules.take(2))
+    deps.plugins should be(rules.takeRight(1))
   }
 
 }

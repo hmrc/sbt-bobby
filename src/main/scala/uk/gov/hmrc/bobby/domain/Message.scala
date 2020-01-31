@@ -18,20 +18,7 @@ package uk.gov.hmrc.bobby.domain
 
 import org.joda.time.LocalDate
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.Helpers._
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
-
-import scala.util.Try
-
-sealed trait Result
-
-case object UnknownVersion extends Result
-
-case object NewVersionAvailable extends Result
-
-case object DependencyNearlyUnusable extends Result
-
-case object DependencyUnusable extends Result
 
 object Message {
   val tabularHeader =
@@ -45,48 +32,43 @@ object Message {
 }
 
 case class Message(
-  result: Result,
+  result: BobbyResult,
   module: ModuleID,
   dependencyChain: Seq[ModuleID],
-  latestRevisionT: Try[Version],
-  deprecationInfoO: Option[DeprecatedDependency]) {
+  latestVersion: Option[Version]) {
 
-  val deprecationReason = deprecationInfoO.map(_.reason).getOrElse("-")
-  val deprecationFrom   = deprecationInfoO.map(_.from).getOrElse("-")
-  val latestRevision    = latestRevisionT.getOrElse("-")
+  val deprecationReason = result.rule.map(_.reason).getOrElse("-")
+  val deprecationFrom   = result.rule.map(_.from).getOrElse("-")
+  val latestRevision    = latestVersion.getOrElse("-")
+  val deadline: Option[LocalDate] =  result.rule.map(_.from)
 
   val moduleName = s"${module.organization}.${module.name}"
 
   def buildModuleName(moduleID: ModuleID) = s"${moduleID.organization}.${moduleID.name}"
 
-  val deadline: Option[LocalDate] = deprecationInfoO.map(_.from)
-
-  val (level, tabularMessage) = result match {
-    case UnknownVersion           => (INFO, s"Unable to get a latestRelease number for '${module.toString()}'")
-    case NewVersionAvailable      => (INFO, "A new version is available")
-    case DependencyNearlyUnusable => (WARN, deprecationReason)
-    case DependencyUnusable       => (ERROR, deprecationReason)
+  val level = result match {
+    case BobbyOk            => INFO
+    case BobbyWarning(_)    => WARN
+    case BobbyViolation(_)  => ERROR
   }
 
   val jsonMessage: String = result match {
-    case UnknownVersion => s"Unable to get a latestRelease number for '${module.toString()}'"
-    case NewVersionAvailable =>
-      s"${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '$latestRevision'"
-    case DependencyNearlyUnusable =>
-      s"${module.organization}.${module.name} ${module.revision} is deprecated: '$deprecationReason'. To be updated by $deprecationFrom to version $latestRevision"
-    case DependencyUnusable => deprecationReason
+    case BobbyOk         => ""
+    case BobbyWarning(r) =>
+      s"${module.organization}.${module.name} ${module.revision} is deprecated: '${r.reason}'. To be updated by ${r.from} to version $latestRevision"
+    case BobbyViolation(r) => r.reason
   }
 
   def isError: Boolean = level.equals(MessageLevels.ERROR)
 
-  def rawJson =
+  def rawJson: String =
     s"""{ "level" : "${level.name}",
        |  "message" : "$jsonMessage",
        |  "data": {
        |    "organisation" : "${module.organization}",
        |    "name" : "${module.name}",
        |    "revision" : "${module.revision}",
-       |    "result" : "$result",
+       |    "result" : "${result.getClass.getSimpleName}",
        |    "deprecationFrom" : "$deprecationFrom",
        |    "deprecationReason" : "$deprecationReason",
        |    "latestRevision" : "$latestRevision"
@@ -95,17 +77,17 @@ case class Message(
 
   def shortTabularOutput: Seq[String] = {
     Seq(
-      level.toString,
+      level.name,
       moduleName,
       dependencyChain.lastOption.map(buildModuleName).getOrElse(""),
       module.revision,
-      deprecationInfoO.map(_.range.toString()).getOrElse("-"),
-      latestRevisionT.map(_.toString).getOrElseWith(_.getMessage),
+      result.rule.map(_.range.toString()).getOrElse("-"),
+      latestVersion.map(_.toString).getOrElse("?"),
       deadline.map(_.toString).getOrElse("-")
     )
   }
 
-  def longTabularOutput: Seq[String] = shortTabularOutput :+ tabularMessage
+  def longTabularOutput: Seq[String] = shortTabularOutput :+ result.rule.map(_.reason).getOrElse("")
 
   def logOutput: (String, String) = level.name -> jsonMessage
 

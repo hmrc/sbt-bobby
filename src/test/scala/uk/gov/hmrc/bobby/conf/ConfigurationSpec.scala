@@ -42,7 +42,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
     c should have size 2
 
-    val (libs, plugins) = c.partition(_._type == Library)
+    val (libs, plugins) = c.partition(_.`type` == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.head.dependency.name         shouldBe "some-frontend"
@@ -70,7 +70,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
         |}
       """.stripMargin)
 
-    val (libs, plugins) = c.partition(_._type == Library)
+    val (libs, plugins) = c.partition(_.`type` == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.head.dependency.name         shouldBe "some-frontend"

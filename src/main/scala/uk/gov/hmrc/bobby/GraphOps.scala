@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.bobby
 
-import net.virtualvoid.sbt.graph.{GraphTransformations, ModuleGraph, ModuleId}
+import net.virtualvoid.sbt.graph.{GraphTransformations, Module, ModuleGraph, ModuleId}
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.Util._
 
-// Modified from https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
+// Based on https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
 object GraphOps {
 
   /**
@@ -63,7 +64,11 @@ object GraphOps {
    * if they happen to exist) edges.
    */
   def pruneEvicted(g: ModuleGraph): ModuleGraph = {
-    val usedModules = g.nodes.filterNot(_.isEvicted)
+    pruneNodes(g, m => m.isEvicted)
+  }
+
+  def pruneNodes(g: ModuleGraph, pruneFn: Module => Boolean): ModuleGraph = {
+    val usedModules = g.nodes.filterNot(pruneFn)
     val usedModuleIds = usedModules.map(_.id).toSet
     val legitEdges = g.edges.filter {
       case (from, to) =>
@@ -77,15 +82,16 @@ object GraphOps {
 
   }
 
+  def stripUnderscore(mid: ModuleId): ModuleId = {
+    val updatedName = mid.name.split("_2\\.\\d{2}").head
+    mid.copy(name = updatedName)
+  }
+
   // The full module graph includes the full artifact with names like:
   // uk.gov.hmrc.simple-reactivemongo_2.11
   // We want to strip off the _2.11 suffix so that the output from transitive dependencies matches what is shown
   // for local libraryDependencies
   def stripScalaVersionSuffix(g: ModuleGraph): ModuleGraph = {
-    def stripUnderscore(mid: ModuleId): ModuleId = {
-      val updatedName = mid.name.split("_2\\.\\d{2}").head
-      mid.copy(name = updatedName)
-    }
     g.copy(
       nodes = g.nodes.map(n => n.copy(id = stripUnderscore(n.id))),
       edges = g.edges.map {
@@ -108,10 +114,19 @@ object GraphOps {
     }.toMap
   }
 
-  def toSbtModuleID(id: ModuleId) = ModuleID(id.organisation, id.name, id.version)
-
   def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] = {
-    map.map { case (k, v) => toSbtModuleID(k) -> v.map(toSbtModuleID)}
+    map.map { case (k, v) => k.toSbt -> v.map(_.toSbt)}
+  }
+
+  def cleanGraph(graph: ModuleGraph, excludeNode: ModuleId): ModuleGraph = {
+    // Remove evicted nodes and the current project node
+    val pruned = pruneNodes(
+      pruneEvicted(graph)
+    , m => {
+        stripUnderscore(m.id) == stripUnderscore(excludeNode)
+      })
+    // Remove the '_2.11' suffixes etc from the artefact names
+    stripScalaVersionSuffix(pruned)
   }
 
 }

@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby
 
-sealed trait DependencyCheckResult {
-  def fail: Boolean
+import net.virtualvoid.sbt.graph.ModuleId
+import sbt.librarymanagement.ModuleID
+import uk.gov.hmrc.bobby.domain.Dependency
+
+object Util {
+
+  implicit class ExtendedModuleId(id: ModuleId) {
+    def toSbt = ModuleID(id.organisation, id.name, id.version)
+    def toDependency() = Dependency(id.organisation, id.name)
+  }
+
+  implicit class ExtendedSbtModuleID(id: ModuleID) {
+    def toDependencyGraph = ModuleId(id.organization, id.name, id.revision)
+    def toDependency() = Dependency(id.organization, id.name)
+  }
+
 }
-
-trait Fail extends DependencyCheckResult { val fail = true }
-trait Pass extends DependencyCheckResult { val fail = false }
-
-case class MandatoryFail(exclusion: DeprecatedDependency) extends DependencyCheckResult with Fail
-case class MandatoryWarn(exclusion: DeprecatedDependency) extends DependencyCheckResult with Pass
-case class NexusHasNewer(latest: String) extends DependencyCheckResult with Pass
-object NotFoundInNexus extends DependencyCheckResult with Pass
-object OK extends DependencyCheckResult with Pass
