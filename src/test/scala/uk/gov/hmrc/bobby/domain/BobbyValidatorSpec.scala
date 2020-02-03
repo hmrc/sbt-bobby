@@ -21,6 +21,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
+import uk.gov.hmrc.bobby.output.Flat
 
 class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
@@ -69,7 +70,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty,  Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "not return error if a plugin is not in the exclude range" in {
@@ -77,7 +78,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "return error if a library is in the exclude range using wildcards for org, name and version number " in {
@@ -87,7 +88,8 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty,  Map.empty, rules)
 
     messages.head.level                 shouldBe ERROR
-    messages.head.shortTabularOutput(4) shouldBe "[*-SNAPSHOT]"
+
+    Flat.renderMessage(messages.head)(4).plainText shouldBe "[*-SNAPSHOT]"
   }
 
   it should "return error if a plugin is in the exclude range using wildcards for org, name and version number " in {
@@ -97,7 +99,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins,  Map.empty, rules)
 
     messages.head.level                 shouldBe ERROR
-    messages.head.shortTabularOutput(4) shouldBe "[*-SNAPSHOT]"
+    Flat.renderMessage(messages.head)(4).plainText shouldBe "[*-SNAPSHOT]"
   }
 
   it should "not return error for valid libraries that don't include snapshots" in {
@@ -105,7 +107,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val rules          = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty,  Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "not return error for valid plugins that don't include snapshots" in {
@@ -113,7 +115,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val rules     = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins,  Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "return error if one of several dependencies is in the exclude range" in {
@@ -153,7 +155,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty,  Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "not return error for mandatory plugins which are superseded" in {
@@ -161,7 +163,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins,  Map.empty, rules)
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "produce warning message for mandatory libraries which will be enforced in the future" in {
@@ -187,12 +189,12 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty,  Map.empty, rules)
 
-    messages.head.longTabularOutput(0) shouldBe "ERROR"
-    messages.head.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
-    messages.head.longTabularOutput(2) shouldBe ""
-    messages.head.longTabularOutput(3) shouldBe "3.2.0"
-    messages.head.longTabularOutput(6) shouldBe "2000-01-01"
-    messages.head.longTabularOutput(7) shouldBe "the reason"
+    Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
+    Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
+    Flat.renderMessage(messages.head)(2).plainText shouldBe ""
+    Flat.renderMessage(messages.head)(3).plainText shouldBe "3.2.0"
+    Flat.renderMessage(messages.head)(6).plainText shouldBe "2000-01-01"
+    Flat.renderMessage(messages.head)(7).plainText shouldBe "the reason"
   }
 
   it should "produce error message for mandatory plugins which are currently been enforced" in {
@@ -209,12 +211,12 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins,  Map.empty, rules)
 
     val pluginMessage = messages.head
-    pluginMessage.longTabularOutput(0) shouldBe "ERROR"
-    pluginMessage.longTabularOutput(1) shouldBe "uk.gov.hmrc.auth"
-    pluginMessage.longTabularOutput(2) shouldBe ""
-    pluginMessage.longTabularOutput(3) shouldBe "3.2.0"
-    pluginMessage.longTabularOutput(6) shouldBe "2000-01-01"
-    pluginMessage.longTabularOutput(7) shouldBe "the reason"
+    Flat.renderMessage(pluginMessage)(0).plainText shouldBe "ERROR"
+    Flat.renderMessage(pluginMessage)(1).plainText shouldBe "uk.gov.hmrc.auth"
+    Flat.renderMessage(pluginMessage)(2).plainText shouldBe ""
+    Flat.renderMessage(pluginMessage)(3).plainText shouldBe "3.2.0"
+    Flat.renderMessage(pluginMessage)(6).plainText shouldBe "2000-01-01"
+    Flat.renderMessage(pluginMessage)(7).plainText shouldBe "the reason"
   }
 
   it should "show a ERROR message for a library which has a newer version in a repository AND is a mandatory upgrade now" in {
@@ -223,7 +225,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val latestVersionMap    = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("4.3.0")))
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
-    messages.head.longTabularOutput(0) shouldBe "ERROR"
+    Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
   }
 
   it should "show a WARN message for a library which has a newer version in a repository AND is a mandatory upgrade soon" in {
@@ -235,8 +237,8 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
     messages.size                    shouldBe 1
     messages.head.level              shouldBe WARN
-    messages.head.shortTabularOutput should contain("3.2.1")
-    messages.head.shortTabularOutput should contain("4.3.0")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("4.3.0")
   }
 
   it should "show an INFO message for a library which has a newer version in a repository" in {
@@ -248,8 +250,8 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
     messages.size                    shouldBe 1
     messages.head.level              shouldBe INFO
-    messages.head.shortTabularOutput should contain("3.2.1")
-    messages.head.shortTabularOutput should contain("3.3.0")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.3.0")
   }
 
   it should "not show a message if a library is up-to-date" in {
@@ -259,7 +261,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
 
-    messages.head.result shouldBe BobbyOk
+    messages.head.checked.result shouldBe BobbyOk
   }
 
   it should "show an INFO message for a library for which the latest nexus revision is unknown and show '?' in the results table" in {
@@ -270,8 +272,8 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
 
     messages.head.level              shouldBe INFO
-    messages.head.shortTabularOutput should contain("3.2.1")
-    messages.head.shortTabularOutput should contain("?")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("?")
   }
 
   it should "show an WARN message for a library which will be rules soon AND has a newer version in a repository" in {
@@ -282,10 +284,10 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
 
     messages.head.level              shouldBe WARN
-    messages.head.shortTabularOutput should contain("(,4.0.0]")
-    messages.head.shortTabularOutput should contain("3.2.1")
-    messages.head.shortTabularOutput should contain("3.8.0")
-    messages.head.shortTabularOutput should not contain "4.0.0"
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("(,4.0.0]")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
+    Flat.renderMessage(messages.head).map(_.plainText) should contain("3.8.0")
+    Flat.renderMessage(messages.head).map(_.plainText) should not contain "4.0.0"
   }
 
   it should "not show an earlier version of a mandatory library if the latest was not found in a repository" in {
@@ -295,7 +297,7 @@ class BobbyValidatorSpec extends AnyFlatSpec with Matchers {
 
     val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
 
-    messages.head.shortTabularOutput should not contain "1.0.0"
-    messages.head.shortTabularOutput should not contain "3.1.0"
+    Flat.renderMessage(messages.head).map(_.plainText) should not contain "1.0.0"
+    Flat.renderMessage(messages.head).map(_.plainText) should not contain "3.1.0"
   }
 }

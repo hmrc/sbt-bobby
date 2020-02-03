@@ -16,44 +16,6 @@
 
 package uk.gov.hmrc.bobby.output
 
-import java.io.File
-import java.nio.file.Files
-
-import fansi.Str
-import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.domain.Message
-
-class TextOutingFileWriter(filepath: String) {
-
-  implicit class FansiStr(s: String) {
-    def fansi = Str(s)
-  }
-
-  private val logger = ConsoleLogger()
-
-  def outputMessagesToTextFile(messages: List[Message]) = {
-    logger.info("[bobby] Output file set to: " + filepath)
-    outputToFile(filepath, renderText(messages))
-  }
-
-  def renderText(messages: List[Message]): String = {
-
-    val messageModel = messages.sorted
-      .map { m =>
-        m.longTabularOutput
-      }
-
-    Tabulator.format((Message.tabularHeader +: messageModel).map(_.map(_.fansi)))
-  }
-
-  private def outputToFile(filepath: String, textString: String) = {
-    val file: File = new File(filepath)
-    file.getParentFile.mkdirs()
-    logger.debug("[bobby] Writing Bobby report to: " + file.getAbsolutePath);
-
-    Files.write(file.toPath, textString.getBytes)
-  }
-}
 //
 // heavily influenced by http://stackoverflow.com/a/7542476/599068.
 //

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.bobby
 
+import fansi.Str
 import net.virtualvoid.sbt.graph.ModuleId
 import sbt.librarymanagement.ModuleID
 import uk.gov.hmrc.bobby.domain.Dependency
@@ -30,6 +31,11 @@ object Util {
   implicit class ExtendedSbtModuleID(id: ModuleID) {
     def toDependencyGraph = ModuleId(id.organization, id.name, id.revision)
     def toDependency() = Dependency(id.organization, id.name)
+    def moduleName = s"${id.organization}.${id.name}"
+  }
+
+  implicit class FansiStr(s: String) {
+    def fansi = Str(s)
   }
 
 }

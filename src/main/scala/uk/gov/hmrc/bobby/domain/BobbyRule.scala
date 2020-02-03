@@ -38,7 +38,7 @@ case class BobbyRule(
   dependency: Dependency,
   range: VersionRange,
   reason: String,
-  from: LocalDate,
+  effectiveDate: LocalDate,
   `type`: DependencyType)
 
 case class BobbyRules(rules: List[BobbyRule] = List.empty) {
@@ -47,6 +47,6 @@ case class BobbyRules(rules: List[BobbyRule] = List.empty) {
 
 object BobbyRules {
 
-  val EMPTY = BobbyRules()
+  val EMPTY: BobbyRules = BobbyRules()
 
 }

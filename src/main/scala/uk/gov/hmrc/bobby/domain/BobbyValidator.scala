@@ -50,9 +50,9 @@ object BobbyValidator {
     }).filter(_.range.includes(version))
 
     // Apply the earliest enforced rule first in the case of multiple
-    matchingRules.sortWith((a, b) => a.from.isBefore(b.from)).headOption  match {
+    matchingRules.sortWith((a, b) => a.effectiveDate.isBefore(b.effectiveDate)).headOption  match {
       case Some(rule) => {
-        rule.from match {
+        rule.effectiveDate match {
           case d if d.isBefore(now) || d.isEqual(now) => BobbyViolation(rule)
           case _ => BobbyWarning(rule)
         }
@@ -70,7 +70,7 @@ object BobbyValidator {
         nextVersionFound <- latestVersions.getOrElse(bc.moduleID, None)
         if nextVersionFound.isAfter(Version(bc.moduleID.revision)) //Don't show a next version < current version
       } yield nextVersionFound
-      Message(bc.bobbyResult, bc.moduleID, dependencyMap.getOrElse(bc.moduleID, Seq.empty), nextVersion)
+      Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty), nextVersion)
     }
   }
 }

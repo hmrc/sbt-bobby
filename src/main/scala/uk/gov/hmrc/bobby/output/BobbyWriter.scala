@@ -19,36 +19,29 @@ package uk.gov.hmrc.bobby.output
 import java.io.File
 import java.nio.file.Files
 
-import sbt.ConsoleLogger
+import sbt.internal.util.ConsoleLogger
 import uk.gov.hmrc.bobby.domain.Message
 
-class JsonOutingFileWriter(val filepath: String) {
+trait BobbyWriter {
 
-  private val logger = ConsoleLogger()
+  val logger = ConsoleLogger()
 
-  def outputMessagesToJsonFile(messages: List[Message]) = {
-    logger.debug("[bobby] Output file set to: " + filepath)
-    outputToFile(filepath, renderJson(messages))
-  }
+  def write(messages: List[Message], viewType: ViewType)
 
-  def renderJson(messages: List[Message]): String = {
+  def renderText(messages: List[Message], viewType: ViewType): String
 
-    val outputMessages = messages.map(_.rawJson)
+}
 
-    s"""{
-      | "results" : [
-      |   ${outputMessages.mkString(", ")}
-      | ]
-      |}""".stripMargin
+trait FileWriter extends BobbyWriter {
 
-  }
+  val filepath: String
 
-  private def outputToFile(filepath: String, jsonString: String) = {
+  def write(messages: List[Message], viewType: ViewType) {
     val file: File = new File(filepath)
     file.getParentFile.mkdirs()
-    logger.debug("[bobby] Writing Bobby report to: " + file.getAbsolutePath);
+    logger.info(s"[bobby] ${getClass.getSimpleName} - Writing Bobby report to: " + file.getAbsolutePath)
 
-    Files.write(file.toPath, jsonString.getBytes)
+    Files.write(file.toPath, renderText(messages, viewType).getBytes)
   }
 
 }

@@ -22,7 +22,7 @@ import sbt._
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
 import uk.gov.hmrc.bobby.conf.Configuration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.Output
+import uk.gov.hmrc.bobby.output.{Output, ViewType}
 import uk.gov.hmrc.bobby.repos.Repositories
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
@@ -32,13 +32,6 @@ object Bobby {
   private val logger         = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
-  val ignoredOrgs = Set(
-    "com.typesafe.play",
-    "com.kenshoo",
-    "com.codahale.metrics",
-    "org.scala-lang"
-  )
-
   def validateDependencies(
     projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
     projectDependencies: Seq[ModuleID],
@@ -46,27 +39,26 @@ object Bobby {
     scalaVersion: String,
     reposValue: Seq[Repo],
     checkForLatest: Boolean,
+    viewType: ViewType,
     bobbyRulesUrl: Option[URL] = None,
-    jsonOutputFileOverride: Option[String] = None): Unit = {
+    jsonOutputFileOverride: Option[String] = None,
+    ): Unit = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
     val config = new Configuration(bobbyRulesUrl, jsonOutputFileOverride)
 
-    val filteredLibraries = filterDependencies(projectDependencies, ignoredOrgs)
-
     val latestDiscoveredVersions = if (checkForLatest) {
-      findLatestVersions(scalaVersion, reposValue, filteredLibraries++pluginDependencies)
+      findLatestVersions(scalaVersion, reposValue, projectDependencies ++ pluginDependencies)
     } else Map.empty[ModuleID, Option[Version]]
 
     val messages =
-      BobbyValidator.applyBobbyRules(projectDependencyMap, filteredLibraries, pluginDependencies, latestDiscoveredVersions, config.loadBobbyRules)
+      BobbyValidator.applyBobbyRules(projectDependencyMap, projectDependencies, pluginDependencies, latestDiscoveredVersions, config.loadBobbyRules)
 
-    Output.outputMessagesToConsole(messages)
-    Output.writeMessagesToFile(messages, config.jsonOutputFile, config.textOutputFile)
+    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType)
 
-    if (messages.exists(_.isError))
-      throw new BobbyValidationFailedException("See previous bobby output for more information")
+    if(messages.exists(_.isError))
+      throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
   }
 
   def findLatestVersions(

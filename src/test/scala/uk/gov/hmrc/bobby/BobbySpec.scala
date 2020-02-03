@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.bobby
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.flatspec.AnyFlatSpec
-import sbt.ModuleID
-import uk.gov.hmrc.bobby.domain._
-import MessageLevels.{ERROR, INFO, WARN}
-import MessageBuilder._
 import org.joda.time.LocalDate
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import sbt.ModuleID
+import uk.gov.hmrc.bobby.domain.MessageBuilder._
+import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
+import uk.gov.hmrc.bobby.domain._
 
 class BobbySpec extends AnyFlatSpec with Matchers {
 

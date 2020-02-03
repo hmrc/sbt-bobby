@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.bobby.domain
+package uk.gov.hmrc.bobby.output
+import uk.gov.hmrc.bobby.domain.Message
+import uk.gov.hmrc.bobby.Util._
 
-import sbt.librarymanagement.ModuleID
+class TextFileWriter(val filepath: String) extends TextWriter with FileWriter {
 
-sealed trait BobbyResult {
-  def failed: Boolean
-  def rule: Option[BobbyRule] = None
+  override def renderText(messages: List[Message], viewType: ViewType): String = {
+    val messageModel = buildModel(messages, viewType).map(_.map(_.plainText.fansi))
+
+    Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)
+  }
+
 }
-
-case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
-  override def rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = true
-}
-
-case class BobbyWarning(r: BobbyRule) extends BobbyResult {
-  override def rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = false
-}
-
-case object BobbyOk extends BobbyResult {
-  val failed: Boolean = false
-}
-
-case class BobbyChecked(moduleID: ModuleID, `type`: DependencyType, result: BobbyResult)

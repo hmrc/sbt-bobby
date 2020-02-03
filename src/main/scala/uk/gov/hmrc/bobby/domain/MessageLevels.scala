@@ -20,7 +20,7 @@ object MessageLevels {
 
   sealed abstract class Level(val order: Int, val name: String) extends Ordered[Level] {
 
-    def compare(that: Level) = this.order - that.order
+    def compare(that: Level): Int = this.order - that.order
 
     override def toString = name
   }

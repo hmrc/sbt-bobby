@@ -19,11 +19,14 @@ package uk.gov.hmrc
 import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
 import sbt.Keys._
 import sbt._
+import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.{Bobby, GraphOps, ProjectPlugin}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
+
+  private val ENV_KEY_BOBBY_VIEW_TYPE        = "BOBBY_VIEW_TYPE"
 
   object BobbyKeys {
 
@@ -42,11 +45,14 @@ object SbtBobbyPlugin extends AutoPlugin {
       SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
     lazy val jsonOutputFileOverride =
       SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
+
+    val bobbyViewType = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
+
   }
 
   import BobbyKeys._
-  import uk.gov.hmrc.bobby.Util._
   import net.virtualvoid.sbt.graph.DependencyGraphKeys._
+  import uk.gov.hmrc.bobby.Util._
 
   override lazy val projectSettings = Seq(
     deprecatedDependenciesUrl := None,
@@ -54,6 +60,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     parallelExecution in GlobalScope := true,
     repositories := Seq(Artifactory, Bintray),
     checkForLatest := true,
+    bobbyViewType := sys.env.get(ENV_KEY_BOBBY_VIEW_TYPE).map(ViewType.apply).getOrElse(Compact),
     validate := {
       // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
       val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, ModuleId(organization.value.trim, name.value.trim, version.value.trim))
@@ -76,6 +83,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         scalaVersion.value,
         repositories.value,
         checkForLatest.value,
+        bobbyViewType.value,
         deprecatedDependenciesUrl.value,
         jsonOutputFileOverride.value
       )
