@@ -27,8 +27,8 @@ import scala.util.parsing.json.JSON
 
 object Configuration {
 
-  val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
-  val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
+  val credsFile: String = System.getProperty("user.home") + "/.sbt/.credentials"
+  val bintrayCredsFile: String = System.getProperty("user.home") + "/.bintray/.credentials"
 
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
@@ -90,10 +90,10 @@ class Configuration(
   val timeout = 3000
   val logger  = ConsoleLogger()
 
-  val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
+  val bobbyConfigFile: String = System.getProperty("user.home") + "/.sbt/bobby.conf"
 
   val jsonOutputFile: String =
-    (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
+    (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("json-output-file")).getOrElse(defaultJsonOutputFile)
   val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
 
   def loadBobbyRules: BobbyRules = {
@@ -108,7 +108,7 @@ class Configuration(
       BobbyRules.EMPTY
     } { c =>
       try {
-        logger.info(s"[bobby] loading deprecated dependency list from $c")
+        logger.info(s"[bobby] Loading Bobby Rules from: $c")
         val conn = c.openConnection()
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)

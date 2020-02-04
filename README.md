@@ -33,10 +33,10 @@ Bobby inspects the build and pulls out all of the dependencies you've declared, 
 
 It will then check each against the set of rules and tag each as either:
 
-* *BobbyViolation* => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue.
-* *BobbyWarning* => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a 
+* _BobbyViolation_ => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue.
+* _BobbyWarning_ => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a 
 BobbyViolation from the specified date, so should be looked at with high priority
-* *BobbyOk* => A dependency that is clean and his no rules against it. No issue to take
+* _BobbyOk_ => A dependency that is clean and his no rules against it. No issue to take
 
 ## Creating a Bobby Rule
 
@@ -88,12 +88,12 @@ Rules can be placed on:
 Each rule takes the same form:
 ```
 {
-      "organisation": "com.typesafe.play",
-      "name": "sbt-plugin",
-      "range": "(,2.5.19)",
-      "reason": "Critical security upgrade",
-      "from": "2019-03-04"
-    }
+  "organisation": "com.typesafe.play",
+  "name": "sbt-plugin",
+  "range": "(,2.5.19)",
+  "reason": "Critical security upgrade",
+  "from": "2019-03-04"
+}
 ```
 Where:
 * `organisation` and `name` identify the dependency
@@ -134,7 +134,8 @@ That's it!
 
 Now you can run bobby with `sbt validate`. 
 
-If your build it making use of any outlawed dependencies, and exception will be thrown. Otherwise, all is good and you can carry on with your day.
+If your build is making use of any outlawed dependencies, an exception will be thrown. 
+Otherwise, all is good and you can carry on with your day.
 
 > See the 'Configuration Options' section below for more configuration options
 
@@ -173,7 +174,7 @@ These reports tell you of any rule violations that are preventing your job from 
 highlighting any dependencies with warnings that will become violations in the future. Where discovered,
 the latest version that is available will be shown also.
 
-An example output looks like this (taken from the `test-project`):
+An example output looks like this (taken from the `test-project` in this repo, see below):
 
 ```
 [info] ************************************************************************************************************************
@@ -217,7 +218,7 @@ that are detected.
 
 The table lists violations and warnings at the top (with a level of `ERROR` or `WARN` respectively), and those with no issues after that
 with a level of `INFO`. Each row represents one dependency in the build, and where it is pulled in transitively, the actual dependency in your
-build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation it tells you 
+build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation as it tells you 
 what you need to change in order to fix it.
 
 Note that the KEY and colour coding is only applicable when outputting to the console. There is a `bobby-report.txt` file generated
@@ -249,15 +250,30 @@ deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
 ```
 
 ### Repositories to check for latest versions
-repositories
-checkForLatest
 
-### Changing the json file output location
+Bobby can try to pull in the latest versions of depenendencies and show them to you in the table.
+
+There are two settings to control this behaviour:
+
+```
+checkForLatest := true // Whether to lookup the latest version (true by default)
+repositories := Seq(Artifactory, Bintray) //The repositories to check, in order
+```
+
+> Note this feature is mostly specific to HMRC
+
+### Changing the file output location
 
 You can override where the json file is written using the setting:
 
 ```
 jsonOutputFileOverride := Some("target/changed-name-report.json")
+```
+
+And in the `bobby.conf` you can explicitly set the filename for each:
+```
+json-output-file = target/bobby-output.json
+text-output-file = target/bobby-output.txt
 ```
 
 ### Changing the view type

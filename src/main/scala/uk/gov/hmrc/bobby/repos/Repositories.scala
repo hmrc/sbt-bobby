@@ -31,7 +31,7 @@ object Repositories {
       val repoName                        = "aggregate"
       override val repos: Seq[RepoSearch] = buildRepos(repositories).flatten
 
-      logger.info(s"[bobby] using repositories: ${repos.map(_.repoName).mkString(", ")}")
+      logger.info(s"[bobby] Using repositories: ${repos.map(_.repoName).mkString(", ")}")
     }
 
   def buildRepos(repos: Seq[Repo]): Seq[Option[RepoSearch]] =

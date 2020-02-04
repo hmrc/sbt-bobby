@@ -33,22 +33,22 @@ object Bobby {
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
   def validateDependencies(
-    projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
-    projectDependencies: Seq[ModuleID],
-    pluginDependencies: Seq[ModuleID],
-    scalaVersion: String,
-    reposValue: Seq[Repo],
-    checkForLatest: Boolean,
-    viewType: ViewType,
-    bobbyRulesUrl: Option[URL] = None,
-    jsonOutputFileOverride: Option[String] = None): Unit = {
+     projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
+     projectDependencies: Seq[ModuleID],
+     pluginDependencies: Seq[ModuleID],
+     scalaVersion: String,
+     repositoriesToCheck: Seq[Repo],
+     checkForLatest: Boolean,
+     viewType: ViewType,
+     bobbyRulesUrl: Option[URL] = None,
+     jsonOutputFileOverride: Option[String] = None): Unit = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
     val config = new Configuration(bobbyRulesUrl, jsonOutputFileOverride)
 
     val latestDiscoveredVersions = if (checkForLatest) {
-      findLatestVersions(scalaVersion, reposValue, projectDependencies ++ pluginDependencies)
+      findLatestVersions(scalaVersion, repositoriesToCheck, projectDependencies ++ pluginDependencies)
     } else Map.empty[ModuleID, Option[Version]]
 
     val messages =

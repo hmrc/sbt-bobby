@@ -29,20 +29,27 @@ class ConsoleWriter extends TextWriter {
 
     logger.info(colourKey().mkString("\n"))
 
-    val (violations, warnings) = messages.filterNot(_.isOkay).partition(_.isError)
+    val needsAttention = messages.filterNot(_.isOkay)
 
     logger.info(renderText(messages, viewType))
 
-    if(warnings.nonEmpty){
-      logger.warn(s"WARNING: Your build has ${warnings.size} bobby warning(s). Please take action to fix these before the listed date, or they will " +
-        s"become violations that fail your build")
-      outputSummary(warnings).foreach(logger.warn(_))
+    if(needsAttention.nonEmpty){
+      val (violations, warnings) = needsAttention.partition(_.isError)
+
+      if(warnings.nonEmpty){
+        logger.warn(s"WARNING: Your build has ${warnings.size} bobby warning(s). Please take action to fix these before the listed date, or they will " +
+          s"become violations that fail your build")
+        outputSummary(warnings).foreach(logger.warn(_))
+      }
+
+      if(violations.nonEmpty){
+        logger.error(s"ERROR: Whistle blown! Your build has ${violations.size} bobby violation(s) and has been failed! Urgently fix the issues below:")
+        outputSummary(violations).foreach(logger.error(_))
+      }
+    } else {
+      logger.info(s"Wohoo, your build has no Bobby issues. Have a great day!")
     }
 
-    if(violations.nonEmpty){
-      logger.error(s"ERROR: Your build has ${violations.size} bobby violation(s) and has been failed! Urgently fix the issues below:")
-      outputSummary(violations).foreach(logger.error(_))
-    }
   }
 
   override def renderText(messages: List[Message], viewType: ViewType): String = {
