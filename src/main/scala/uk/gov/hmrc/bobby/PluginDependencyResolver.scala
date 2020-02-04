@@ -26,7 +26,7 @@ import uk.gov.hmrc.SbtCrossSupport.BuildStructure
 // - minor changes to get all the plugins by merging auto plugins
 //
 
-object ProjectPlugin {
+object PluginDependencyResolver {
 
   def plugins(build: BuildStructure): Seq[ModuleID] = {
 

@@ -280,7 +280,7 @@ text-output-file = target/bobby-output.txt
 Bobby can display the output table in a few different variations. Currently these are:
 
 * Flat => The standard table, with all columns
-* Compact => The standard table, minus the * Nested => 
+* Compact => The standard table, minus the reason column 
 * Nested => Shows the local dependencies with their transitives underneath them and indented
 
 To change the view type you can:

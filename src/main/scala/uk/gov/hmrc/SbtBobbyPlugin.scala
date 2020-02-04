@@ -19,13 +19,15 @@ package uk.gov.hmrc
 import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
 import sbt.Keys._
 import sbt._
+import uk.gov.hmrc.bobby.conf.ConfigFile
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
-import uk.gov.hmrc.bobby.{Bobby, GraphOps, ProjectPlugin}
+import uk.gov.hmrc.bobby.{Bobby, GraphOps, PluginDependencyResolver}
 
 object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
+  // Environment variable keys for customising bobby
   private val ENV_KEY_BOBBY_VIEW_TYPE = "BOBBY_VIEW_TYPE"
   private val ENV_KEY_BOBBY_STRICT_MODE = "BOBBY_STRICT_MODE"
 
@@ -63,14 +65,16 @@ object SbtBobbyPlugin extends AutoPlugin {
 
       // Retrieve the plugin dependencies. It would be nice to generate these in the same way via the full ModuleGraph, however the
       // sbt UpdateReport in the pluginData is not rich enough. Seems we have the nodes but not the edges.
-      // Instead we just extract the locally added plugins
-      val pluginDependencies = ProjectPlugin.plugins(buildStructure.value).toSet.toList
+      val pluginDependencies = PluginDependencyResolver.plugins(buildStructure.value).toSet.toList
 
       // Retrieve just the resolved module IDs, in topologically sorted order
       val projectDependencies = GraphOps.topoSort(GraphOps.transpose(projectDependencyGraph))
 
       // Construct a dependency map from each ModuleId -> Sequential list of transitive ModuleIds that brought it in, the tail being the origin
       val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
+
+      // Retrieve config settings
+      val bobbyConfigFile: ConfigFile = new ConfigFile(System.getProperty("user.home") + "/.sbt/bobby.conf")
 
       Bobby.validateDependencies(
         bobbyStrictMode.value,
@@ -80,6 +84,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         scalaVersion.value,
         bobbyViewType.value,
         deprecatedDependenciesUrl.value,
+        Some(bobbyConfigFile),
         jsonOutputFileOverride.value
       )
     }

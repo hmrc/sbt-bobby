@@ -20,7 +20,7 @@ import net.virtualvoid.sbt.graph.{GraphTransformations, Module, ModuleGraph, Mod
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
 
-// Based on https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
+// Initially inspired by https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
 object GraphOps {
 
   /**

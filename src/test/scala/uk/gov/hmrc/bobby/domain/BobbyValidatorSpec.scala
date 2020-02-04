@@ -239,10 +239,9 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "show an INFO message for a library which is not a violation or warning" in {
-      val rules = BobbyRules.EMPTY
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, BobbyRules())
 
       messages.size shouldBe 1
       messages.head.level shouldBe INFO

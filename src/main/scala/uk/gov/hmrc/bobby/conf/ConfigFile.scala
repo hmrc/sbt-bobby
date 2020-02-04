@@ -30,8 +30,8 @@ class ConfigFile(fileName: String) {
   }
 
   val load: Map[String, String] = {
-    val source = Source.fromFile(fileName)
     try {
+      val source = Source.fromFile(fileName)
       val lines = source.getLines().toList
       source.close()
       Configuration.extractMap(lines)

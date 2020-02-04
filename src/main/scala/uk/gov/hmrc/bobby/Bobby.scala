@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import sbt._
-import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.conf.{ConfigFile, Configuration}
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.{Output, ViewType}
 
@@ -38,11 +38,12 @@ object Bobby {
      scalaVersion: String,
      viewType: ViewType,
      bobbyRulesUrl: Option[URL] = None,
+     bobbyConfigFile: Option[ConfigFile] = None,
      jsonOutputFileOverride: Option[String] = None): Unit = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val config = new Configuration(bobbyRulesUrl, jsonOutputFileOverride)
+    val config = new Configuration(bobbyRulesUrl, bobbyConfigFile, jsonOutputFileOverride)
 
     val messages =
       BobbyValidator.applyBobbyRules(projectDependencyMap, projectDependencies, pluginDependencies, config.loadBobbyRules)

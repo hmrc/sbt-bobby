@@ -44,9 +44,3 @@ case class BobbyRule(
 case class BobbyRules(rules: List[BobbyRule] = List.empty) {
   lazy val (plugins, libs) = rules.partition(_.`type` == Plugin)
 }
-
-object BobbyRules {
-
-  val EMPTY: BobbyRules = BobbyRules()
-
-}

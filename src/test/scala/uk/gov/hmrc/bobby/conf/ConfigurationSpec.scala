@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.bobby.conf
 
+import java.net.URL
+
 import org.joda.time.LocalDate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
@@ -85,6 +87,20 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     libs.last.effectiveDate                    shouldBe new LocalDate(2015, 3, 1)
 
     plugins shouldBe 'isEmpty
+  }
+
+  it should "fail-fast if all config is missing" in {
+    val error = intercept[RuntimeException] {
+      new Configuration().loadBobbyRules()
+    }
+    error.getMessage shouldBe s"Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"
+  }
+
+  it should "fail-fast if unable to retrieve the bobby rules" in {
+    val error = intercept[RuntimeException] {
+      new Configuration(bobbyRuleURL = Some(new URL("file://badfile"))).loadBobbyRules()
+    }
+    error.getMessage.startsWith("Unable to load bobby rules from") shouldBe true
   }
 
   "extractMap" should "return a key value map" in {

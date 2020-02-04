@@ -63,8 +63,9 @@ object Configuration {
 }
 
 class Configuration(
-  url: Option[URL] = None,
-  jsonOutputFileOverride: Option[String]
+  bobbyRuleURL: Option[URL] = None,
+  bobbyConfigFile: Option[ConfigFile] = None,
+  jsonOutputFileOverride: Option[String] = None
 ) {
 
   import Configuration._
@@ -72,37 +73,38 @@ class Configuration(
   val timeout = 3000
   val logger  = ConsoleLogger()
 
-  val bobbyConfigFile: String = System.getProperty("user.home") + "/.sbt/bobby.conf"
+  def configValue(key: String): Option[String] = bobbyConfigFile.flatMap(_.get(key))
 
-  val jsonOutputFile: String =
-    (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("json-output-file")).getOrElse(defaultJsonOutputFile)
-  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
+  val jsonOutputFile: String = (jsonOutputFileOverride orElse configValue("json-output-file")).getOrElse(defaultJsonOutputFile)
+  val textOutputFile: String = configValue("text-output-file").getOrElse(defaultTextOutputFile)
 
-  def loadBobbyRules: BobbyRules = {
+  def loadBobbyRules(): BobbyRules = {
 
-    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u =>
-      new URL(u)
+    val resolvedRuleUrl: Option[URL] = bobbyRuleURL.map { url =>
+      logger.info(s"[bobby] Bobby rule location was set explicitly in build")
+      url
+    } orElse {
+      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile}")
+      configValue("deprecated-dependencies").map(new URL(_))
     }
 
-    bobbyConfig.fold {
-      logger.warn(
-        s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
-      BobbyRules.EMPTY
-    } { c =>
+    resolvedRuleUrl.map { url =>
       try {
-        logger.info(s"[bobby] Loading Bobby Rules from: $c")
-        val conn = c.openConnection()
+        logger.info(s"[bobby] Loading bobby rules from: $url")
+        val conn = url.openConnection()
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-
         BobbyRules(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
-
       } catch {
-        case e: Exception =>
-          logger.warn(s"[bobby] Unable to load configuration from $c: ${e.getMessage}")
-          BobbyRules.EMPTY
+        case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }
-    }
+    }.getOrElse(abort("Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"))
   }
+
+  def abort(message: String): Nothing = {
+    logger.error(s"[bobby] $message")
+    sys.error(message)
+  }
+
 }

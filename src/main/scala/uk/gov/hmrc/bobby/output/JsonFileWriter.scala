@@ -34,7 +34,7 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
             "revision" -> m.checked.moduleID.revision,
             "result" -> m.checked.result.name,
             "deprecationFrom" -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
-            "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-")),
+            "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-"))
           )
         )
       }
