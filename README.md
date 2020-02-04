@@ -1,64 +1,157 @@
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby) [ ![Download](https://api.bintray.com/packages/hmrc/sbt-plugin-releases/sbt-bobby/images/download.svg) ](https://bintray.com/hmrc/sbt-plugin-releases/sbt-bobby/_latestVersion) [![Stories in Ready](https://badge.waffle.io/hmrc/sbt-bobby.png?label=ready&title=Ready)](https://waffle.io/hmrc/sbt-bobby)
+[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby) [ ![Download](https://api.bintray.com/packages/hmrc/sbt-plugin-releases/sbt-bobby/images/download.svg) ](https://bintray.com/hmrc/sbt-plugin-releases/sbt-bobby/_latestVersion)
 
-# Overview
+## Overview
 
-Bobby is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
+<img src="https://github.com/hmrc/sbt-bobby/blob/master/images/bobby.jpg" alt="Bobby">
 
-# Background
-It can be hard to ensure that distributed teams do not use versions of dependencies that may contain bugs or security flaws. Bobby provides the capability to fail builds which reference such outdated dependencies. Ideally communications will be in place to ensure updates happen but Bobby acts as a safety net of last resort.
+Bobby, a.k.a. your friendly neighbourhood build policeman, is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
+
+You create a set of rules which outlaw particular versions of a library of plugin, and task Bobby to enforce those rules. 
+If a violation is detected, the whistle is blown, and the build is failed.
+ 
+Bobby can help your team block a bad dependency with a known security issue or memory leak for example, or simply to enforce that
+libraries are upgraded.
+
+<img src="https://github.com/hmrc/sbt-bobby/blob/master/images/bobby-output.png" alt="Bobby Output">
+
+## Background
+It can be hard to ensure that distributed teams do not use versions of dependencies that are known to contain bugs or security flaws. 
+
+If a new bug is found in a library and it should be outlawed across your platform, it can be difficult to ensure upgrades happen. 
+
+Using Bobby, this can be enforced by adding a simple rule which outlaws that bad dependency, possibly future dated to give some leadtime to 
+perform the update.
+
+Ideally communications will be in place to ensure updates happen organically but Bobby acts as a safety net of last resort. 
 
 Bobby also checks your projects' dependency versions against the latest available.
 If a newer one is available it suggests to use it without failing the build.
-The current version looks into nexus for this, using what is defined in ~/.sbt/.credentials. 
-If undefined it skips this step
 
-# When will Bobby fail a build?
+## How does Bobby work?
 
-Bobby is automatically run for you on ci-dev, there is no need to explicitly add it to your project. Bobby works by checking against a blacklist of dependencies (known as rules), and will fail a build if it finds any dependencies in your build that match the versions/version ranges in this list.
+Bobby inspects the build and pulls out all of the dependencies you've declared, and all the transitive dependencies that those pull in. 
 
-Bobby will write out a summary table to the console, as well as generating report artifcats ```bobby-report.json``` and ```bobby-report.html```. This report tells you of any rule violations that are preventing your job from building, as well as highlight any dependencies that are not on the latest version that you should optionally upgrade.
+It will then check each against the set of rules and tag each as either:
 
-An example output looks like this:
+* *BobbyViolation* => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue.
+* *BobbyWarning* => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a 
+BobbyViolation from the specified date, so should be looked at with high priority
+* *BobbyOk* => A dependency that is clean and his no rules against it. No issue to take
 
-```+-------+------------------------------------+--------------+----------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Level | Dependency                         | Your Version | Latest Version | Deadline   | Information                                                                                                                                                       |
-+-------+------------------------------------+--------------+----------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| WARN  | uk.gov.hmrc.simple-reactivemongo   | 2.1.0        | 4.3.0          | 2015-11-30 | ReactiveMongo upgrade. Please consider upgrading to '4.3.0' |
-| WARN  | uk.gov.hmrc.play-reactivemongo     | 3.1.0        | 4.4.0          | 2015-11-30 | ReactiveMongo upgrade. Please consider upgrading to '4.4.0'   |
-| WARN  | uk.gov.hmrc.microservice-bootstrap | 2.0.0        | 3.0.0          | 2015-11-23 | Auditing upgrade. Please consider upgrading to '3.0.0'    |
-| INFO  | uk.gov.hmrc.simple-reactivemongo   | 2.1.0        | 4.3.0          | -          | 'simple-reactivemongo 2.1.0' is not the most recent version, consider upgrading to '4.3.0'                                                                                        |
-| INFO  | uk.gov.hmrc.play-reactivemongo     | 3.1.0        | 4.4.0          | -          | 'play-reactivemongo 3.1.0' is not the most recent version, consider upgrading to '4.4.0'                                                                                          |
-| INFO  | uk.gov.hmrc.play-health            | 0.7.0        | 1.1.0          | -          | 'play-health 0.7.0' is not the most recent version, consider upgrading to '1.1.0'                                                                                                 |
-| INFO  | uk.gov.hmrc.play-config            | 2.0.0        | 2.0.1          | -          | 'play-config 2.0.0' is not the most recent version, consider upgrading to '2.0.1'                                                                                                 |
-| INFO  | uk.gov.hmrc.microservice-bootstrap | 2.0.0        | 3.0.0          | -          | 'microservice-bootstrap 2.0.0' is not the most recent version, consider upgrading to '3.0.0'                                                                                      |
-| INFO  | uk.gov.hmrc.domain                 | 2.11.0       | 3.1.0          | -          | 'domain 2.11.0' is not the most recent version, consider upgrading to '3.1.0'                                                                                                     |
-| INFO  | org.scalatest.scalatest            | 2.2.1        | 2.2.2          | -          | 'scalatest 2.2.1' is not the most recent version, consider upgrading to '2.2.2'                                                                                                   |
-+-------+------------------------------------+--------------+----------------+------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+## Creating a Bobby Rule
+
+Bobby Rules are defined in a single `json` file, and look like this:
+
+```
+{
+  "libraries": [
+    {
+      "organisation": "uk.gov.hmrc",
+      "name": "my-library",
+      "range": "(,6.0.0)",
+      "reason": "Versions older than 6.0.0 have a security vulnerability",
+      "from": "2015-03-15"
+    },
+    {
+      "organisation": "uk.gov.hmrc",
+      "name": "my-other-library",
+      "range": "[1.2.0]",
+      "reason": "1.2.0 has a bug",
+      "from": "2015-03-15"
+    },
+    {
+      "organisation": "*",
+      "name": "*",
+      "range": "[*-SNAPSHOT]",
+      "reason": "You shouldn't be deploying a snapshot to production should you?",
+      "from": "2000-01-01"
+    }
+  ],
+  "plugins": [
+    {
+      "organisation": "uk.gov.hmrc",
+      "name": "sbt-auto-build",
+      "range": "[1.0.0]",
+      "reason": "1.0.0 has a bug",
+      "from": "2099-01-01"
+    }
+  ]
+}
 ```
 
-# How are rules configured?
+Rules can be placed on:
 
-Bobby config is an array of JSON objects of the form:
+* `libraries` => Enforced on any libraries declared in your `libraryDependencies`, or the transitive dependencies pulled in from those
+* `plugins` => Enforced on the plugins added to your projects meta-build, or transitive plugins pulled in from those
+
+## Rule Schema
+Each rule takes the same form:
 ```
-   [
-     { 
-       "organisation" : "uk.gov.hmrc", 
-       "name"         : "sbt-auto-build", 
-       "range"        : "(,0.8.0)", 
-       "reason"       : "Previous versions didn't work correctly", 
-       "from"         : "2015-06-08" 
-     }
-   ]
+{
+      "organisation": "com.typesafe.play",
+      "name": "sbt-plugin",
+      "range": "(,2.5.19)",
+      "reason": "Critical security upgrade",
+      "from": "2019-03-04"
+    }
+```
+Where:
+* `organisation` and `name` identify the dependency
+* `range` is used to target minimum and maximum versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
+* `reason` is a short descriptive message to explain why the versions matching the range are outlawed
+* `from` is the date the rule will come into effect. The builds will fail after that day, and generate a warning up to it
+
+## How to setup and trigger Bobby?
+
+Bobby should *not* be added to an individual projects build. Instead, it should be added as a global plugin
+
+This means:
+* All projects can benefit from Bobby
+* Bobby can be updated centrally
+
+>At HMRC bobby is added on the Jenkins build-servers and runs automatically for you. You do not need to do anything, unless you
+>wish to also run it locally
+
+Just add the plugin to `./sbt/<version>/plugins/plugins.sbt`:
+```
+resolvers += Resolver.url(
+  "hmrc-sbt-plugin-releases",
+    url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+
+addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 ```
 
-###### Where:
-* _organisation_ and _name_ identify the dependency
-* _range_ is used to declare minimum, maximum allowed versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
-* _reason_ tells why the versions in range are deprecated
-* _from_ tells when the versions in range become unsupported. The builds will fail after that day. Before only a warning is shown.
+Then, create your rules configuration as above. This file can live anywhere, you just need to tell Bobby where to find it.
 
-###### Supported Version Ranges
-| Range          | Meaning                               |
+This can be done by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
+
+```
+deprecated-dependencies = https://some-url/deprecated-dependencies.json
+deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
+```
+
+That's it!
+
+Now you can run bobby with `sbt validate`. 
+
+If your build it making use of any outlawed dependencies, and exception will be thrown. Otherwise, all is good and you can carry on with your day.
+
+> See the 'Configuration Options' section below for more configuration options
+
+### Sbt 1.x
+ 
+ Since major version 1, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
+ 
+ | Sbt version | Plugin version |
+ | ----------- | -------------- |
+ | `0.13.x`    | `any`          |
+ | `>= 1.x`    | `>= 1.x`       |
+
+## Supported Version Ranges
+
+The range that is outlawed can be configured using Ivy style syntax. 
+
+| Range          | Applies to                            |
 |----------------|---------------------------------------|
 | (,1.0.0]       | x <= 1.0.0                            |
 | [1.0.0]        | Hard requirement on 1.0.0             |
@@ -67,117 +160,152 @@ Bobby config is an array of JSON objects of the form:
 | [1.5.0,)       | x >= 1.5.0                            |
 | [*-SNAPSHOT]   | Any version with qualifier 'SNAPSHOT' |
 
-# How do I change the rules used by Jenkins?
+Using these ranges you can easily specify minimum and maximum ranges, or exact versions to outlaw.
 
-On Jenkins, Bobby sources it's config remotely. Current rules can be found in the following project https://github.com/hmrc/bobby-config (available only for people in the HMRC org on github). 
+## Understanding the Bobby output
 
-Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests to both bobby config repositories, and once merged the new rules will take effect immediately. 
+Bobby will write out a summary table to the console, as well as generating two report artifacts:
+ 
+ * `target/bobby-report.json` 
+ * `target/bobby-report.txt`
+  
+These reports tell you of any rule violations that are preventing your job from building, as well as 
+highlighting any dependencies with warnings that will become violations in the future. Where discovered,
+the latest version that is available will be shown also.
 
-An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-config/commit/f1b1b180cde857d64e3b1c2fb5322bc400c18c8a
+An example output looks like this (taken from the `test-project`):
 
-# How to use Bobby on your local builds
-
-### Sbt 1.x
-
-Since major version 1, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
-
-| Sbt version | Plugin version |
-| ----------- | -------------- |
-| `0.13.x`    | `any`          |
-| `>= 1.x`    | `>= 1.x`       |
-
-In your project/plugins.sbt file:
-
-```scala
-resolvers += Resolver.url(
-  "hmrc-sbt-plugin-releases",
-    url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
-
-addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
+```
+[info] ************************************************************************************************************************
+[info] Colour Level KEY:
+[info]  * ERROR: Bobby Violations => Your build will forcibly fail if any violations are detected
+[info]  * WARN: Bobby Warnings => Your build will start to fail from the date the rules become enforced
+[info]  * INFO: Bobby Ok => No problems with this dependency
+[info]
+[info] Colour Dependency KEY:
+[info]  * GREEN: Local Dependency => Highlights dependencies declared locally in your project (not transitive)
+[info]  * MAGENTA: Plugin Dependency => From your build project
+[info] ************************************************************************************************************************
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] | Level | Dependency                                             | Via                              | Your Version   | Outlawed Range | Latest Version | Effective From | Reason                                                          |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] | ERROR | org.scalatest.scalatest                                |                                  | 3.0.0          | (,3.1.0)       | ?              | 2020-01-01     | Example: Required to use latest scalatest 3.1.0+                |
+[info] | ERROR | uk.gov.hmrc.simple-reactivemongo                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 7.23.0         | 2020-01-01     | Example: Uses a version of reactivemongo that has a memory leak |
+[info] | WARN  | org.pegdown.pegdown                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | ?              | 2099-01-01     | Example: No pegdown dependencies will be allowed                |
+[info] | INFO  | aopalliance.aopalliance                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | ?              | -              | -                                                               |
+[info] | INFO  | com.eed3si9n.sbt-buildinfo                             |                                  | 0.7.0          | -              | ?              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-core                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-databind            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | ?              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
+[info] | INFO  | org.typelevel.macro-compat                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | ?              | -              | -                                                               |
+[info] | INFO  | uk.gov.hmrc.sbt-auto-build                             |                                  | 2.5.0          | -              | ?              | -              | -                                                               |
+[info] | INFO  | uk.gov.hmrc.sbt-git-stamp                              |                                  | 6.0.0          | -              | ?              | -              | -                                                               |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
+[warn]  (1) org.pegdown.pegdown (1.3.0)
+[warn]      Reason: Example: No pegdown dependencies will be allowed
+[error] ERROR: Your build has 2 bobby violation(s) and has been failed! Urgently fix the issues below:
+[error]  (1) org.scalatest.scalatest (3.0.0)
+[error]      Reason: Example: Required to use latest scalatest 3.1.0+
+[error]  (2) uk.gov.hmrc.simple-reactivemongo (7.13.0-play-26)
+[error]      Reason: Example: Uses a version of reactivemongo that has a memory leak
 ```
 
-Then in your `build.sbt` you need to tell `sbt-bobby` where the configuration rules are.
+The Bobby output consists of a table of all of the dependencies in your build, as well as a summary of any warnings and violations
+that are detected.
 
-First add the required imports:
-```
-import java.net.URL
-import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
-```
-Then point to the current config:
-```
-deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
-```
+The table lists violations and warnings at the top (with a level of `ERROR` or `WARN` respectively), and those with no issues after that
+with a level of `INFO`. Each row represents one dependency in the build, and where it is pulled in transitively, the actual dependency in your
+build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation it tells you 
+what you need to change in order to fix it.
 
-Then call the 'validate' command:
+Note that the KEY and colour coding is only applicable when outputting to the console. There is a `bobby-report.txt` file generated
+with just the table. You can find it in the `target` folder, along with `bobby-report.json` which has the content in machine readable form.
 
-```sbt validate```
+>Note that the Via column is always empty for plugin dependencies (from your meta-build). This is because the dependency graph available
+>at the meta-build level is not as rich in detail
 
-> Alternatively you can add a `bobby.conf` file and set the location there: 
-> `deprecated-dependencies=path to your bobby rules file`
+## Configuration Options
 
-# Providing custom rules
-
-If you want to prevent outdated dependencies from being used by your project outside of HMRC, you can create a blacklist of version ranges in the following format:
-
-```json
-{
-    "libraries" :[
-      {
-        "organisation": "uk.gov.hmrc",
-        "name": "my-library",
-        "range": "(,6.0.0)",
-        "reason": "Versions older than 6.0.0 have a security vulnerability",
-        "from": "2015-03-15"
-      },
-      {
-        "organisation": "uk.gov.hmrc",
-        "name": "my-other-library",
-        "range": "[1.2.0]",
-        "reason": "1.2.0 has a bug",
-        "from": "2015-03-15"
-      },
-      {
-        "organisation": "*",
-        "name": "*",
-        "range": "[*-SNAPSHOT]",
-        "reason": "You shouldn't be deploying a snapshot to production should you?",
-        "from": "2000-01-01"
-      }
-    ],
-    "plugins" : [
-      {
-          "organisation": "uk.gov.hmrc",
-          "name": "sbt-auto-build",
-          "range": "[1.0.0]",
-          "reason": "1.0.0 has a bug",
-          "from": "2099-01-01"
-       }
-    ]
-}
-```
-
-Once this is done, tell Bobby where to find the file containing the list by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
+### Bobby Rule file location
+As shown above, you can configure the rules via a setting in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
 ```
 deprecated-dependencies = https://some-url/deprecated-dependencies.json
 deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
 ```
 
-###### JSON output file
-Bobby can be configured to output results to a structured JSON file. To enable this feature provide an output filepath using the 
-optional output-file parameter in your ~/.sbt/bobby.conf file. The file path could be relative or absolute.
+Alternatively, you can specify the location directly in your `build.sbt`:
+
+First add the required imports:
+```
+import java.net.URL
+import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
+```
+Then point to the rule file:
+```
+deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
+```
+
+### Repositories to check for latest versions
+repositories
+checkForLatest
+
+### Changing the json file output location
+
+You can override where the json file is written using the setting:
 
 ```
-output-file = bobby-output.json
+jsonOutputFileOverride := Some("target/changed-name-report.json")
 ```
+
+### Changing the view type
+
+Bobby can display the output table in a few different variations. Currently these are:
+
+* Flat => The standard table, with all columns
+* Compact => The standard table, minus the * Nested => 
+* Nested => Shows the local dependencies with their transitives underneath them and indented
+
+To change the view type you can either:
+
+ * Start SBT with an environment variable, `BOBBY_VIEW_TYPE=Nested & sbt validate`
+ * Specify it in your build settings
+    ```
+    bobbyViewType := Nested
+    ```
+ * Change it manually just for your console session, e.g.
+    ```
+    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyViewType := uk.gov.hmrc.bobby.output.Nested
+    ```
+## How do I change the Bobby rules enforced by Jenkins?
+
+On Jenkins, Bobby sources its config remotely. Current rules can be found at https://github.com/hmrc/bobby-config (available only for people in the HMRC org on github). 
+
+Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests and once merged the new rules will take effect immediately. 
+
+An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-config/commit/f1b1b180cde857d64e3b1c2fb5322bc400c18c8a
 
 ## Developing ##
 
-* The test-project folder contains a simple test project is useful for executing the sbt-bobby plugin from source against a test project. CD into the directory and run ```sbt validate```. It can also be debugged by doing ```sbt -jvm-debug 5005 validate```
+* The `test-project` folder contains a simple example project which may be useful as a playground:
+
+```
+cd test-project
+sbt validate
+```
  
 * Bobby uses [scripted](https://www.scala-sbt.org/1.x/docs/Testing-sbt-plugins.html) tests which are executed with ```sbt scripted```
 
-## License ##
+## Notice 
+
+From major version 2, `sbt-bobby` makes use of the [sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph) plugin to compute 
+the transitive module graph. In previous versions only the locally declared dependencies were considered.
+
+It also takes some inspiration from [sbt-blockade](https://github.com/Verizon/sbt-blockade)
+
+## License
  
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
 
