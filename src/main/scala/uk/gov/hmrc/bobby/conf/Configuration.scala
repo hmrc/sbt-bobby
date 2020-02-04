@@ -53,6 +53,13 @@ object Configuration {
 
   }
 
+  def extractMap(lines: List[String]): Map[String, String] = {
+    (for {
+      line <- lines
+      Array(key, value) = line.split("=", 2)
+    } yield key.trim -> value.trim).toMap
+  }
+
 }
 
 class Configuration(

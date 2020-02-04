@@ -29,15 +29,12 @@ class ConfigFile(fileName: String) {
     logger.warn(s"Supplied configuration file '$fileName' does not exist.")
   }
 
-  private val kvMap: Map[String, String] = {
+  val load: Map[String, String] = {
+    val source = Source.fromFile(fileName)
     try {
-      Source
-        .fromFile(fileName)
-        .getLines()
-        .toSeq
-        .map(_.split("="))
-        .map { case Array(key, value) => key.trim -> value.trim }
-        .toMap
+      val lines = source.getLines().toList
+      source.close()
+      Configuration.extractMap(lines)
     } catch {
       case e: Exception =>
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")
@@ -45,10 +42,6 @@ class ConfigFile(fileName: String) {
     }
   }
 
-  def getString(path: String) = kvMap(path)
-
-  def get(path: String) = kvMap.get(path)
-
-  def hasPath(path: String) = kvMap.isDefinedAt(path)
+  def get(path: String): Option[String] = load.get(path)
 
 }

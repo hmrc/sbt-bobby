@@ -87,4 +87,19 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     plugins shouldBe 'isEmpty
   }
 
+  "extractMap" should "return a key value map" in {
+    val lines = List(
+      "deprecated-dependencies = https://myurl",
+      "somekey=somevalue",
+      "anotherkey=http://myurl?token=mytoken",
+      " key =    value  "
+    )
+    Configuration.extractMap(lines) shouldBe Map(
+      "deprecated-dependencies" -> "https://myurl",
+      "somekey" -> "somevalue",
+      "anotherkey" -> "http://myurl?token=mytoken",
+      "key" -> "value"
+    )
+  }
+
 }
