@@ -225,6 +225,22 @@ with just the table. You can find it in the `target` folder, along with `bobby-r
 
 ## Configuration Options
 
+### Strict mode
+
+You can configure Bobby to be more fussy and fail a build on warnings as well as violations. To do this, just set:
+
+To change the strict mode you can:
+
+ * Start SBT with an environment variable, `BOBBY_STRICT_MODE=true sbt validate`
+ * Specify it in your build settings
+    ```
+    bobbyStrictMode := true
+    ```
+ * Change it manually just for your console session, e.g.
+    ```
+    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyStrictMode := true
+    ```
+
 ### Bobby Rule file location
 As shown above, you can configure the rules via a setting in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
@@ -267,9 +283,9 @@ Bobby can display the output table in a few different variations. Currently thes
 * Compact => The standard table, minus the * Nested => 
 * Nested => Shows the local dependencies with their transitives underneath them and indented
 
-To change the view type you can either:
+To change the view type you can:
 
- * Start SBT with an environment variable, `BOBBY_VIEW_TYPE=Nested & sbt validate`
+ * Start SBT with an environment variable, `BOBBY_VIEW_TYPE=Nested sbt validate`
  * Specify it in your build settings
     ```
     bobbyViewType := Nested

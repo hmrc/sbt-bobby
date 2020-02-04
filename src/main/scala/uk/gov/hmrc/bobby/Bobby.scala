@@ -31,6 +31,7 @@ object Bobby {
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
   def validateDependencies(
+     strictMode: Boolean,
      projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
      projectDependencies: Seq[ModuleID],
      pluginDependencies: Seq[ModuleID],
@@ -50,6 +51,9 @@ object Bobby {
 
     if(messages.exists(_.isError))
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
+
+    if(strictMode && messages.exists(_.isWarning))
+      throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 
   private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] =

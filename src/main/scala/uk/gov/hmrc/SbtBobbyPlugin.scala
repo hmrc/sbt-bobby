@@ -27,6 +27,7 @@ object SbtBobbyPlugin extends AutoPlugin {
   override def trigger = allRequirements
 
   private val ENV_KEY_BOBBY_VIEW_TYPE = "BOBBY_VIEW_TYPE"
+  private val ENV_KEY_BOBBY_STRICT_MODE = "BOBBY_STRICT_MODE"
 
   object BobbyKeys {
 
@@ -41,8 +42,8 @@ object SbtBobbyPlugin extends AutoPlugin {
       SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
     lazy val jsonOutputFileOverride =
       SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
-
-    val bobbyViewType = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
+    lazy val bobbyStrictMode = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
+    lazy val bobbyViewType = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
 
   }
 
@@ -55,6 +56,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     jsonOutputFileOverride := None,
     parallelExecution in GlobalScope := true,
     bobbyViewType := sys.env.get(ENV_KEY_BOBBY_VIEW_TYPE).map(ViewType.apply).getOrElse(Compact),
+    bobbyStrictMode := sys.env.get(ENV_KEY_BOBBY_STRICT_MODE).map(_.toBoolean).getOrElse(false),
     validate := {
       // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
       val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, ModuleId(organization.value.trim, name.value.trim, version.value.trim))
@@ -71,6 +73,7 @@ object SbtBobbyPlugin extends AutoPlugin {
       val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
 
       Bobby.validateDependencies(
+        bobbyStrictMode.value,
         GraphOps.toSbtDependencyMap(dependencyMap), //Use vanilla sbt ModuleIDs
         projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
         pluginDependencies,
