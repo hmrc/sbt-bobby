@@ -1,4 +1,3 @@
 > validate
-$ exists target/bobby-reports/bobby-report.json
+$ exists target/changed-name-report.json
 $ exists target/bobby-reports/bobby-report.txt
-> check

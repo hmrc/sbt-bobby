@@ -1,0 +1,32 @@
+{
+  "libraries": [
+    {
+      "organisation": "org.reactivemongo",
+      "name": "reactivemongo",
+      "range": "[0.17.1]",
+      "reason": "Mongo Test",
+      "from": "2001-01-01"
+    },
+    {
+      "organisation": "joda-time",
+      "name": "joda-time",
+      "range": "[2.10.1]",
+      "reason": "Bad Joda!",
+      "from": "2021-03-01"
+    },
+    {
+      "organisation": "com.typesafe",
+      "name": "ssl-config-core",
+      "range": "[0.2.4]",
+      "reason": "Bad stuff!",
+      "from": "2001-01-01"
+    },
+    {
+      "organisation": "uk.gov.hmrc",
+      "name": "simple-reactivemongo",
+      "range": "[7.20.0]",
+      "reason": "Bad simple!",
+      "from": "2001-01-01"
+    }
+  ]
+}

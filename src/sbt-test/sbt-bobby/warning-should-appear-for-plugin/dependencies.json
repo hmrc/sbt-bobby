@@ -3,8 +3,8 @@
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-auto-build",
-      "range": "[2.2.0]",
-      "reason": "expires",
+      "range": "[2.5.0]",
+      "reason": "bad auto build",
       "from": "2099-01-01"
     }
   ]

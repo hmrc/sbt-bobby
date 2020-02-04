@@ -41,8 +41,7 @@ object Bobby {
     checkForLatest: Boolean,
     viewType: ViewType,
     bobbyRulesUrl: Option[URL] = None,
-    jsonOutputFileOverride: Option[String] = None,
-    ): Unit = {
+    jsonOutputFileOverride: Option[String] = None): Unit = {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 

@@ -118,7 +118,7 @@ class Configuration(
 
       } catch {
         case e: Exception =>
-          logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
+          logger.warn(s"[bobby] Unable to load configuration from $c: ${e.getMessage}")
           BobbyRules.EMPTY
       }
     }

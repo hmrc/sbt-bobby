@@ -16,33 +16,32 @@
 
 package uk.gov.hmrc.bobby.output
 
+import play.api.libs.json.{JsString, JsValue, Json}
 import uk.gov.hmrc.bobby.domain.{BobbyOk, BobbyViolation, BobbyWarning, Message}
 
 class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
 
   override def renderText(messages: List[Message], viewType: ViewType): String = {
 
-    def rawJson(m: Message): String =
-      s"""{ "level" : "${m.level.name}",
-         |  "message" : "${jsonMessage(m)}",
-         |  "data": {
-         |    "organisation" : "${m.checked.moduleID.organization}",
-         |    "name" : "${m.checked.moduleID.name}",
-         |    "revision" : "${m.checked.moduleID.revision}",
-         |    "result" : "${m.checked.result.getClass.getSimpleName}",
-         |    "deprecationFrom" : "${m.deprecationFrom.getOrElse("-")}",
-         |    "deprecationReason" : "${m.deprecationReason.getOrElse("-")}",
-         |    "latestRevision" : "${m.latestVersion.getOrElse("?")}"
-         |  }
-         |}""".stripMargin
+    val json: JsValue = Json.obj(
+      "results" -> messages.map { m =>
+        Json.obj(
+          "level" -> m.level.name,
+          "message" -> jsonMessage(m),
+          "data" -> Json.obj(
+            "organisation" -> m.checked.moduleID.organization,
+            "name" -> m.checked.moduleID.name,
+            "revision" -> m.checked.moduleID.revision,
+            "result" -> m.checked.result.name,
+            "deprecationFrom" -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
+            "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-")),
+            "latestRevision" ->  JsString(m.latestVersion.map(_.toString).getOrElse("?"))
+          )
+        )
+      }
+    )
 
-    val outputMessages = messages.map(rawJson)
-
-    s"""{
-       | "results" : [
-       |   ${outputMessages.mkString(", ")}
-       | ]
-       |}""".stripMargin
+    Json.prettyPrint(json)
   }
 
   def jsonMessage(m: Message): String = m.checked.result match {

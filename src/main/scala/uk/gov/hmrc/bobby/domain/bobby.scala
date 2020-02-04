@@ -21,20 +21,24 @@ import sbt.librarymanagement.ModuleID
 sealed trait BobbyResult {
   def failed: Boolean
   def rule: Option[BobbyRule] = None
+  def name: String
 }
 
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   override def rule: Option[BobbyRule] = Some(r)
   val failed: Boolean = true
+  val name: String = "BobbyViolation"
 }
 
 case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   override def rule: Option[BobbyRule] = Some(r)
   val failed: Boolean = false
+  val name: String = "BobbyWarning"
 }
 
 case object BobbyOk extends BobbyResult {
   val failed: Boolean = false
+  val name: String = "BobbyOk"
 }
 
 case class BobbyChecked(moduleID: ModuleID, `type`: DependencyType, result: BobbyResult)

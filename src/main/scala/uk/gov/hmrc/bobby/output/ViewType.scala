@@ -38,7 +38,7 @@ case object Flat extends ViewType {
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
     Str(m.latestVersion.map(_.toString).getOrElse("?")),
     Str(m.effectiveDate.map(_.toString).getOrElse("-")),
-    Str(m.deprecationReason.map(_.toString).getOrElse("-")),
+    Str(m.deprecationReason.map(_.toString).getOrElse("-"))
   )
 
 }
@@ -52,7 +52,7 @@ case object Nested extends ViewType {
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
     Str(m.latestVersion.map(_.toString).getOrElse("?")),
-    Str(m.effectiveDate.map(_.toString).getOrElse("-")),
+    Str(m.effectiveDate.map(_.toString).getOrElse("-"))
   )
 }
 

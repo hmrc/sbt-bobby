@@ -21,18 +21,18 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import play.api.libs.json._
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{BobbyRule, BobbyViolation, BobbyWarning, Dependency, Library, VersionRange}
+import uk.gov.hmrc.bobby.domain.{BobbyOk, BobbyRule, BobbyViolation, BobbyWarning, Dependency, Library, VersionRange}
 import uk.gov.hmrc.bobby.domain.MessageBuilder._
 
 class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
 
-  "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
-    val jsonOutputFileWriter: JsonFileWriter = new JsonFileWriter(Configuration.defaultJsonOutputFile)
+  val jsonFileWriter: JsonFileWriter = new JsonFileWriter(Configuration.defaultJsonOutputFile)
 
+  "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
     val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", new LocalDate("2020-01-31") , Library)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)))
 
-    val jsonString: String = jsonOutputFileWriter.renderText(messages, Flat)
+    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
 
     val jsValue: JsValue = Json.parse(jsonString)
 
@@ -51,6 +51,14 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
     (rowData \ "latestRevision").as[String]    shouldBe "?"
 
     (rows(1) \ "level").as[String] shouldBe "WARN"
+  }
+
+  it should "use the correct names for the results" in {
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", new LocalDate("2020-01-31") , Library)
+    val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)), makeMessage(BobbyOk))
+    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
+
+    (Json.parse(jsonString) \\ "result").map(_.as[String]).toSet shouldBe Set("BobbyViolation", "BobbyWarning", "BobbyOk")
   }
 
 }

@@ -5,15 +5,19 @@ import sbt.IO._
 lazy val root = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.10.8",
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
+    libraryDependencies := Seq(
+      "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.20.0-play-26",
+      "org.reactivemongo" %% "reactivemongo" % "0.17.0"
+    ),
     deprecatedDependenciesUrl := Some(file("dependencies.json").toURI.toURL),
-
     TaskKey[Unit]("check") := {
       val json = Json.parse(read(file("target/bobby-reports/bobby-report.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet
+      val expected = Set("-", "Mongo Test", "Bad stuff!", "Bad simple!", "Bad Joda!")
 
-      assert(reasons.contains("bad auto build"), "Did not find expected violations")
+      assert(reasons == expected, "Did not find expected violations")
       ()
     }
   )

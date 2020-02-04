@@ -26,7 +26,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  private val ENV_KEY_BOBBY_VIEW_TYPE        = "BOBBY_VIEW_TYPE"
+  private val ENV_KEY_BOBBY_VIEW_TYPE = "BOBBY_VIEW_TYPE"
 
   object BobbyKeys {
 

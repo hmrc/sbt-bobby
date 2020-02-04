@@ -21,7 +21,7 @@ lazy val root = (project in file("."))
       "joda-time"             % "joda-time"                   % "2.10.5",
       "org.joda"              % "joda-convert"                % "2.2.1",
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",
-      "com.typesafe.play"     %% "play-json"                  % "2.6.14"        % Test,
+      "com.typesafe.play"     %% "play-json"                  % "2.6.14",
       "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,
       "com.vladsch.flexmark"  % "flexmark-all"                % "0.35.10"       % Test,
       "org.scalacheck"        %% "scalacheck"                 % "1.14.3"        % Test,

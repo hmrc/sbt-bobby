@@ -19,14 +19,14 @@ package uk.gov.hmrc.bobby.output
 import java.io.File
 import java.nio.file.Files
 
-import sbt.internal.util.ConsoleLogger
+import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain.Message
 
 trait BobbyWriter {
 
   val logger = ConsoleLogger()
 
-  def write(messages: List[Message], viewType: ViewType)
+  def write(messages: List[Message], viewType: ViewType): Unit
 
   def renderText(messages: List[Message], viewType: ViewType): String
 
