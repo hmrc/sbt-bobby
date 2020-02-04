@@ -24,9 +24,6 @@ perform the update.
 
 Ideally communications will be in place to ensure updates happen organically but Bobby acts as a safety net of last resort. 
 
-Bobby also checks your projects' dependency versions against the latest available.
-If a newer one is available it suggests to use it without failing the build.
-
 ## How does Bobby work?
 
 Bobby inspects the build and pulls out all of the dependencies you've declared, and all the transitive dependencies that those pull in. 
@@ -171,8 +168,7 @@ Bobby will write out a summary table to the console, as well as generating two r
  * `target/bobby-report.txt`
   
 These reports tell you of any rule violations that are preventing your job from building, as well as 
-highlighting any dependencies with warnings that will become violations in the future. Where discovered,
-the latest version that is available will be shown also.
+highlighting any dependencies with warnings that will become violations in the future.
 
 An example output looks like this (taken from the `test-project` in this repo, see below):
 
@@ -187,22 +183,22 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info]  * GREEN: Local Dependency => Highlights dependencies declared locally in your project (not transitive)
 [info]  * MAGENTA: Plugin Dependency => From your build project
 [info] ************************************************************************************************************************
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
-[info] | Level | Dependency                                             | Via                              | Your Version   | Outlawed Range | Latest Version | Effective From | Reason                                                          |
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
-[info] | ERROR | org.scalatest.scalatest                                |                                  | 3.0.0          | (,3.1.0)       | ?              | 2020-01-01     | Example: Required to use latest scalatest 3.1.0+                |
-[info] | ERROR | uk.gov.hmrc.simple-reactivemongo                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 7.23.0         | 2020-01-01     | Example: Uses a version of reactivemongo that has a memory leak |
-[info] | WARN  | org.pegdown.pegdown                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | ?              | 2099-01-01     | Example: No pegdown dependencies will be allowed                |
-[info] | INFO  | aopalliance.aopalliance                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | ?              | -              | -                                                               |
-[info] | INFO  | com.eed3si9n.sbt-buildinfo                             |                                  | 0.7.0          | -              | ?              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-core                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-databind            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | ?              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | ?              | -              | -                                                               |
-[info] | INFO  | org.typelevel.macro-compat                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | ?              | -              | -                                                               |
-[info] | INFO  | uk.gov.hmrc.sbt-auto-build                             |                                  | 2.5.0          | -              | ?              | -              | -                                                               |
-[info] | INFO  | uk.gov.hmrc.sbt-git-stamp                              |                                  | 6.0.0          | -              | ?              | -              | -                                                               |
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] | Level | Dependency                                             | Via                              | Your Version   | Outlawed Range | Effective From | Reason                                                          |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] | ERROR | org.scalatest.scalatest                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     | Example: Required to use latest scalatest 3.1.0+                |
+[info] | ERROR | uk.gov.hmrc.simple-reactivemongo                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     | Example: Uses a version of reactivemongo that has a memory leak |
+[info] | WARN  | org.pegdown.pegdown                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     | Example: No pegdown dependencies will be allowed                |
+[info] | INFO  | aopalliance.aopalliance                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              | -                                                               |
+[info] | INFO  | com.eed3si9n.sbt-buildinfo                             |                                  | 0.7.0          | -              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-core                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-databind            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              | -                                                               |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
+[info] | INFO  | org.typelevel.macro-compat                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              | -                                                               |
+[info] | INFO  | uk.gov.hmrc.sbt-auto-build                             |                                  | 2.5.0          | -              | -              | -                                                               |
+[info] | INFO  | uk.gov.hmrc.sbt-git-stamp                              |                                  | 6.0.0          | -              | -              | -                                                               |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
 [warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
 [warn]  (1) org.pegdown.pegdown (1.3.0)
 [warn]      Reason: Example: No pegdown dependencies will be allowed
@@ -248,19 +244,6 @@ Then point to the rule file:
 ```
 deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
 ```
-
-### Repositories to check for latest versions
-
-Bobby can try to pull in the latest versions of depenendencies and show them to you in the table.
-
-There are two settings to control this behaviour:
-
-```
-checkForLatest := true // Whether to lookup the latest version (true by default)
-repositories := Seq(Artifactory, Bintray) //The repositories to check, in order
-```
-
-> Note this feature is mostly specific to HMRC
 
 ### Changing the file output location
 

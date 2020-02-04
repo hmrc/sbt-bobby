@@ -39,7 +39,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
     val rows: List[JsValue] = (jsValue \ "results").as[List[JsValue]]
     rows.size                          shouldBe 2
     (rows.head \ "level").as[String]   shouldBe "ERROR"
-    (rows.head \ "message").as[String] shouldBe "bad library"
+    (rows.head \ "message").as[String] shouldBe "Needs urgent attention - preventing build"
 
     val rowData: JsValue = (rows.head \ "data").as[JsValue]
     (rowData \ "name").as[String]              shouldBe "name"
@@ -48,7 +48,6 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
     (rowData \ "result").as[String]            shouldBe "BobbyViolation"
     (rowData \ "deprecationFrom").as[String]   shouldBe "2020-01-31" //brexit
     (rowData \ "deprecationReason").as[String] shouldBe "bad library"
-    (rowData \ "latestRevision").as[String]    shouldBe "?"
 
     (rows(1) \ "level").as[String] shouldBe "WARN"
   }

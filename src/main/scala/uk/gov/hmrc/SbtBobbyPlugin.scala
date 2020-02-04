@@ -37,10 +37,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     object Maven extends Repo
 
     lazy val validate     = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
-    lazy val repositories = SettingKey[Seq[Repo]]("repositories", "The repositories to check, in order")
-    lazy val checkForLatest = SettingKey[Boolean](
-      "checkForLatest",
-      "Check against various repositories to compare project dependency versions against latest available")
     lazy val deprecatedDependenciesUrl =
       SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
     lazy val jsonOutputFileOverride =
@@ -58,8 +54,6 @@ object SbtBobbyPlugin extends AutoPlugin {
     deprecatedDependenciesUrl := None,
     jsonOutputFileOverride := None,
     parallelExecution in GlobalScope := true,
-    repositories := Seq(Artifactory, Bintray),
-    checkForLatest := true,
     bobbyViewType := sys.env.get(ENV_KEY_BOBBY_VIEW_TYPE).map(ViewType.apply).getOrElse(Compact),
     validate := {
       // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
@@ -81,8 +75,6 @@ object SbtBobbyPlugin extends AutoPlugin {
         projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
         pluginDependencies,
         scalaVersion.value,
-        repositories.value,
-        checkForLatest.value,
         bobbyViewType.value,
         deprecatedDependenciesUrl.value,
         jsonOutputFileOverride.value

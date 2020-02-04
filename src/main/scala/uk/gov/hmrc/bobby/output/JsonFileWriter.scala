@@ -35,7 +35,6 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
             "result" -> m.checked.result.name,
             "deprecationFrom" -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
             "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-")),
-            "latestRevision" ->  JsString(m.latestVersion.map(_.toString).getOrElse("?"))
           )
         )
       }
@@ -45,11 +44,9 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
   }
 
   def jsonMessage(m: Message): String = m.checked.result match {
-    case BobbyOk => ""
-    case BobbyWarning(r) =>
-      s"${m.checked.moduleID.organization}.${m.checked.moduleID.name} ${m.checked.moduleID.revision} is deprecated: '${r.reason}'. " +
-        s"To be updated by ${r.effectiveDate} to version ${m.latestVersion.getOrElse("?")}"
-    case BobbyViolation(r) => r.reason
+    case BobbyOk => "No issue"
+    case BobbyWarning(_) => "Needs attention soon to avoid future violations"
+    case BobbyViolation(_) => "Needs urgent attention - preventing build"
   }
 
 }

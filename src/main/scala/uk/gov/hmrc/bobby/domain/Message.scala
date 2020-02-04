@@ -31,8 +31,7 @@ object Message {
 
 case class Message(
   checked: BobbyChecked,
-  dependencyChain: Seq[ModuleID],
-  latestVersion: Option[Version]) {
+  dependencyChain: Seq[ModuleID]) {
 
   val level: MessageLevels.Level = checked.result match {
     case BobbyOk            => INFO

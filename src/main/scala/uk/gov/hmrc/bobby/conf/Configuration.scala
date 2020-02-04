@@ -27,9 +27,6 @@ import scala.util.parsing.json.JSON
 
 object Configuration {
 
-  val credsFile: String = System.getProperty("user.home") + "/.sbt/.credentials"
-  val bintrayCredsFile: String = System.getProperty("user.home") + "/.bintray/.credentials"
-
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
@@ -56,28 +53,6 @@ object Configuration {
 
   }
 
-  val nexusCredetials: Option[NexusCredentials] = {
-    val ncf = new ConfigFile(credsFile)
-
-    for {
-      host     <- ncf.get("host")
-      user     <- ncf.get("user")
-      password <- ncf.get("password")
-
-    } yield NexusCredentials(host, user, password)
-  }
-
-  val bintrayCredetials: Option[BintrayCredentials] = {
-    val bncf = new ConfigFile(bintrayCredsFile)
-
-    for {
-      user     <- bncf.get("user")
-      password <- bncf.get("password")
-
-    } yield BintrayCredentials(user, password)
-  }
-
-  val artifactoryUri: Option[String] = sys.env.get("ARTIFACTORY_URI")
 }
 
 class Configuration(

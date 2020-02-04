@@ -21,6 +21,8 @@ import net.virtualvoid.sbt.graph.ModuleId
 import sbt.librarymanagement.ModuleID
 import uk.gov.hmrc.bobby.domain.Dependency
 
+import scala.util.{Failure, Success, Try}
+
 object Util {
 
   implicit class ExtendedModuleId(id: ModuleId) {
@@ -36,6 +38,20 @@ object Util {
 
   implicit class FansiStr(s: String) {
     def fansi = Str(s)
+  }
+
+  implicit class RichOption[A](opt: Option[A]) {
+    def toTry(onNone: Exception): Try[A] = opt match {
+      case Some(a) => Success(a)
+      case None    => Failure(onNone)
+    }
+  }
+
+  implicit class RichTry[A](ty: Try[A]) {
+    def getOrElseWith(e: Throwable => A) = ty match {
+      case Success(a) => a
+      case Failure(t) => e(t)
+    }
   }
 
 }

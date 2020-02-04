@@ -27,14 +27,13 @@ object BobbyValidator {
      projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
      projectDependencies: Seq[ModuleID],
      pluginDependencies: Seq[ModuleID],
-     latestVersions: Map[ModuleID, Option[Version]],
      bobbyRules: BobbyRules): List[Message] = {
 
     val checkedProjectDependencies = projectDependencies.map(dep => BobbyChecked(dep, Library, calc(bobbyRules.libs, dep)))
     val checkedPluginDependencies = pluginDependencies.map(dep => BobbyChecked(dep, Plugin, calc(bobbyRules.plugins, dep)))
 
-    val projectMessages = generateMessages(bobbyRules.libs, checkedProjectDependencies, latestVersions, projectDependencyMap)
-    val pluginMessages = generateMessages(bobbyRules.plugins, checkedPluginDependencies, latestVersions)
+    val projectMessages = generateMessages(bobbyRules.libs, checkedProjectDependencies, projectDependencyMap)
+    val pluginMessages = generateMessages(bobbyRules.plugins, checkedPluginDependencies)
 
     (projectMessages ++ pluginMessages).sortBy(_.moduleName).toList
 
@@ -63,14 +62,7 @@ object BobbyValidator {
   }
 
   def generateMessages(rules: Seq[BobbyRule], bobbyChecked: Seq[BobbyChecked],
-                       latestVersions: Map[ModuleID, Option[Version]],
                        dependencyMap: Map[ModuleID, Seq[ModuleID]] = Map.empty): Seq[Message] = {
-    bobbyChecked.map { bc =>
-      val nextVersion = for {
-        nextVersionFound <- latestVersions.getOrElse(bc.moduleID, None)
-        if nextVersionFound.isAfter(Version(bc.moduleID.revision)) //Don't show a next version < current version
-      } yield nextVersionFound
-      Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty), nextVersion)
-    }
+    bobbyChecked.map ( bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)) )
   }
 }

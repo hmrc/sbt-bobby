@@ -22,7 +22,7 @@ object MessageBuilder {
 
   def makeMessage(result: BobbyResult) = {
     val checked = BobbyChecked(ModuleID("org", "name", "0.0.0"), Library, result)
-    new Message(checked, Seq.empty, None)
+    new Message(checked, Seq.empty)
   }
 
 }

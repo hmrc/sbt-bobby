@@ -28,7 +28,7 @@ sealed trait ViewType {
 }
 
 case object Flat extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Latest Version", "Effective From", "Reason")
+  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From", "Reason")
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.level.name),
@@ -36,7 +36,6 @@ case object Flat extends ViewType {
     Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse("")),
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
-    Str(m.latestVersion.map(_.toString).getOrElse("?")),
     Str(m.effectiveDate.map(_.toString).getOrElse("-")),
     Str(m.deprecationReason.map(_.toString).getOrElse("-"))
   )
@@ -51,7 +50,6 @@ case object Nested extends ViewType {
     if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Green(m.moduleName) else Str(s" => ${m.moduleName}"),
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
-    Str(m.latestVersion.map(_.toString).getOrElse("?")),
     Str(m.effectiveDate.map(_.toString).getOrElse("-"))
   )
 }

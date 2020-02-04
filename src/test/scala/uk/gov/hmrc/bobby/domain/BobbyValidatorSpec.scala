@@ -56,7 +56,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectLibs = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, Seq.empty, rules)
 
       messages.head.level shouldBe ERROR
     }
@@ -64,7 +64,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "return error if a plugin is in the exclude range" in {
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth-plugin", "[3.2.1]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth-plugin", "3.2.1"))
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.level shouldBe ERROR
     }
 
@@ -72,7 +72,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -80,7 +80,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -88,7 +88,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
 
       messages.head.level shouldBe ERROR
 
@@ -99,7 +99,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
 
       messages.head.level shouldBe ERROR
       Flat.renderMessage(messages.head)(4).plainText shouldBe "[*-SNAPSHOT]"
@@ -109,7 +109,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
       val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -117,7 +117,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
       val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]", dependencyType = Plugin))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -133,7 +133,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)", dependencyType = Plugin)
       )
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibraries, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibraries, projectPlugins, rules)
       messages.map(_.level) shouldBe List(ERROR, WARN, INFO)
     }
 
@@ -141,7 +141,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       messages.head.level shouldBe WARN
     }
 
@@ -149,7 +149,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.level shouldBe WARN
     }
 
@@ -157,7 +157,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -165,7 +165,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -173,7 +173,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       messages.head.level shouldBe WARN
     }
 
@@ -181,7 +181,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]", dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
       messages.head.level shouldBe WARN
     }
 
@@ -190,14 +190,13 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1)))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
 
       Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
       Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
       Flat.renderMessage(messages.head)(2).plainText shouldBe ""
-      Flat.renderMessage(messages.head)(3).plainText shouldBe "3.2.0"
-      Flat.renderMessage(messages.head)(6).plainText shouldBe "2000-01-01"
-      Flat.renderMessage(messages.head)(7).plainText shouldBe "the reason"
+      Flat.renderMessage(messages.head)(5).plainText shouldBe "2000-01-01"
+      Flat.renderMessage(messages.head)(6).plainText shouldBe "the reason"
     }
 
     "produce error message for mandatory plugins which are currently been enforced" in {
@@ -211,97 +210,42 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
           dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, Map.empty, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, Seq.empty, projectPlugins, rules)
 
       val pluginMessage = messages.head
       Flat.renderMessage(pluginMessage)(0).plainText shouldBe "ERROR"
       Flat.renderMessage(pluginMessage)(1).plainText shouldBe "uk.gov.hmrc.auth"
       Flat.renderMessage(pluginMessage)(2).plainText shouldBe ""
-      Flat.renderMessage(pluginMessage)(3).plainText shouldBe "3.2.0"
-      Flat.renderMessage(pluginMessage)(6).plainText shouldBe "2000-01-01"
-      Flat.renderMessage(pluginMessage)(7).plainText shouldBe "the reason"
+      Flat.renderMessage(pluginMessage)(5).plainText shouldBe "2000-01-01"
+      Flat.renderMessage(pluginMessage)(6).plainText shouldBe "the reason"
     }
 
-    "show a ERROR message for a library which has a newer version in a repository AND is a mandatory upgrade now" in {
+    "show a ERROR message for a library which is a bobby violation" in {
       val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("4.3.0")))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
       Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
     }
 
-    "show a WARN message for a library which has a newer version in a repository AND is a mandatory upgrade soon" in {
+    "show a WARN message for a library which is a bobby warning" in {
       val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("4.3.0")))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
 
       messages.size shouldBe 1
       messages.head.level shouldBe WARN
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("4.3.0")
     }
 
-    "show an INFO message for a library which has a newer version in a repository" in {
+    "show an INFO message for a library which is not a violation or warning" in {
       val rules = BobbyRules.EMPTY
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("3.3.0")))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
 
       messages.size shouldBe 1
       messages.head.level shouldBe INFO
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.3.0")
-    }
-
-    "not show a message if a library is up-to-date" in {
-      val rules = BobbyRules.EMPTY
-      val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("3.2.1")))
-
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
-
-      messages.head.checked.result shouldBe BobbyOk
-    }
-
-    "show an INFO message for a library for which the latest nexus revision is unknown and show '?' in the results table" in {
-      val rules = BobbyRules.EMPTY
-      val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> None)
-
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
-
-      messages.head.level shouldBe INFO
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("?")
-    }
-
-    "show an WARN message for a library which will be rules soon AND has a newer version in a repository" in {
-      val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
-      val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Some(Version("3.8.0")))
-
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
-
-      messages.head.level shouldBe WARN
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("(,4.0.0]")
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.2.1")
-      Flat.renderMessage(messages.head).map(_.plainText) should contain("3.8.0")
-      Flat.renderMessage(messages.head).map(_.plainText) should not contain "4.0.0"
-    }
-
-    "not show an earlier version of a mandatory library if the latest was not found in a repository" in {
-      val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
-      val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val latestVersionMap = Map(ModuleID("uk.gov.hmrc", "auth", "3.2.1") -> Option(Version("1.0.0")))
-
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, latestVersionMap, rules)
-
-      Flat.renderMessage(messages.head).map(_.plainText) should not contain "1.0.0"
-      Flat.renderMessage(messages.head).map(_.plainText) should not contain "3.1.0"
     }
 
   }
