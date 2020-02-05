@@ -18,8 +18,6 @@ lazy val root = (project in file("."))
     addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
     libraryDependencies ++= Seq(
       "commons-codec"         % "commons-codec"               % "1.14",
-      "joda-time"             % "joda-time"                   % "2.10.5",
-      "org.joda"              % "joda-convert"                % "2.2.1",
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",
       "com.typesafe.play"     %% "play-json"                  % "2.6.14",
       "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,

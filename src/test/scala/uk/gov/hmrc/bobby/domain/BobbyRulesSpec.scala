@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -24,7 +25,7 @@ class BobbyRulesSpec extends AnyFlatSpec with Matchers {
 
   "BobbyRules" should "filter plugin and lib dependencies" in {
 
-    val now = new LocalDate()
+    val now = LocalDate.now
     val rules: List[BobbyRule] = List(
       BobbyRule(
         Dependency("uk.gov.hmrc", "some-service"),

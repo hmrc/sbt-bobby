@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}

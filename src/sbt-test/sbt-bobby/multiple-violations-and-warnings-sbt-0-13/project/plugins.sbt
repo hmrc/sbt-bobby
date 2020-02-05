@@ -1,7 +1,7 @@
 resolvers += Resolver.url("hmrc-sbt-plugin-releases", url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(
   Resolver.ivyStylePatterns)
 
-libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.1"
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.14"
 
 sys.props.get("plugin.version") match {
   case Some(x) => addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % x)

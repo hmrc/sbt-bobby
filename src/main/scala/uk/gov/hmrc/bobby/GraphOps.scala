@@ -114,9 +114,8 @@ object GraphOps {
     }.toMap
   }
 
-  def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] = {
+  def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] =
     map.map { case (k, v) => k.toSbt -> v.map(_.toSbt)}
-  }
 
   def cleanGraph(graph: ModuleGraph, excludeNode: ModuleId): ModuleGraph = {
     // Remove evicted nodes and the current project node

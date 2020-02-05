@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import sbt.{ConsoleLogger, ModuleID}
 
 object BobbyValidator {

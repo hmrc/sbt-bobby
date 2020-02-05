@@ -17,8 +17,8 @@
 package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
+import java.time.LocalDate
 
-import org.joda.time.LocalDate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import uk.gov.hmrc.bobby.domain.{Library, VersionRange}
@@ -50,13 +50,13 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     libs.head.dependency.name         shouldBe "some-frontend"
     libs.head.range                   shouldBe VersionRange("(,7.4.1)")
     libs.head.reason                  shouldBe "7.4.1 has important security fixes"
-    libs.head.effectiveDate                    shouldBe new LocalDate(2015, 1, 1)
+    libs.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 1)
 
     plugins.head.dependency.organisation shouldBe "uk.gov.hmrc"
     plugins.head.dependency.name         shouldBe "some-plugin"
     plugins.head.range                   shouldBe VersionRange("(,1.0.0)")
     plugins.head.reason                  shouldBe "1.0.0 is outdated"
-    plugins.head.effectiveDate                    shouldBe new LocalDate(2015, 1, 2)
+    plugins.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 2)
 
   }
 
@@ -78,13 +78,13 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     libs.head.dependency.name         shouldBe "some-frontend"
     libs.head.range                   shouldBe VersionRange("(,7.4.1)")
     libs.head.reason                  shouldBe "7.4.1 has important security fixes"
-    libs.head.effectiveDate                    shouldBe new LocalDate(2015, 1, 1)
+    libs.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 1)
 
     libs.last.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.last.dependency.name         shouldBe "some-service"
     libs.last.range                   shouldBe VersionRange("[8.0.0, 8.4.1]")
     libs.last.reason                  shouldBe "Versions between 8.0.0 and 8.4.1 have a bug"
-    libs.last.effectiveDate                    shouldBe new LocalDate(2015, 3, 1)
+    libs.last.effectiveDate                    shouldBe LocalDate.of(2015, 3, 1)
 
     plugins shouldBe 'isEmpty
   }

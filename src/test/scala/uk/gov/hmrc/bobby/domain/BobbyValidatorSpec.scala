@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -36,7 +37,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       Dependency(org, name),
       VersionRange(version),
       "reason",
-      new LocalDate().plusWeeks(1),
+      LocalDate.now().plusWeeks(1),
       dependencyType)
 
   def deprecatedNow(
@@ -44,7 +45,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     name: String,
     version: String,
     reason: String                 = "reason",
-    deadline: LocalDate            = new LocalDate().minusWeeks(1),
+    deadline: LocalDate            = LocalDate.now().minusWeeks(1),
     dependencyType: DependencyType = Library): BobbyRule =
     BobbyRule(Dependency(org, name), VersionRange(version), reason, deadline, dependencyType)
 
@@ -187,7 +188,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
     "produce error message for mandatory libraries which are currently been enforced" in {
       val rules = boddyRules(
-        deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = new LocalDate(2000, 1, 1)))
+        deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = LocalDate.of(2000, 1, 1)))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
@@ -206,7 +207,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
           "auth",
           "(,4.0.0]",
           reason = "the reason",
-          deadline = new LocalDate(2000, 1, 1),
+          deadline = LocalDate.of(2000, 1, 1),
           dependencyType = Plugin))
       val projectPlugins = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 

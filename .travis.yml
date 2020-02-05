@@ -10,4 +10,4 @@ cache:
 notifications:
   email: false
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION -J-XX:ReservedCodeCacheSize=256M test scripted
+  - sbt ++$TRAVIS_SCALA_VERSION -J-XX:ReservedCodeCacheSize=256M ^test ^scripted

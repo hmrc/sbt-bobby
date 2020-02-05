@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.bobby
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
@@ -48,7 +49,7 @@ class BobbySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "order messages correctly" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", new LocalDate(), Library)
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), Library)
 
     val messages = Seq(
       makeMessage(BobbyOk),

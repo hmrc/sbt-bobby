@@ -17,8 +17,8 @@
 package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
+import java.time.LocalDate
 
-import org.joda.time.LocalDate
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
 
