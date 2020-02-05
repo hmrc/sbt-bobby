@@ -32,7 +32,7 @@ case object Flat extends ViewType {
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.checked.moduleID.moduleName) else if (m.isLocal) Color.Green(m.checked.moduleID.moduleName) else Str(m.checked.moduleID.moduleName),
+    if(m.isPlugin) Color.Magenta(m.checked.moduleID.moduleName) else if (m.isLocal) Color.Blue(m.checked.moduleID.moduleName) else Str(m.checked.moduleID.moduleName),
     Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse("")),
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
@@ -47,7 +47,7 @@ case object Nested extends ViewType {
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Green(m.moduleName) else Str(s" => ${m.moduleName}"),
+    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Blue(m.moduleName) else Str(s" => ${m.moduleName}"),
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
     Str(m.effectiveDate.map(_.toString).getOrElse("-"))
@@ -59,7 +59,7 @@ case object Compact extends ViewType {
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Green(m.moduleName) else Str(m.moduleName),
+    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Blue(m.moduleName) else Str(m.moduleName),
     Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse("")),
     Str(m.checked.moduleID.revision),
     Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
@@ -79,7 +79,7 @@ object ViewType {
   def messageColour(message: Message): EscapeAttr = message.level match {
     case ERROR => Color.Red
     case WARN => Color.Yellow
-    case INFO => Color.Cyan
+    case INFO => Color.Green
   }
 
 }

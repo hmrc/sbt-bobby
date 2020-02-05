@@ -20,6 +20,8 @@ import net.virtualvoid.sbt.graph.{GraphTransformations, Module, ModuleGraph, Mod
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
 
+import scala.annotation.tailrec
+
 // Initially inspired by https://github.com/Verizon/sbt-blockade/blob/1f64972703f73267bf9f8607d736516f013ac07b/src/main/scala/verizon/build/blockade.scala#L375-L433
 object GraphOps {
 
@@ -42,6 +44,7 @@ object GraphOps {
 
     // Recursively builds a list of ModuleIDs in sequence starting from the nodes, chopping off the nodes
     // and making a new graph, then repeating.
+    @tailrec
     def go(curGraph: ModuleGraph, acc: Seq[ModuleId]): Seq[ModuleId] = {
       if (curGraph.nodes.isEmpty) acc
       else {
@@ -63,9 +66,7 @@ object GraphOps {
    * So, we need only remove evicted nodes and their in-bound (and out-bound,
    * if they happen to exist) edges.
    */
-  def pruneEvicted(g: ModuleGraph): ModuleGraph = {
-    pruneNodes(g, m => m.isEvicted)
-  }
+  def pruneEvicted(g: ModuleGraph): ModuleGraph = pruneNodes(g, m => m.isEvicted)
 
   def pruneNodes(g: ModuleGraph, pruneFn: Module => Boolean): ModuleGraph = {
     val usedModules = g.nodes.filterNot(pruneFn)

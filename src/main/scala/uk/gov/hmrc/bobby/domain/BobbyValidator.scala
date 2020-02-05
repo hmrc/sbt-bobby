@@ -44,19 +44,18 @@ object BobbyValidator {
 
     val version = Version(dep.revision)
 
-    val matchingRules = bobbyRules.filter(rule => {
+    val matchingRules = bobbyRules.filter{ rule =>
       (rule.dependency.organisation.equals(dep.organization) || rule.dependency.organisation.equals("*")) &&
         (rule.dependency.name.equals(dep.name) || rule.dependency.name.equals("*"))
-    }).filter(_.range.includes(version))
+    }.filter(_.range.includes(version))
 
     // Apply the earliest enforced rule first in the case of multiple
     matchingRules.sortWith((a, b) => a.effectiveDate.isBefore(b.effectiveDate)).headOption  match {
-      case Some(rule) => {
+      case Some(rule) =>
         rule.effectiveDate match {
           case d if d.isBefore(now) || d.isEqual(now) => BobbyViolation(rule)
           case _ => BobbyWarning(rule)
         }
-      }
       case _ => BobbyOk
     }
 

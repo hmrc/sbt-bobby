@@ -19,38 +19,36 @@ package uk.gov.hmrc.bobby.conf
 import java.net.URL
 import java.time.LocalDate
 
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Json, Reads, _}
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
 
 import scala.io.Source
-import scala.util.parsing.json.JSON
 
 object Configuration {
 
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
+  case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
+  case class BobbyRulesConfig(libraries: Option[List[BobbyRuleConfig]], plugins: Option[List[BobbyRuleConfig]])
+
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
-    import uk.gov.hmrc.bobby.NativeJsonHelpers._
+    implicit lazy val ruleConfigR = Json.reads[BobbyRuleConfig]
+    // Not using macro below to avoid false unused implicit warning
+    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] = (
+      (__ \ "libraries").readNullable[List[BobbyRuleConfig]] and
+        (__ \ "plugins").readNullable[List[BobbyRuleConfig]]
+      )(BobbyRulesConfig.apply _)
 
-    (for (M(map) <- JSON.parseFull(jsonConfig)) yield {
-      (for {
-        (S(key), L(list)) <- map
-        typ = DependencyType(key)
-        if typ != Unknown
-      } yield {
-        for {
-          MS(mapS)     <- list
-          organisation <- mapS.get("organisation")
-          name         <- mapS.get("name")
-          range        <- mapS.get("range")
-          reason       <- mapS.get("reason")
-          fromString   <- mapS.get("from")
-          fromDate = LocalDate.parse(fromString)
-        } yield BobbyRule.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
-      }).toList.flatten
-    }).getOrElse(List.empty)
+    def toBobbyRule(brc:BobbyRuleConfig)(`type`: DependencyType)  =
+      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from), `type`)
 
+    Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig)).map { c =>
+        c.libraries.getOrElse(List.empty).map(toBobbyRule(_)(Library)) ++
+        c.plugins.getOrElse(List.empty).map(toBobbyRule(_)(Plugin))
+    }.getOrElse(List.empty)
   }
 
   def extractMap(lines: List[String]): Map[String, String] = {

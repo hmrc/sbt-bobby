@@ -23,12 +23,12 @@ object Output {
 
   val logger = ConsoleLogger()
 
-  def writeMessages(messages: List[Message], jsonFilePath: String, textFilePath: String, viewType: ViewType): Unit = {
+  def writeMessages(messages: List[Message], jsonFilePath: String, textFilePath: String, viewType: ViewType, consoleColours: Boolean): Unit = {
 
     val writers = Seq(
       new JsonFileWriter(jsonFilePath),
       new TextFileWriter(textFilePath),
-      new ConsoleWriter()
+      new ConsoleWriter(consoleColours)
     )
 
     writers.foreach(_.write(messages, viewType))

@@ -30,6 +30,19 @@ object Bobby {
   private val logger         = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
+  val bobbyLogo =
+    """
+      |              ,
+      |     __  _.-"` `'-.
+      |    /||\'._ __{}_(
+      |    ||||  |'--.__\           SBT BOBBY
+      |    |  L.(   ^_\^    Your friendly neighbourhood
+      |    \ .-' |   _ |          build policeman
+      |    | |   )\___/
+      |    |  \-'`:._]
+      |     \__/;      '-.
+      |""".stripMargin
+
   def validateDependencies(
      strictMode: Boolean,
      projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
@@ -37,9 +50,12 @@ object Bobby {
      pluginDependencies: Seq[ModuleID],
      scalaVersion: String,
      viewType: ViewType,
+     consoleColours: Boolean,
      bobbyRulesUrl: Option[URL] = None,
      bobbyConfigFile: Option[ConfigFile] = None,
      jsonOutputFileOverride: Option[String] = None): Unit = {
+
+    logger.info(bobbyLogo)
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
@@ -48,7 +64,7 @@ object Bobby {
     val messages =
       BobbyValidator.applyBobbyRules(projectDependencyMap, projectDependencies, pluginDependencies, config.loadBobbyRules)
 
-    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType)
+    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType, consoleColours)
 
     if(messages.exists(_.isError))
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")

@@ -29,7 +29,7 @@ class ConfigFile(fileName: String) {
     logger.warn(s"Supplied configuration file '$fileName' does not exist.")
   }
 
-  val load: Map[String, String] = {
+  private def loadKvMap: Map[String, String] = {
     try {
       val source = Source.fromFile(fileName)
       val lines = source.getLines().toList
@@ -42,6 +42,8 @@ class ConfigFile(fileName: String) {
     }
   }
 
-  def get(path: String): Option[String] = load.get(path)
+  val kvMap: Map[String, String] = loadKvMap
+
+  def get(path: String): Option[String] = kvMap.get(path)
 
 }

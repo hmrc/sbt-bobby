@@ -275,6 +275,19 @@ json-output-file = target/bobby-output.json
 text-output-file = target/bobby-output.txt
 ```
 
+### Turning off the console colours
+
+By default, the console output will show with ANSI colours. To turn this off you can:
+
+ * Start SBT with an environment variable, `BOBBY_CONSOLE_COLOURS=false sbt validate`
+ * Specify it in your build settings
+    ```
+    bobbyConsoleColours := false
+    ```
+ * Change it manually just for your console session, e.g.
+    ```
+    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyConsoleColours := false
+
 ### Changing the view type
 
 Bobby can display the output table in a few different variations. Currently these are:

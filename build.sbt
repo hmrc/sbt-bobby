@@ -19,7 +19,8 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "commons-codec"         % "commons-codec"               % "1.14",
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",
-      "com.typesafe.play"     %% "play-json"                  % "2.6.14",
+      "com.typesafe.play"     %% "play-json"                  % "2.6.14", // Kept lower for sbt 0.13 compatibility
+      "org.joda"              % "joda-convert"                % "2.2.1", //Required only to prevent warnings with play-json (https://stackoverflow.com/questions/13856266/class-broken-error-with-joda-time-using-scala)
       "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,
       "com.vladsch.flexmark"  % "flexmark-all"                % "0.35.10"       % Test,
       "org.scalacheck"        %% "scalacheck"                 % "1.14.3"        % Test,
@@ -28,6 +29,5 @@ lazy val root = (project in file("."))
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
-    scriptedBufferLog := false,
-    useCoursier := false
+    scriptedBufferLog := false
   )

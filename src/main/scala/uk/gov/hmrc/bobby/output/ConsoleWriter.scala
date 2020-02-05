@@ -20,14 +20,14 @@ import fansi.{Color, Str}
 import uk.gov.hmrc.bobby.Util._
 import uk.gov.hmrc.bobby.domain.Message
 
-class ConsoleWriter extends TextWriter {
+class ConsoleWriter(colours: Boolean) extends TextWriter {
 
   override def write(messages: List[Message], viewType: ViewType): Unit = {
     logger.info(
        "[bobby] Bobby info and warnings. See bobby report artefact for more details. For more information " +
          "and documentation regarding bobby, please see the README at https://github.com/hmrc/sbt-bobby")
 
-    logger.info(colourKey().mkString("\n"))
+    logger.info(key().mkString("\n"))
 
     val needsAttention = messages.filterNot(_.isOkay)
 
@@ -47,13 +47,15 @@ class ConsoleWriter extends TextWriter {
         outputSummary(violations).foreach(logger.error(_))
       }
     } else {
-      logger.info(s"Wohoo, your build has no Bobby issues. Have a great day!")
+      logger.info(s"Woohoo, your build has no Bobby issues. Have a great day!")
     }
 
   }
 
   override def renderText(messages: List[Message], viewType: ViewType): String = {
-    val messageModel = buildModel(messages, viewType)
+    val colouredModel = buildModel(messages, viewType)
+
+    val messageModel = if(colours) colouredModel else colouredModel.map(_.map(_.plainText.fansi))
 
     Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)
   }
@@ -61,20 +63,21 @@ class ConsoleWriter extends TextWriter {
   private def outputSummary(messages: List[Message]): List[String] =
         messages.zipWithIndex.map{ case (m, idx) => s" (${idx+1}) ${m.moduleName} (${m.checked.moduleID.revision})\n     Reason: ${m.deprecationReason.getOrElse("")}" }
 
-  private def colourKey(): Seq[Str] = {
-    Seq(
+  private def key(): Seq[Str] = {
+    val key = Seq(
       Str("*" * 120),
       Str("Colour Level KEY: "),
       Color.Red(" * ERROR: Bobby Violations => Your build will forcibly fail if any violations are detected"),
       Color.Yellow(" * WARN: Bobby Warnings => Your build will" +
         " start to fail from the date the rules become enforced"),
-      Color.Cyan(" * INFO: Bobby Ok => No problems with this dependency"),
+      Color.Green(" * INFO: Bobby Ok => No problems with this dependency"),
       Str(""),
       Str("Colour Dependency KEY: "),
-      Color.Green(" * GREEN: Local Dependency => Highlights dependencies declared locally in your project (not transitive)"),
+      Color.Blue(" * BLUE: Local Dependency => Highlights dependencies declared locally in your project (not transitive)"),
       Color.Magenta(" * MAGENTA: Plugin Dependency => From your build project"),
       Str("*" * 120)
     )
+    if(colours) key else key.map(_.plainText.fansi)
   }
 
 }

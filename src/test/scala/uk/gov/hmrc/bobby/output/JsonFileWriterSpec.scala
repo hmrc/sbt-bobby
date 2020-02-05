@@ -47,7 +47,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
     (rowData \ "organisation").as[String]      shouldBe "org"
     (rowData \ "revision").as[String]          shouldBe "0.0.0"
     (rowData \ "result").as[String]            shouldBe "BobbyViolation"
-    (rowData \ "deprecationFrom").as[String]   shouldBe "2020-01-31" //brexit
+    (rowData \ "deprecationFrom").as[String]   shouldBe "2020-01-31" // ^_^
     (rowData \ "deprecationReason").as[String] shouldBe "bad library"
 
     (rows(1) \ "level").as[String] shouldBe "WARN"
