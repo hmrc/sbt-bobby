@@ -6,7 +6,7 @@
 
 Bobby, a.k.a. your friendly neighbourhood build policeman, is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
-You create a set of rules which outlaw particular versions of a library of plugin, and task Bobby to enforce those rules. 
+You create a set of rules which outlaw particular versions of a library or plugin, and task Bobby to enforce those rules. 
 If a violation is detected, the whistle is blown, and the build is failed.
  
 Bobby can help your team block a bad dependency with a known security issue or memory leak for example, or simply to enforce that
