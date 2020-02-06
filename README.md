@@ -28,12 +28,12 @@ Ideally communications will be in place to ensure updates happen organically but
 
 Bobby inspects the build and pulls out all of the dependencies you've declared, and all the transitive dependencies that those pull in. 
 
-It will then check each against the set of rules and tag each as either:
+It will then check each against the set of rules and tag them as either:
 
-* _BobbyViolation_ => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue.
+* _BobbyViolation_ => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue
 * _BobbyWarning_ => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a 
 BobbyViolation from the specified date, so should be looked at with high priority
-* _BobbyOk_ => A dependency that is clean and his no rules against it. No issue to take
+* _BobbyOk_ => A dependency that is clean and has no rules against it. No issue to take
 
 ## Creating a Bobby Rule
 
