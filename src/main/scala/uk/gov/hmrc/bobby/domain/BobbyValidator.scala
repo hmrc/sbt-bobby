@@ -44,20 +44,18 @@ object BobbyValidator {
 
     val version = Version(dep.revision)
 
-    val matchingRules = bobbyRules.filter{ rule =>
+    // First sort the rules according to the precedence we impose, and partition to warnings and violations
+    val (violations, warnings) = bobbyRules.sorted.partition(r => r.effectiveDate.isBefore(now) || r.effectiveDate.equals(now))
+
+    def matching(rules: List[BobbyRule]): List[BobbyRule] = rules.filter { rule =>
       (rule.dependency.organisation.equals(dep.organization) || rule.dependency.organisation.equals("*")) &&
         (rule.dependency.name.equals(dep.name) || rule.dependency.name.equals("*"))
     }.filter(_.range.includes(version))
 
-    // Apply the earliest enforced rule first in the case of multiple
-    matchingRules.sortWith((a, b) => a.effectiveDate.isBefore(b.effectiveDate)).headOption  match {
-      case Some(rule) =>
-        rule.effectiveDate match {
-          case d if d.isBefore(now) || d.isEqual(now) => BobbyViolation(rule)
-          case _ => BobbyWarning(rule)
-        }
-      case _ => BobbyOk
-    }
+    // Always consider violations before warnings
+    matching(violations).headOption.map(BobbyViolation)
+      .orElse(matching(warnings).headOption.map(BobbyWarning))
+      .getOrElse(BobbyOk)
 
   }
 

@@ -74,7 +74,7 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
 
   def isAfter(version: Version) = this.compareTo(version) > 0
 
-  lazy val boqFormatted = buildOrQualifier.map {
+  lazy val boqFormatted: Option[String] = buildOrQualifier.map {
     case Left(num) => num.toString
     case Right(st) => st
   }

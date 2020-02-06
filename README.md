@@ -160,6 +160,35 @@ The range that is outlawed can be configured using Ivy style syntax.
 
 Using these ranges you can easily specify minimum and maximum ranges, or exact versions to outlaw.
 
+## Rule precedence
+
+Sometimes you might have multiple rules that apply for a given dependency. Maybe you create a rule to outlaw
+version `1.2.0` of `myawesomelib` because it has a known memory leak. Later on, you might decide to blanket ban all
+versions <= `2.0.0`. You would then have two rules with ranges:
+
+```
+1. [1.2.0]      Effective from T+1  (so a BobbyWarning )
+2. (,2.0.0]     Effective from T-1  (so a BobbyViolation )
+```
+If a build then has a dependency on `myawesomelib % 1.2.0` then both rules match. We clearly want to apply the second rule
+that is already in effect and results in a violation, over the first that would allow the build to continue with only a 
+warning.
+
+So in order to disambiguate multiple rules, first Bobby partitions them to only consider violations first. If none match,
+it will consider warnings. In each subset, the ordering is (in decreasing ordering of precedence):
+
+1. First consider the upper bound of the rule version. The one that is the *highest* takes precedence
+   a. No upper bound (None) first
+   b. Highest upper bound if both defined
+2. Inclusive upper bound over exclusive (when version numbers matching)
+3. Most recent rule first
+4. Undefined (very much an edge case, pick any)
+
+Precedence is in this order so that a blanket ban across a range takes effect over a ban on a single version. The reasoning
+behind this is in the case where you had a specific rule on versions V1, V2, V3 and V1-3. If a build tries to use V1,
+the preference is to show them it is blocked because of the V1-3 rule, saving them trying upgrading to V2, then V3 first and getting 
+a different violation each time.
+
 ## Understanding the Bobby output
 
 Bobby will write out a summary table to the console, as well as generating two report artifacts:

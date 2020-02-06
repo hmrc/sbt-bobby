@@ -26,6 +26,8 @@ import uk.gov.hmrc.bobby.Generators.{depedendencyGen, dependencyTypeGen}
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 import uk.gov.hmrc.bobby.output.Flat
 
+import scala.util.Random
+
 class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDrivenPropertyChecks {
 
   def deprecatedSoon(
@@ -269,13 +271,58 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       }
     }
 
-    "give BobbyViolation when there are multiple matching rules" in {
+    "resolves correct rule when there are multiple matching rules (Priority 1a: takes no upper bound first)" in {
       forAll(depedendencyGen, dependencyTypeGen) { case(dep, t) =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now.minusDays(1), t)
-        val rule2 = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now.minusDays(2), t)
+        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, t)
+        val rule2 = BobbyRule(dep, VersionRange("[0.1.0,)"), "some reason", now, t)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+      }
+    }
+
+    "resolves correct rule when there are multiple matching rules (Priority 1b: takes highest upper bound)" in {
+      forAll(depedendencyGen, dependencyTypeGen) { case(dep, t) =>
+        val now = LocalDate.now()
+        val rule = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, t)
+        val rule2 = BobbyRule(dep, VersionRange("(,0.3.0]"), "some reason", now, t)
+        val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
+        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+      }
+    }
+
+    "resolves correct rule when there are multiple matching rules (Priority 2: takes inclusive upper bound)" in {
+      forAll(depedendencyGen, dependencyTypeGen) { case(dep, t) =>
+        val now = LocalDate.now()
+        val rule = BobbyRule(dep, VersionRange("(,0.1.0)"), "some reason", now, t)
+        val rule2 = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, t)
+        val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
+        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+      }
+    }
+
+    "resolves correct rule when there are multiple matching rules (Priority 3: takes most recent)" in {
+      forAll(depedendencyGen, dependencyTypeGen) { case(dep, t) =>
+        val now = LocalDate.now()
+        val rule = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(2), t)
+        val rule2 = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(1), t)
+        val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
+        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+      }
+    }
+
+    "resolves correct rule when there are multiple matching rules (all priorities, duplicating test from Catalogue)" in {
+      forAll(depedendencyGen, dependencyTypeGen) { case (dep, t) =>
+        val now = LocalDate.now()
+        val orderedList = List(
+          BobbyRule(dep, VersionRange("[1.0.0,)"), "some reason", now, t),
+          BobbyRule(dep, VersionRange("(,99.99.99)"), "some reason", now, t),
+          BobbyRule(dep, VersionRange("(,2.1.0)"), "some reason", now, t),
+          BobbyRule(dep, VersionRange("(,1.2.0]"), "some reason", now, t),
+          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now, t),
+          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now.minusDays(1), t)
+        )
+        Random.shuffle(orderedList).sorted shouldBe orderedList
       }
     }
 

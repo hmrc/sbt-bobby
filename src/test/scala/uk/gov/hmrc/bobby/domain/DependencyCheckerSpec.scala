@@ -39,13 +39,22 @@ class DependencyCheckerSpec extends AnyFlatSpec with Matchers {
     bv.calc(List(rule), d) shouldBe BobbyViolation(rule)
   }
 
-  it should "return warn result if the version is in when two restricted ranges, and the result should be the soonest deprecation" in {
+  it should "return warn result if the version is in a restricted range, and the result should be the highest precedence deprecation" in {
     val d = ModuleID("uk.gov.hmrc", "some-service", "3.1.0")
     val rule1 = BobbyRule(d.toDependency(), VersionRange("(,6.0.0]"), "testing 2", LocalDate.now().plusDays(2), Library)
     val rule2 = BobbyRule(d.toDependency(), VersionRange("(,5.0.0]"), "testing 1", LocalDate.now().plusDays(1), Library)
     val rule3 = BobbyRule(d.toDependency(), VersionRange("(,7.0.0]"), "testing 3", LocalDate.now().plusDays(3), Library)
 
-    bv.calc(List(rule1, rule2, rule3), d) shouldBe BobbyWarning(rule2)
+    bv.calc(List(rule1, rule2, rule3), d) shouldBe BobbyWarning(rule3)
+  }
+
+  it should "always return a violation over a warning if both rules apply" in {
+    val d = ModuleID("uk.gov.hmrc", "some-service", "3.1.0")
+    val rule1 = BobbyRule(d.toDependency(), VersionRange("(,6.0.0]"), "testing 2", LocalDate.now().plusDays(2), Library)
+    val rule2 = BobbyRule(d.toDependency(), VersionRange("(,5.0.0]"), "testing 1", LocalDate.now().minusDays(1), Library)
+    val rule3 = BobbyRule(d.toDependency(), VersionRange("(,7.0.0]"), "testing 3", LocalDate.now().plusDays(3), Library)
+
+    bv.calc(List(rule1, rule2, rule3), d) shouldBe BobbyViolation(rule2)
   }
 
   it should "return failed result if the version is in a restricted range of multiple exclude" in {
