@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,9 @@ package uk.gov.hmrc.bobby
 import java.net.URL
 
 import sbt._
-import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.Repo
-import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.conf.{ConfigFile, Configuration}
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.Output
-import uk.gov.hmrc.bobby.repos.Repositories
-
-import scala.util.Try
+import uk.gov.hmrc.bobby.output.{Output, ViewType}
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
@@ -34,71 +30,57 @@ object Bobby {
   private val logger         = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
-  val ignoredOrgs = Set(
-    "com.typesafe.play",
-    "com.kenshoo",
-    "com.codahale.metrics",
-    "org.scala-lang"
-  )
+  val bobbyLogo =
+    """
+      |              ,
+      |     __  _.-"` `'-.
+      |    /||\'._ __{}_(
+      |    ||||  |'--.__\           SBT BOBBY
+      |    |  L.(   ^_\^    Your friendly neighbourhood
+      |    \ .-' |   _ |          build policeman
+      |    | |   )\___/
+      |    |  \-'`:._]
+      |     \__/;      '-.
+      |""".stripMargin
 
   def validateDependencies(
-    libraries: Seq[ModuleID],
-    plugins: Seq[ModuleID],
-    scalaVersion: String,
-    reposValue: Seq[Repo],
-    checkForLatest: Boolean,
-    deprecatedDependenciesUrl: Option[URL] = None,
-    jsonOutputFileOverride: Option[String] = None,
-    isSbtProject: Boolean                  = false) = {
+     strictMode: Boolean,
+     projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
+     projectDependencies: Seq[ModuleID],
+     pluginDependencies: Seq[ModuleID],
+     scalaVersion: String,
+     viewType: ViewType,
+     consoleColours: Boolean,
+     bobbyRulesUrl: Option[URL] = None,
+     bobbyConfigFile: Option[ConfigFile] = None,
+     jsonOutputFileOverride: Option[String] = None): Unit = {
+
+    logger.info(bobbyLogo)
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val config = new Configuration(deprecatedDependenciesUrl, jsonOutputFileOverride)
-
-    val filteredLibraries = filterDependencies(libraries, ignoredOrgs)
-
-    val latestLibraryRevisionsO = if (checkForLatest) {
-      Some(findLatestVersions(scalaVersion, reposValue, filteredLibraries))
-    } else None
+    val config = new Configuration(bobbyRulesUrl, bobbyConfigFile, jsonOutputFileOverride)
 
     val messages =
-      ResultBuilder.calculate(filteredLibraries, plugins, latestLibraryRevisionsO, config.loadDeprecatedDependencies)
+      BobbyValidator.applyBobbyRules(projectDependencyMap, projectDependencies, pluginDependencies, config.loadBobbyRules)
 
-    Output.outputMessages(messages, config.jsonOutputFile, config.textOutputFile)
+    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType, consoleColours)
 
-    if (messages.exists(_.isError))
-      throw new BobbyValidationFailedException("See previous bobby output for more information")
-  }
+    if(messages.exists(_.isError))
+      throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
 
-  def findLatestVersions(
-    scalaVersion: String,
-    repositoriesToCheck: Seq[Repo],
-    prepared: Seq[ModuleID]): Map[ModuleID, Try[Version]] = {
-    val repoSearch = Repositories.buildAggregateRepositories(repositoriesToCheck)
-    getLatestRepoRevisions(scalaVersion, prepared, repoSearch)
+    if(strictMode && messages.exists(_.isWarning))
+      throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 
   private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] =
     compactDependencies(dependencies)
       .filterNot(m => ignoreList.contains(m.organization))
 
-  private[bobby] def getLatestRepoRevisions(
-    scalaVersion: String,
-    compacted: Seq[ModuleID],
-    repoSearch: RepoSearch
-  ): Map[ModuleID, Try[Version]] =
-    compacted.par
-      .map { module =>
-        module -> repoSearch.findLatestRevision(module, Option(scalaVersion))
-      }
-      .seq
-      .toMap
-
   private[bobby] def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
-    def orgAndName(d: ModuleID) = s"${d.organization}.${d.name}"
-
+    import Util._
     dependencies
-      .groupBy(orgAndName)
+      .groupBy(_.moduleName)
       .map(_._2.head)
       .toSeq
   }

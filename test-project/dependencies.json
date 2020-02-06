@@ -4,31 +4,38 @@
       "organisation": "*",
       "name": "*",
       "range": "[*-SNAPSHOT]",
-      "reason": "No snapshot dependencies permitted",
+      "reason": "Example: No snapshot dependencies permitted",
       "from": "2099-01-01"
     },
     {
-      "organisation": "uk.gov.hmrc",
-      "name": "play-frontend",
-      "range": "(,99.99.99)",
-      "reason": "Post Play Frontend mandatory from 2 Nov",
-      "from": "2099-01-01"
+      "organisation": "org.scalatest",
+      "name": "scalatest",
+      "range": "(,3.1.0)",
+      "reason": "Example: Required to use latest scalatest 3.1.0+",
+      "from": "2020-01-01"
     },
     {
       "organisation": "uk.gov.hmrc",
-      "name": "play-health",
-      "range": "[1.0.0]",
-      "reason": "play-health",
-      "from": "2010-01-01"
+      "name": "simple-reactivemongo",
+      "range": "[7.0.0,7.14.0]",
+      "reason": "Example: Uses a version of reactivemongo that has a memory leak",
+      "from": "2020-01-01"
+    },
+    {
+      "organisation": "org.pegdown",
+      "name": "pegdown",
+      "range": "[0.0.0,)",
+      "reason": "Example: No pegdown dependencies will be allowed",
+      "from": "2099-01-01"
     }
   ],
   "plugins": [
     {
       "organisation": "uk.gov.hmrc",
-      "name": "sbt-auto-build",
-      "range": "[1.0.0]",
-      "reason": "sbt-auto-build",
-      "from": "2010-01-01"
+      "name": "sbt-settings",
+      "range": "[4.1.0]",
+      "reason": "Example: sbt-settings 4.1.0 is not allowed",
+      "from": "2020-01-01"
     }
   ]
 }

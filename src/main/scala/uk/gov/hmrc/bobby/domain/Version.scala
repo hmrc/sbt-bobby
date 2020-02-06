@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ case class Version(major: Int, minor: Int, revision: Int, buildOrQualifier: Opti
 
   def isAfter(version: Version) = this.compareTo(version) > 0
 
-  lazy val boqFormatted = buildOrQualifier.map {
+  lazy val boqFormatted: Option[String] = buildOrQualifier.map {
     case Left(num) => num.toString
     case Right(st) => st
   }

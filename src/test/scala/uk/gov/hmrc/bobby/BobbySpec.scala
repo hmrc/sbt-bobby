@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.bobby
 
-import org.scalatest.matchers.should.Matchers
+import java.time.LocalDate
+
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import sbt.ModuleID
+import uk.gov.hmrc.bobby.domain.MessageBuilder._
+import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 import uk.gov.hmrc.bobby.domain._
-import MessageLevels.{ERROR, INFO, WARN}
-import MessageBuilder._
 
 class BobbySpec extends AnyFlatSpec with Matchers {
 
-  it should "compact dependencies by using one dependnecy when more than one has the " in {
+  it should "compact dependencies by only including them once if declared in multiple configurations" in {
     val mods = Seq(
       ModuleID("uk.gov.hmrc", "auth", "3.2.0").withConfigurations(Some("test")),
       ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
@@ -47,13 +49,13 @@ class BobbySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "order messages correctly" in {
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), Library)
 
     val messages = Seq(
-      makeMessage(UnknownVersion),
-      makeMessage(NewVersionAvailable),
-      makeMessage(DependencyNearlyUnusable),
-      makeMessage(DependencyUnusable))
+      makeMessage(BobbyOk),
+      makeMessage(BobbyWarning(rule)),
+      makeMessage(BobbyViolation(rule)))
 
-    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO, INFO)
+    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
   }
 }

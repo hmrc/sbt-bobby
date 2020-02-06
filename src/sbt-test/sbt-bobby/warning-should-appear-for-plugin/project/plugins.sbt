@@ -2,7 +2,7 @@ resolvers += Resolver.url("hmrc-sbt-plugin-releases", url("https://dl.bintray.co
   Resolver.ivyStylePatterns)
 
 // This dependency being present should cause a warning from bobby
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.2.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.5.0")
 
 sys.props.get("plugin.version") match {
   case Some(x) => addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % x)

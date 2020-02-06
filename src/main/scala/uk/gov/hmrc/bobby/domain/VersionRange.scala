@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package uk.gov.hmrc.bobby.domain
+
+import scala.util.matching.Regex
 
 case class VersionRange(
   lowerBound: Option[Version],
@@ -36,7 +38,7 @@ case class VersionRange(
       lbRange && ubRange
     }
 
-  override def toString(): String =
+  override def toString: String =
     if (qualifierStartsWith.isDefined) {
       s"[*-${qualifierStartsWith.get}]"
     } else {
@@ -61,7 +63,7 @@ case class VersionRange(
   *
   * All versions must have all 3 numbers, 1.0 is not supported for example
   *
-  * @throws IllegalArgumentException when an illegal format is used
+  * throws IllegalArgumentException when an illegal format is used
   */
 object VersionRange {
 
@@ -72,11 +74,11 @@ object VersionRange {
   // (1.0.0]   x <= 1.0.0  WHY IS THE COMMA NOT MANDATORY?
   // [,1.0.0]  x <= 1.0.0  WHY IS THIS NOT ALLOWED?
 
-  val ValidFixedVersion          = """^\[(\d+\.\d+.\d+)\]""".r
-  val ValidVersionRangeLeftOpen  = """^\(,?(\d+\.\d+.\d+)[\]\)]""".r
-  val ValidVersionRangeRightOpen = """^[\[\(](\d+\.\d+.\d+),[\]\)]""".r
-  val ValidVersionRangeBetween   = """^[\[\(](\d+\.\d+.\d+),(\d+\.\d+.\d+)[\]\)]""".r
-  val Qualifier                  = """^\[[-\*]+(.*)\]""".r
+  val ValidFixedVersion: Regex              = """^\[(\d+\.\d+.\d+)\]""".r
+  val ValidVersionRangeLeftOpen: Regex      = """^\(,?(\d+\.\d+.\d+)[\]\)]""".r
+  val ValidVersionRangeRightOpen: Regex     = """^[\[\(](\d+\.\d+.\d+),[\]\)]""".r
+  val ValidVersionRangeBetween: Regex       = """^[\[\(](\d+\.\d+.\d+),(\d+\.\d+.\d+)[\]\)]""".r
+  val Qualifier: Regex                      = """^\[[-\*]+(.*)\]""".r
 
   def apply(range: String): VersionRange =
     range.replaceAll(" ", "") match {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,42 +23,15 @@ object Output {
 
   val logger = ConsoleLogger()
 
-  def outputMessages(messages: List[Message], jsonFilePath: String, textFilePath: String): Unit = {
+  def writeMessages(messages: List[Message], jsonFilePath: String, textFilePath: String, viewType: ViewType, consoleColours: Boolean): Unit = {
 
-    outputMessagesToConsole(messages)
-    new JsonOutingFileWriter(jsonFilePath).outputMessagesToJsonFile(messages)
-    new TextOutingFileWriter(textFilePath).outputMessagesToTextFile(messages)
+    val writers = Seq(
+      new JsonFileWriter(jsonFilePath),
+      new TextFileWriter(textFilePath),
+      new ConsoleWriter(consoleColours)
+    )
+
+    writers.foreach(_.write(messages, viewType))
   }
 
-  private def outputMessagesToConsole(messages: List[Message]): Unit = {
-    val model = buildTabularOutputModel(messages)
-
-    logger.info(
-      "[bobby] Bobby info and warnings. See bobby report artefact for more details. For more information " +
-        "and documentation regarding bobby, please see the README at https://github.com/hmrc/sbt-bobby")
-
-    Tabulator.formatAsStrings(Message.shortTabularHeader +: model).foreach { log =>
-      logger.info(log)
-    }
-
-    messages.filter(_.isError).foreach { log =>
-      renderConsoleErrorMessage(log.jsonMessage)
-    }
-  }
-
-  def buildTabularOutputModel(messages: List[Message]): List[Seq[String]] =
-    messages
-      .sortBy(_.moduleName)
-      .sortWith((a, b) => MessageLevels.compare(a.level, b.level))
-      .map { m =>
-        m.shortTabularOutput
-      }
-
-  def renderConsoleErrorMessage(text: String): Unit = {
-    logger.error("-")
-    logger.error("- Bobby mandatory failure details:")
-    logger.error("-")
-    logger.error(text)
-    logger.error("")
-  }
 }

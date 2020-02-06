@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.bobby.conf
 
-import org.joda.time.LocalDate
+import java.net.URL
+import java.time.LocalDate
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
 import uk.gov.hmrc.bobby.domain.{Library, VersionRange}
@@ -42,19 +44,19 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
     c should have size 2
 
-    val (libs, plugins) = c.partition(_._type == Library)
+    val (libs, plugins) = c.partition(_.`type` == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.head.dependency.name         shouldBe "some-frontend"
     libs.head.range                   shouldBe VersionRange("(,7.4.1)")
     libs.head.reason                  shouldBe "7.4.1 has important security fixes"
-    libs.head.from                    shouldBe new LocalDate(2015, 1, 1)
+    libs.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 1)
 
     plugins.head.dependency.organisation shouldBe "uk.gov.hmrc"
     plugins.head.dependency.name         shouldBe "some-plugin"
     plugins.head.range                   shouldBe VersionRange("(,1.0.0)")
     plugins.head.reason                  shouldBe "1.0.0 is outdated"
-    plugins.head.from                    shouldBe new LocalDate(2015, 1, 2)
+    plugins.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 2)
 
   }
 
@@ -70,21 +72,50 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
         |}
       """.stripMargin)
 
-    val (libs, plugins) = c.partition(_._type == Library)
+    val (libs, plugins) = c.partition(_.`type` == Library)
 
     libs.head.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.head.dependency.name         shouldBe "some-frontend"
     libs.head.range                   shouldBe VersionRange("(,7.4.1)")
     libs.head.reason                  shouldBe "7.4.1 has important security fixes"
-    libs.head.from                    shouldBe new LocalDate(2015, 1, 1)
+    libs.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 1)
 
     libs.last.dependency.organisation shouldBe "uk.gov.hmrc"
     libs.last.dependency.name         shouldBe "some-service"
     libs.last.range                   shouldBe VersionRange("[8.0.0, 8.4.1]")
     libs.last.reason                  shouldBe "Versions between 8.0.0 and 8.4.1 have a bug"
-    libs.last.from                    shouldBe new LocalDate(2015, 3, 1)
+    libs.last.effectiveDate                    shouldBe LocalDate.of(2015, 3, 1)
 
     plugins shouldBe 'isEmpty
+  }
+
+  it should "fail-fast if all config is missing" in {
+    val error = intercept[RuntimeException] {
+      new Configuration().loadBobbyRules()
+    }
+    error.getMessage shouldBe s"Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"
+  }
+
+  it should "fail-fast if unable to retrieve the bobby rules" in {
+    val error = intercept[RuntimeException] {
+      new Configuration(bobbyRuleURL = Some(new URL("file://badfile"))).loadBobbyRules()
+    }
+    error.getMessage.startsWith("Unable to load bobby rules from") shouldBe true
+  }
+
+  "extractMap" should "return a key value map" in {
+    val lines = List(
+      "deprecated-dependencies = https://myurl",
+      "somekey=somevalue",
+      "anotherkey=http://myurl?token=mytoken",
+      " key =    value  "
+    )
+    Configuration.extractMap(lines) shouldBe Map(
+      "deprecated-dependencies" -> "https://myurl",
+      "somekey" -> "somevalue",
+      "anotherkey" -> "http://myurl?token=mytoken",
+      "key" -> "value"
+    )
   }
 
 }

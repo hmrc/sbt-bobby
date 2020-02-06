@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ object MessageLevels {
 
   sealed abstract class Level(val order: Int, val name: String) extends Ordered[Level] {
 
-    def compare(that: Level) = this.order - that.order
+    def compare(that: Level): Int = this.order - that.order
 
     override def toString = name
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,91 +16,40 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import sbt.ModuleID
-import uk.gov.hmrc.bobby.Helpers._
+import uk.gov.hmrc.bobby.Util._
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 
-import scala.util.Try
-
-sealed trait Result
-
-case object UnknownVersion extends Result
-
-case object NewVersionAvailable extends Result
-
-case object DependencyNearlyUnusable extends Result
-
-case object DependencyUnusable extends Result
-
 object Message {
-  val tabularHeader =
-    Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline", "Reason")
-  val shortTabularHeader = Seq("Level", "Dependency", "Your Version", "Invalid Range", "Latest Version", "Deadline")
 
   implicit object MessageOrdering extends Ordering[Message] {
-    def compare(a: Message, b: Message) = a.level compare b.level
+    def compare(a: Message, b: Message): Int = a.level compare b.level
   }
 
 }
 
 case class Message(
-  result: Result,
-  module: ModuleID,
-  latestRevisionT: Try[Version],
-  deprecationInfoO: Option[DeprecatedDependency]) {
+  checked: BobbyChecked,
+  dependencyChain: Seq[ModuleID]) {
 
-  val deprecationReason = deprecationInfoO.map(_.reason).getOrElse("-")
-  val deprecationFrom   = deprecationInfoO.map(_.from).getOrElse("-")
-  val latestRevision    = latestRevisionT.getOrElse("-")
-
-  val moduleName = s"${module.organization}.${module.name}"
-
-  val deadline: Option[LocalDate] = deprecationInfoO.map(_.from)
-
-  val (level, tabularMessage) = result match {
-    case UnknownVersion           => (INFO, s"Unable to get a latestRelease number for '${module.toString()}'")
-    case NewVersionAvailable      => (INFO, "A new version is available")
-    case DependencyNearlyUnusable => (WARN, deprecationReason)
-    case DependencyUnusable       => (ERROR, deprecationReason)
+  val level: MessageLevels.Level = checked.result match {
+    case BobbyOk            => INFO
+    case BobbyWarning(_)    => WARN
+    case BobbyViolation(_)  => ERROR
   }
 
-  val jsonMessage: String = result match {
-    case UnknownVersion => s"Unable to get a latestRelease number for '${module.toString()}'"
-    case NewVersionAvailable =>
-      s"${module.organization}.${module.name} ${module.revision}' is not the most recent version, consider upgrading to '$latestRevision'"
-    case DependencyNearlyUnusable =>
-      s"${module.organization}.${module.name} ${module.revision} is deprecated: '$deprecationReason'. To be updated by $deprecationFrom to version $latestRevision"
-    case DependencyUnusable => deprecationReason
-  }
+  val deprecationReason: Option[String]    = checked.result.rule.map(_.reason)
+  val deprecationFrom: Option[LocalDate]   = checked.result.rule.map(_.effectiveDate)
+  val effectiveDate: Option[LocalDate]     =  checked.result.rule.map(_.effectiveDate)
+  val moduleName: String                   = checked.moduleID.moduleName
 
-  def isError: Boolean = level.equals(MessageLevels.ERROR)
+  val isError: Boolean = level.equals(MessageLevels.ERROR)
+  val isWarning: Boolean = level.equals(MessageLevels.WARN)
+  val isOkay: Boolean = level.equals(MessageLevels.INFO)
 
-  def rawJson =
-    s"""{ "level" : "${level.name}",
-       |  "message" : "$jsonMessage",
-       |  "data": {
-       |    "organisation" : "${module.organization}",
-       |    "name" : "${module.name}",
-       |    "revision" : "${module.revision}",
-       |    "result" : "$result",
-       |    "deprecationFrom" : "$deprecationFrom",
-       |    "deprecationReason" : "$deprecationReason",
-       |    "latestRevision" : "$latestRevision"
-       |  }
-       |}""".stripMargin
-
-  def shortTabularOutput: Seq[String] = Seq(
-    level.toString,
-    moduleName,
-    module.revision,
-    deprecationInfoO.map(_.range.toString()).getOrElse("-"),
-    latestRevisionT.map(_.toString).getOrElseWith(_.getMessage),
-    deadline.map(_.toString).getOrElse("-")
-  )
-
-  def longTabularOutput: Seq[String] = shortTabularOutput :+ tabularMessage
-
-  def logOutput: (String, String) = level.name -> jsonMessage
+  val isLocal: Boolean = dependencyChain.isEmpty
+  val isPlugin: Boolean = checked.`type` == Plugin
 
 }

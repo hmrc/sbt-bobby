@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,72 +17,53 @@
 package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
+import java.time.LocalDate
 
-import org.joda.time.LocalDate
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Json, Reads, _}
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
 
 import scala.io.Source
-import scala.util.parsing.json.JSON
 
 object Configuration {
-
-  val credsFile        = System.getProperty("user.home") + "/.sbt/.credentials"
-  val bintrayCredsFile = System.getProperty("user.home") + "/.bintray/.credentials"
 
   val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
-  def parseConfig(jsonConfig: String): List[DeprecatedDependency] = {
-    import uk.gov.hmrc.bobby.NativeJsonHelpers._
+  case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
+  case class BobbyRulesConfig(libraries: Option[List[BobbyRuleConfig]], plugins: Option[List[BobbyRuleConfig]])
 
-    (for (M(map) <- JSON.parseFull(jsonConfig)) yield {
-      (for {
-        (S(key), L(list)) <- map
-        typ = DependencyType(key)
-        if typ != Unknown
-      } yield {
-        for {
-          MS(mapS)     <- list
-          organisation <- mapS.get("organisation")
-          name         <- mapS.get("name")
-          range        <- mapS.get("range")
-          reason       <- mapS.get("reason")
-          fromString   <- mapS.get("from")
-          fromDate = LocalDate.parse(fromString)
-        } yield DeprecatedDependency.apply(Dependency(organisation, name), VersionRange(range), reason, fromDate, typ)
-      }).toList.flatten
-    }).getOrElse(List.empty)
+  def parseConfig(jsonConfig: String): List[BobbyRule] = {
+    implicit lazy val ruleConfigR = Json.reads[BobbyRuleConfig]
+    // Not using macro below to avoid false unused implicit warning
+    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] = (
+      (__ \ "libraries").readNullable[List[BobbyRuleConfig]] and
+        (__ \ "plugins").readNullable[List[BobbyRuleConfig]]
+      )(BobbyRulesConfig.apply _)
 
+    def toBobbyRule(brc:BobbyRuleConfig)(`type`: DependencyType)  =
+      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from), `type`)
+
+    Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig)).map { c =>
+        c.libraries.getOrElse(List.empty).map(toBobbyRule(_)(Library)) ++
+        c.plugins.getOrElse(List.empty).map(toBobbyRule(_)(Plugin))
+    }.getOrElse(List.empty)
   }
 
-  val nexusCredetials: Option[NexusCredentials] = {
-    val ncf = new ConfigFile(credsFile)
-
-    for {
-      host     <- ncf.get("host")
-      user     <- ncf.get("user")
-      password <- ncf.get("password")
-
-    } yield NexusCredentials(host, user, password)
+  def extractMap(lines: List[String]): Map[String, String] = {
+    (for {
+      line <- lines
+      Array(key, value) = line.split("=", 2)
+    } yield key.trim -> value.trim).toMap
   }
 
-  val bintrayCredetials: Option[BintrayCredentials] = {
-    val bncf = new ConfigFile(bintrayCredsFile)
-
-    for {
-      user     <- bncf.get("user")
-      password <- bncf.get("password")
-
-    } yield BintrayCredentials(user, password)
-  }
-
-  val artifactoryUri: Option[String] = sys.env.get("ARTIFACTORY_URI")
 }
 
 class Configuration(
-  url: Option[URL] = None,
-  jsonOutputFileOverride: Option[String]
+  bobbyRuleURL: Option[URL] = None,
+  bobbyConfigFile: Option[ConfigFile] = None,
+  jsonOutputFileOverride: Option[String] = None
 ) {
 
   import Configuration._
@@ -90,37 +71,38 @@ class Configuration(
   val timeout = 3000
   val logger  = ConsoleLogger()
 
-  val bobbyConfigFile = System.getProperty("user.home") + "/.sbt/bobby.conf"
+  def configValue(key: String): Option[String] = bobbyConfigFile.flatMap(_.get(key))
 
-  val jsonOutputFile: String =
-    (jsonOutputFileOverride orElse new ConfigFile(bobbyConfigFile).get("output-file")).getOrElse(defaultJsonOutputFile)
-  val textOutputFile: String = new ConfigFile(bobbyConfigFile).get("text-output-file").getOrElse(defaultTextOutputFile)
+  val jsonOutputFile: String = (jsonOutputFileOverride orElse configValue("json-output-file")).getOrElse(defaultJsonOutputFile)
+  val textOutputFile: String = configValue("text-output-file").getOrElse(defaultTextOutputFile)
 
-  def loadDeprecatedDependencies: DeprecatedDependencies = {
+  def loadBobbyRules(): BobbyRules = {
 
-    val bobbyConfig: Option[URL] = url orElse new ConfigFile(bobbyConfigFile).get("deprecated-dependencies").map { u =>
-      new URL(u)
+    val resolvedRuleUrl: Option[URL] = bobbyRuleURL.map { url =>
+      logger.info(s"[bobby] Bobby rule location was set explicitly in build")
+      url
+    } orElse {
+      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile}")
+      configValue("deprecated-dependencies").map(new URL(_))
     }
 
-    bobbyConfig.fold {
-      logger.warn(
-        s"[bobby] Unable to check for explicitly deprecated dependencies - $bobbyConfigFile does not exist or is not configured with deprecated-dependencies or may have trailing whitespace")
-      DeprecatedDependencies.EMPTY
-    } { c =>
+    resolvedRuleUrl.map { url =>
       try {
-        logger.info(s"[bobby] loading deprecated dependency list from $c")
-        val conn = c.openConnection()
+        logger.info(s"[bobby] Loading bobby rules from: $url")
+        val conn = url.openConnection()
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-
-        DeprecatedDependencies(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
-
+        BobbyRules(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
       } catch {
-        case e: Exception =>
-          logger.warn(s"[bobby] Unable load configuration from $c: ${e.getMessage}")
-          DeprecatedDependencies.EMPTY
+        case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }
-    }
+    }.getOrElse(abort("Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"))
   }
+
+  def abort(message: String): Nothing = {
+    logger.error(s"[bobby] $message")
+    sys.error(message)
+  }
+
 }

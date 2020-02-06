@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,12 @@ class ConfigFile(fileName: String) {
     logger.warn(s"Supplied configuration file '$fileName' does not exist.")
   }
 
-  private val kvMap: Map[String, String] = {
+  private def loadKvMap: Map[String, String] = {
     try {
-      Source
-        .fromFile(fileName)
-        .getLines()
-        .toSeq
-        .map(_.split("="))
-        .map { case Array(key, value) => key.trim -> value.trim }
-        .toMap
+      val source = Source.fromFile(fileName)
+      val lines = source.getLines().toList
+      source.close()
+      Configuration.extractMap(lines)
     } catch {
       case e: Exception =>
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")
@@ -45,10 +42,8 @@ class ConfigFile(fileName: String) {
     }
   }
 
-  def getString(path: String) = kvMap(path)
+  val kvMap: Map[String, String] = loadKvMap
 
-  def get(path: String) = kvMap.get(path)
-
-  def hasPath(path: String) = kvMap.isDefinedAt(path)
+  def get(path: String): Option[String] = kvMap.get(path)
 
 }

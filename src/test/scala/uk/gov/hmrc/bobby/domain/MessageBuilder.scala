@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package uk.gov.hmrc.bobby.domain
 
 import sbt.ModuleID
 
-import scala.util.Failure
-
 object MessageBuilder {
 
-  def makeMessage(result: Result) =
-    new Message(result, ModuleID("org", "name", "0.0.0"), Failure(new Exception("ex")), None)
+  def makeMessage(result: BobbyResult) = {
+    val checked = BobbyChecked(ModuleID("org", "name", "0.0.0"), Library, result)
+    new Message(checked, Seq.empty)
+  }
 
 }
