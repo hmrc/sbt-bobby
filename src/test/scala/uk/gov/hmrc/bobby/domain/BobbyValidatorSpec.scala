@@ -194,7 +194,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, Seq.empty, rules)
 
       Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
-      Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
+      Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth L"
       Flat.renderMessage(messages.head)(2).plainText shouldBe ""
       Flat.renderMessage(messages.head)(5).plainText shouldBe "2000-01-01"
       Flat.renderMessage(messages.head)(6).plainText shouldBe "the reason"
@@ -215,7 +215,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val pluginMessage = messages.head
       Flat.renderMessage(pluginMessage)(0).plainText shouldBe "ERROR"
-      Flat.renderMessage(pluginMessage)(1).plainText shouldBe "uk.gov.hmrc.auth"
+      Flat.renderMessage(pluginMessage)(1).plainText shouldBe "uk.gov.hmrc.auth P"
       Flat.renderMessage(pluginMessage)(2).plainText shouldBe ""
       Flat.renderMessage(pluginMessage)(5).plainText shouldBe "2000-01-01"
       Flat.renderMessage(pluginMessage)(6).plainText shouldBe "the reason"

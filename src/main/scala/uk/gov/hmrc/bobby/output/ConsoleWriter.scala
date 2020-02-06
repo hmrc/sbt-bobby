@@ -24,8 +24,7 @@ class ConsoleWriter(colours: Boolean) extends TextWriter {
 
   override def write(messages: List[Message], viewType: ViewType): Unit = {
     logger.info(
-       "[bobby] Bobby info and warnings. See bobby report artefact for more details. For more information " +
-         "and documentation regarding bobby, please see the README at https://github.com/hmrc/sbt-bobby")
+       "[bobby] For more information and documentation about Bobby, see the README at https://github.com/hmrc/sbt-bobby")
 
     logger.info(key().mkString("\n"))
 
@@ -66,15 +65,16 @@ class ConsoleWriter(colours: Boolean) extends TextWriter {
   private def key(): Seq[Str] = {
     val key = Seq(
       Str("*" * 120),
-      Str("Colour Level KEY: "),
+      Str("Level KEY: "),
       Color.Red(" * ERROR: Bobby Violations => Your build will forcibly fail if any violations are detected"),
       Color.Yellow(" * WARN: Bobby Warnings => Your build will" +
         " start to fail from the date the rules become enforced"),
       Color.Green(" * INFO: Bobby Ok => No problems with this dependency"),
       Str(""),
-      Str("Colour Dependency KEY: "),
-      Color.Blue(" * BLUE: Local Dependency => Highlights dependencies declared locally in your project (not transitive)"),
-      Color.Magenta(" * MAGENTA: Plugin Dependency => From your build project"),
+      Str("Dependency KEY: "),
+      Color.Blue(" * L: Local Dependency => Highlights dependencies declared locally in your project (not transitive)"),
+      Str(" * T: Transitive Dependency => Dependencies pulled in via your locally declared dependencies"),
+      Color.Magenta(" * P: Plugin Dependency => From your build project"),
       Str("*" * 120)
     )
     if(colours) key else key.map(_.plainText.fansi)

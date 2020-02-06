@@ -27,43 +27,66 @@ sealed trait ViewType {
   def renderMessage(m: Message): Seq[Str]
 }
 
+object DefaultRendering {
+  implicit class ExtendedMessage(m: Message) {
+
+    private val prefix = Str(m match {
+      case _ if !m.isLocal => " T"    //transitive
+      case _ if m.isPlugin => " P"    //plugin
+      case _ => " L"                  //local
+    })
+
+    val levelS: Str = messageColour(m)(m.level.name)
+    val dependencyS: Str = {
+      val dep = s"${m.checked.moduleID.moduleName}$prefix"
+      if(m.isPlugin) Color.Magenta(dep) else if (m.isLocal) Color.Blue(dep) else Str(dep)
+    }
+    val viaS: Str = Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse(""))
+    val yourVersionS: Str = Str(m.checked.moduleID.revision)
+    val outlawedRangeS: Str = Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-"))
+    val effectiveDateS: Str = Str(m.effectiveDate.map(_.toString).getOrElse("-"))
+    val reasonS: Str = Str(m.deprecationReason.map(_.toString).getOrElse("-"))
+  }
+}
+
+import DefaultRendering._
 case object Flat extends ViewType {
   override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From", "Reason")
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
-    messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.checked.moduleID.moduleName) else if (m.isLocal) Color.Blue(m.checked.moduleID.moduleName) else Str(m.checked.moduleID.moduleName),
-    Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse("")),
-    Str(m.checked.moduleID.revision),
-    Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
-    Str(m.effectiveDate.map(_.toString).getOrElse("-")),
-    Str(m.deprecationReason.map(_.toString).getOrElse("-"))
+    m.levelS,
+    m.dependencyS,
+    m.viaS,
+    m.yourVersionS,
+    m.outlawedRangeS,
+    m.effectiveDateS,
+    m.reasonS
   )
 
 }
 
 case object Nested extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Latest Version", "Effective From")
+  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Effective From")
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
-    messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Blue(m.moduleName) else Str(s" => ${m.moduleName}"),
-    Str(m.checked.moduleID.revision),
-    Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
-    Str(m.effectiveDate.map(_.toString).getOrElse("-"))
+    messageColour(m)(m.levelS),
+    if(m.isLocal || m.isPlugin) m.dependencyS else Str(s" => ${m.dependencyS}"),
+    m.yourVersionS,
+    m.outlawedRangeS,
+    m.effectiveDateS
   )
 }
 
 case object Compact extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From")
+  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Type", "Your Version", "Outlawed Range", "Effective From")
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
-    messageColour(m)(m.level.name),
-    if(m.isPlugin) Color.Magenta(m.moduleName) else if (m.isLocal) Color.Blue(m.moduleName) else Str(m.moduleName),
-    Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse("")),
-    Str(m.checked.moduleID.revision),
-    Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-")),
-    Str(m.effectiveDate.map(_.toString).getOrElse("-"))
+    m.levelS,
+    m.dependencyS,
+    m.viaS,
+    m.yourVersionS,
+    m.outlawedRangeS,
+    m.effectiveDateS
   )
 }
 
