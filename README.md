@@ -203,39 +203,52 @@ An example output looks like this (taken from the `test-project` in this repo, s
 
 ```
 [info] ************************************************************************************************************************
-[info] Colour Level KEY:
+[info] Level KEY:
 [info]  * ERROR: Bobby Violations => Your build will forcibly fail if any violations are detected
 [info]  * WARN: Bobby Warnings => Your build will start to fail from the date the rules become enforced
 [info]  * INFO: Bobby Ok => No problems with this dependency
 [info]
-[info] Colour Dependency KEY:
-[info]  * GREEN: Local Dependency => Highlights dependencies declared locally in your project (not transitive)
-[info]  * MAGENTA: Plugin Dependency => From your build project
+[info] Dependency KEY:
+[info]  * L: Local Dependency => Highlights dependencies declared locally in your project (not transitive)
+[info]  * T: Transitive Dependency => Dependencies pulled in via your locally declared dependencies
+[info]  * P: Plugin Dependency => From your build project
 [info] ************************************************************************************************************************
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
-[info] | Level | Dependency                                             | Via                              | Your Version   | Outlawed Range | Effective From | Reason                                                          |
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
-[info] | ERROR | org.scalatest.scalatest                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     | Example: Required to use latest scalatest 3.1.0+                |
-[info] | ERROR | uk.gov.hmrc.simple-reactivemongo                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     | Example: Uses a version of reactivemongo that has a memory leak |
-[info] | WARN  | org.pegdown.pegdown                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     | Example: No pegdown dependencies will be allowed                |
-[info] | INFO  | aopalliance.aopalliance                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              | -                                                               |
-[info] | INFO  | com.eed3si9n.sbt-buildinfo                             |                                  | 0.7.0          | -              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-core                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-databind            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              | -                                                               |
-[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              | -                                                               |
-[info] | INFO  | org.typelevel.macro-compat                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              | -                                                               |
-[info] | INFO  | uk.gov.hmrc.sbt-auto-build                             |                                  | 2.5.0          | -              | -              | -                                                               |
-[info] | INFO  | uk.gov.hmrc.sbt-git-stamp                              |                                  | 6.0.0          | -              | -              | -                                                               |
-[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+-----------------------------------------------------------------+
+[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
+[info] | Level | Dependency                                               | Type                             | Your Version   | Outlawed Range | Effective From |
+[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
+[info] | ERROR | org.scalatest.scalatest L                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     |
+[info] | ERROR | uk.gov.hmrc.simple-reactivemongo L                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     |
+[info] | WARN  | org.pegdown.pegdown L                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     |
+[info] | INFO  | aopalliance.aopalliance T                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              |
+[info] | INFO  | com.eed3si9n.sbt-buildinfo P                             |                                  | 0.7.0          | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations T         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-core T                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-databind T            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8 T   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jsr310 T | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.github.nscala-time.nscala-time T                     | uk.gov.hmrc.simple-reactivemongo | 2.22.0         | -              | -              |
+[info] | INFO  | com.google.code.findbugs.jsr305 T                        | uk.gov.hmrc.simple-reactivemongo | 1.3.9          | -              | -              |
+[info] | INFO  | org.scala-lang.scala-reflect T                           | uk.gov.hmrc.simple-reactivemongo | 2.12.10        | -              | -              |
+[info] | INFO  | org.scala-stm.scala-stm T                                | uk.gov.hmrc.simple-reactivemongo | 0.8            | -              | -              |
+[info] | INFO  | org.scalactic.scalactic T                                | org.scalatest.scalatest          | 3.0.0          | -              | -              |
+[info] | INFO  | org.slf4j.jcl-over-slf4j T                               | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.slf4j.jul-to-slf4j T                                 | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.slf4j.slf4j-api T                                    | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.typelevel.macro-compat T                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              |
+[info] | INFO  | uk.gov.hmrc.sbt-auto-build P                             |                                  | 2.5.0          | -              | -              |
+[info] | INFO  | uk.gov.hmrc.sbt-git-stamp P                              |                                  | 6.0.0          | -              | -              |
+[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
 [warn]  (1) org.pegdown.pegdown (1.3.0)
 [warn]      Reason: Example: No pegdown dependencies will be allowed
-[error] ERROR: Your build has 2 bobby violation(s) and has been failed! Urgently fix the issues below:
+[error] ERROR: Whistle blown! Your build has 2 bobby violation(s) and has been failed! Urgently fix the issues below:
 [error]  (1) org.scalatest.scalatest (3.0.0)
 [error]      Reason: Example: Required to use latest scalatest 3.1.0+
 [error]  (2) uk.gov.hmrc.simple-reactivemongo (7.13.0-play-26)
 [error]      Reason: Example: Uses a version of reactivemongo that has a memory leak
+[error] stack trace is suppressed; run last validate for the full output
+[error] (validate) uk.gov.hmrc.bobby.BobbyValidationFailedException: Build failed due to bobby violations. See previous output to resolve
+[error] Total time: 2 s, completed 07-Feb-2020 10:32:54
 ```
 
 The Bobby output consists of a table of all of the dependencies in your build, as well as a summary of any warnings and violations
@@ -256,7 +269,7 @@ with just the table. You can find it in the `target` folder, along with `bobby-r
 
 ### Strict mode
 
-You can configure Bobby to be more fussy and fail a build on warnings as well as violations. To do this, just set:
+You can configure Bobby to be more fussy and fail a build on warnings as well as violations, by turning on strict mode.
 
 To change the strict mode you can:
 

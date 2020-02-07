@@ -18,12 +18,13 @@ package uk.gov.hmrc.bobby
 
 import net.virtualvoid.sbt.graph.{Module, ModuleGraph, ModuleId}
 import org.scalacheck.Gen
+import org.scalatest.AppendedClues
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import uk.gov.hmrc.bobby.Generators._
 
-class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks with AppendedClues {
 
   object deps {
     val A = ModuleId("A", "a", "v1")
@@ -156,6 +157,7 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
     map shouldBe Map(C -> Seq(B, A), B -> Seq(A), A -> Seq.empty)
   }
 
+  // This test is occasionally flaky
   it should "map with a complex graph" in {
     forAll(moduleGraphGen()) { graph =>
 
@@ -175,7 +177,7 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
         val fullPathBackToRoot = map.getOrElse(id, Seq.empty)
         val partialPathBackToRoot = sbtDepGraphReverseMap.getOrElse(id, Seq.empty).map(_.id)
 
-        fullPathBackToRoot.headOption shouldBe partialPathBackToRoot.headOption
+        fullPathBackToRoot.headOption shouldBe partialPathBackToRoot.headOption withClue(s"Looking up transitive line for: ${id}")
       }
     }
   }
