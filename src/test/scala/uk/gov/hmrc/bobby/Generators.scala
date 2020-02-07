@@ -32,7 +32,7 @@ object Generators {
   val nonEmptyString: Gen[String] = chooseNum(2, 3).flatMap(n => strGen(n))
 
   val organisationGen: Gen[String] = for {
-    letter <- alphaChar
+    letter <- nonEmptyString
     number <- chooseNum(1,10)
   } yield s"uk.gov.$letter$number"
 
@@ -80,7 +80,7 @@ object Generators {
 
   def moduleGraphGen(): Gen[ModuleGraph] =
     for {
-      num <- chooseNum(1, 100)
+      num <- chooseNum(10, 30)
       nodes <- listOfN(num, moduleGen())
       edges <- edgeGen(nodes.map(_.id))
     } yield ModuleGraph(nodes, edges)
