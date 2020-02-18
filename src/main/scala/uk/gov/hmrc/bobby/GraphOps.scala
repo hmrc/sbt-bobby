@@ -118,13 +118,14 @@ object GraphOps {
   def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] =
     map.map { case (k, v) => k.toSbt -> v.map(_.toSbt)}
 
-  def cleanGraph(graph: ModuleGraph, excludeNode: ModuleId): ModuleGraph = {
+  def cleanGraph(graph: ModuleGraph, excludeNodes: Seq[ModuleId]): ModuleGraph = {
+    val stripped = excludeNodes.map(stripUnderscore)
+
     // Remove evicted nodes and the current project node
     val pruned = pruneNodes(
-      pruneEvicted(graph)
-    , m => {
-        stripUnderscore(m.id) == stripUnderscore(excludeNode)
-      })
+      pruneEvicted(graph),
+      m => stripped.contains(stripUnderscore(m.id))
+    )
     // Remove the '_2.11' suffixes etc from the artefact names
     stripScalaVersionSuffix(pruned)
   }

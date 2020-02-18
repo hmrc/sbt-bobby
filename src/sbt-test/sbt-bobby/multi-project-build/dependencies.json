@@ -1,0 +1,11 @@
+{
+  "libraries": [
+    {
+      "organisation": "*",
+      "name": "*",
+      "range": "[*-SNAPSHOT]",
+      "reason": "No snapshot dependencies permitted",
+      "from": "2015-03-16"
+    }
+  ]
+}

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc
 
-import net.virtualvoid.sbt.graph.{ModuleGraph, ModuleId}
+import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.ConfigFile
@@ -60,8 +60,15 @@ object SbtBobbyPlugin extends AutoPlugin {
     bobbyStrictMode := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true),
     validate := {
+      // Determine nodes to exclude which are this project or dependent projects from this build
+      // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
+      val extracted = Project.extract(state.value)
+      val excludeNodes = buildStructure.value.allProjectRefs.map({ p =>
+        extracted.get(projectID in p)
+      }).distinct.map(_.toDependencyGraph)
+
       // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
-      val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, ModuleId(organization.value.trim, name.value.trim, version.value.trim))
+      val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, excludeNodes)
 
       // Retrieve the plugin dependencies. It would be nice to generate these in the same way via the full ModuleGraph, however the
       // sbt UpdateReport in the pluginData is not rich enough. Seems we have the nodes but not the edges.
