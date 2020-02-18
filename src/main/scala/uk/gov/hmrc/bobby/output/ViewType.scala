@@ -78,7 +78,7 @@ case object Nested extends ViewType {
 }
 
 case object Compact extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Type", "Your Version", "Outlawed Range", "Effective From")
+  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From")
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     m.levelStr,

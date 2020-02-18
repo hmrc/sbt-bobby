@@ -214,7 +214,7 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info]  * P: Plugin Dependency => From your build project
 [info] ************************************************************************************************************************
 [info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
-[info] | Level | Dependency                                               | Type                             | Your Version   | Outlawed Range | Effective From |
+[info] | Level | Dependency                                               | Via                              | Your Version   | Outlawed Range | Effective From |
 [info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [info] | ERROR | org.scalatest.scalatest L                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     |
 [info] | ERROR | uk.gov.hmrc.simple-reactivemongo L                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     |
