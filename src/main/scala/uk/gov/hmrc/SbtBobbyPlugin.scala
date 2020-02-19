@@ -63,12 +63,12 @@ object SbtBobbyPlugin extends AutoPlugin {
       // Determine nodes to exclude which are this project or dependent projects from this build
       // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
       val extracted = Project.extract(state.value)
-      val excludeNodes = buildStructure.value.allProjectRefs.map({ p =>
+      val internalModuleNodes = buildStructure.value.allProjectRefs.map( p =>
         extracted.get(projectID in p)
-      }).distinct.map(_.toDependencyGraph)
+      ).distinct.map(_.toDependencyGraph)
 
       // Construct a complete module graph of the project (not plugin) dependencies, piggy-backing off `sbt-dependency-graph`
-      val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, excludeNodes)
+      val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in Compile).value, excludeNodes = internalModuleNodes)
 
       // Retrieve the plugin dependencies. It would be nice to generate these in the same way via the full ModuleGraph, however the
       // sbt UpdateReport in the pluginData is not rich enough. Seems we have the nodes but not the edges.
