@@ -32,7 +32,6 @@ object DefaultRendering {
 
     private val prefix = Str(m match {
       case _ if !m.isLocal => " T"    //transitive
-      case _ if m.isPlugin => " P"    //plugin
       case _ => " L"                  //local
     })
 
@@ -62,7 +61,6 @@ case object Flat extends ViewType {
     m.effectiveDateStr,
     m.reasonStr
   )
-
 }
 
 case object Nested extends ViewType {

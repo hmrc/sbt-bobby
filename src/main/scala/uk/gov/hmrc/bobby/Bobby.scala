@@ -44,16 +44,15 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
-     strictMode: Boolean,
-     projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
-     projectDependencies: Seq[ModuleID],
-     pluginDependencies: Seq[ModuleID],
-     scalaVersion: String,
-     viewType: ViewType,
-     consoleColours: Boolean,
-     bobbyRulesUrl: Option[URL] = None,
-     bobbyConfigFile: Option[ConfigFile] = None,
-     jsonOutputFileOverride: Option[String] = None): Unit = {
+    strictMode: Boolean,
+    dependencyMap: Map[ModuleID, Seq[ModuleID]],
+    dependencies: Seq[ModuleID],
+    scalaVersion: String,
+    viewType: ViewType,
+    consoleColours: Boolean,
+    bobbyRulesUrl: Option[URL] = None,
+    bobbyConfigFile: Option[ConfigFile] = None,
+    jsonOutputFileOverride: Option[String] = None): Unit = {
 
     logger.info(bobbyLogo)
 
@@ -62,7 +61,7 @@ object Bobby {
     val config = new Configuration(bobbyRulesUrl, bobbyConfigFile, jsonOutputFileOverride)
 
     val messages =
-      BobbyValidator.applyBobbyRules(projectDependencyMap, projectDependencies, pluginDependencies, config.loadBobbyRules)
+      BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules())
 
     Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType, consoleColours)
 

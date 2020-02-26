@@ -329,6 +329,7 @@ By default, the console output will show with ANSI colours. To turn this off you
  * Change it manually just for your console session, e.g.
     ```
     set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyConsoleColours := false
+    ```
 
 ### Changing the view type
 

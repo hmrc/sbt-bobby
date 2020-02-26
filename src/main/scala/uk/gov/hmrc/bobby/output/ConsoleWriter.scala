@@ -53,7 +53,6 @@ class ConsoleWriter(colours: Boolean) extends TextWriter {
 
   override def renderText(messages: List[Message], viewType: ViewType): String = {
     val colouredModel = buildModel(messages, viewType)
-
     val messageModel = if(colours) colouredModel else colouredModel.map(_.map(_.plainText.fansi))
 
     Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)
@@ -72,9 +71,8 @@ class ConsoleWriter(colours: Boolean) extends TextWriter {
       Color.Green(" * INFO: Bobby Ok => No problems with this dependency"),
       Str(""),
       Str("Dependency KEY: "),
-      Color.Blue(" * L: Local Dependency => Highlights dependencies declared locally in your project (not transitive)"),
+      Color.Blue(" * L: Local Dependency => Highlights dependencies declared locally in your project"),
       Str(" * T: Transitive Dependency => Dependencies pulled in via your locally declared dependencies"),
-      Color.Magenta(" * P: Plugin Dependency => From your build project"),
       Str("*" * 120)
     )
     if(colours) key else key.map(_.plainText.fansi)
