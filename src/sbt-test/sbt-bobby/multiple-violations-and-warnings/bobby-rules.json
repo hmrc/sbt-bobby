@@ -1,5 +1,5 @@
 {
-  "libraries": [
+  "rules": [
     {
       "organisation": "org.reactivemongo",
       "name": "reactivemongo",

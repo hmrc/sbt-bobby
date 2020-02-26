@@ -77,7 +77,7 @@ class Configuration(
       logger.info(s"[bobby] Bobby rule location was set explicitly in build")
       url
     } orElse {
-      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile}")
+      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile.map(_.fileName).getOrElse("Not set")}")
       configValue("deprecated-dependencies").map(new URL(_))
     }
 

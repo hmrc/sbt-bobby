@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     libraryDependencies := Seq(
       "uk.gov.hmrc"       %% "simple-reactivemongo" % "2.1.2"
     ),
-    deprecatedDependenciesUrl := Some(file("dependencies.json").toURI.toURL),
+    deprecatedDependenciesUrl := Some(file("bobby-rules.json").toURI.toURL),
     TaskKey[Unit]("check") := {
       val json = Json.parse(read(file("target/bobby-reports/bobby-report.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet

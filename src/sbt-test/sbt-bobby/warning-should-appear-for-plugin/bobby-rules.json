@@ -1,5 +1,5 @@
 {
-  "plugins": [
+  "rules": [
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-auto-build",

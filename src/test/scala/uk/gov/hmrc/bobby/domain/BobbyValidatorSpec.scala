@@ -48,11 +48,11 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     deadline: LocalDate            = LocalDate.now().minusWeeks(1)): BobbyRule =
     BobbyRule(Dependency(org, name), VersionRange(version), reason, deadline)
 
-  def boddyRules(rules: BobbyRule*) = rules.toList
+  def bobbyRules(rules: BobbyRule*): List[BobbyRule] = rules.toList
 
   "BobbyValidator.applyBobbyRules" should {
     "return error if a library is in the exclude range" in {
-      val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
+      val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectLibs = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, rules)
@@ -61,7 +61,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "not return error if a library is not in the exclude range" in {
-      val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
+      val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -69,7 +69,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "return error if a library is in the exclude range using wildcards for org, name and version number " in {
-      val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
+      val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -81,7 +81,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
     "not return error for valid libraries that don't include snapshots" in {
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
-      val rules = boddyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
+      val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
       messages.head.checked.result shouldBe BobbyOk
@@ -95,7 +95,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
           ModuleID("uk.gov.hmrc", "data-stream-plugin", "0.2.1")
         )
 
-      val rules = boddyRules(
+      val rules = bobbyRules(
         deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"),
         deprecatedSoon("uk.gov.hmrc", "data-stream", "(,4.0.0]"),
         deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)")
@@ -106,7 +106,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "not return error for libraries in the exclude range but not applicable yet" in {
-      val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
+      val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -114,7 +114,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "not return error for mandatory libraries which are superseded" in {
-      val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
+      val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -122,7 +122,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "produce warning message for mandatory libraries which will be enforced in the future" in {
-      val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
+      val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -130,7 +130,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "produce error message for mandatory libraries which are currently enforced" in {
-      val rules = boddyRules(
+      val rules = bobbyRules(
         deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = LocalDate.of(2000, 1, 1)))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
@@ -144,7 +144,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "show a ERROR message for a library which is a bobby violation" in {
-      val rules = boddyRules(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
+      val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
@@ -152,7 +152,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     }
 
     "show a WARN message for a library which is a bobby warning" in {
-      val rules = boddyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
+      val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
       val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
