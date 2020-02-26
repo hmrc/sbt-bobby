@@ -41,7 +41,7 @@ Bobby Rules are defined in a single `json` file, and look like this:
 
 ```
 {
-  "libraries": [
+  "rules": [
     {
       "organisation": "uk.gov.hmrc",
       "name": "my-library",
@@ -62,9 +62,7 @@ Bobby Rules are defined in a single `json` file, and look like this:
       "range": "[*-SNAPSHOT]",
       "reason": "You shouldn't be deploying a snapshot to production should you?",
       "from": "2000-01-01"
-    }
-  ],
-  "plugins": [
+    },
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-auto-build",
@@ -76,10 +74,9 @@ Bobby Rules are defined in a single `json` file, and look like this:
 }
 ```
 
-Rules can be placed on:
+Rules can be placed on both libraries and plugins, and will be enforced on all local and transitive dependencies.
 
-* `libraries` => Enforced on any libraries declared in your `libraryDependencies`, or the transitive dependencies pulled in from those
-* `plugins` => Enforced on the plugins added to your projects meta-build, or transitive plugins pulled in from those
+> In order to apply Bobby to the meta scope to validate plugin output, see the section below
 
 ## Rule Schema
 Each rule takes the same form:
@@ -135,6 +132,21 @@ If your build is making use of any outlawed dependencies, an exception will be t
 Otherwise, all is good and you can carry on with your day.
 
 > See the 'Configuration Options' section below for more configuration options
+
+### Running in different configurations
+
+Bobby respects the configuration scoping mechanisms built into sbt, which means you can run:
+
+`sbt validate` to validate _compile_ dependencies 
+`sbt test:validate` to validate _test_ dependencies
+`sbt "reload plugins; validate; reload return"` to validate _plugin_ dependencies
+
+There is also a helper command alias which runs all three of these in one:
+
+`sbt validateAll`
+
+>Prior to major version 3, Bobby tried to pull out both local and plugin dependencies in one task. This has been
+>changed to better integrate with the sbt [scoping](https://www.scala-sbt.org/1.x/docs/Scopes.html) ecosystem 
 
 ### Sbt 1.x
  
@@ -209,9 +221,8 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info]  * INFO: Bobby Ok => No problems with this dependency
 [info]
 [info] Dependency KEY:
-[info]  * L: Local Dependency => Highlights dependencies declared locally in your project (not transitive)
+[info]  * L: Local Dependency => Highlights dependencies declared locally in your project
 [info]  * T: Transitive Dependency => Dependencies pulled in via your locally declared dependencies
-[info]  * P: Plugin Dependency => From your build project
 [info] ************************************************************************************************************************
 [info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [info] | Level | Dependency                                               | Via                              | Your Version   | Outlawed Range | Effective From |
@@ -220,7 +231,6 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info] | ERROR | uk.gov.hmrc.simple-reactivemongo L                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     |
 [info] | WARN  | org.pegdown.pegdown L                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     |
 [info] | INFO  | aopalliance.aopalliance T                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              |
-[info] | INFO  | com.eed3si9n.sbt-buildinfo P                             |                                  | 0.7.0          | -              | -              |
 [info] | INFO  | com.fasterxml.jackson.core.jackson-annotations T         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
 [info] | INFO  | com.fasterxml.jackson.core.jackson-core T                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
 [info] | INFO  | com.fasterxml.jackson.core.jackson-databind T            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              |
@@ -236,7 +246,6 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info] | INFO  | org.slf4j.slf4j-api T                                    | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
 [info] | INFO  | org.typelevel.macro-compat T                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              |
 [info] | INFO  | uk.gov.hmrc.sbt-auto-build P                             |                                  | 2.5.0          | -              | -              |
-[info] | INFO  | uk.gov.hmrc.sbt-git-stamp P                              |                                  | 6.0.0          | -              | -              |
 [info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
 [warn]  (1) org.pegdown.pegdown (1.3.0)
