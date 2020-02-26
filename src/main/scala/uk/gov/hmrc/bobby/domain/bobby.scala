@@ -42,4 +42,4 @@ case object BobbyOk extends BobbyResult {
   val name: String = "BobbyOk"
 }
 
-case class BobbyChecked(moduleID: ModuleID, `type`: DependencyType, result: BobbyResult)
+case class BobbyChecked(moduleID: ModuleID, result: BobbyResult)

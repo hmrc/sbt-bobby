@@ -27,10 +27,10 @@ object BobbyValidator {
   def applyBobbyRules(
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
-    bobbyRules: BobbyRules): List[Message] = {
+    bobbyRules: List[BobbyRule]): List[Message] = {
 
-    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, Library, calc(bobbyRules.libs, dep)))
-    val messages = generateMessages(bobbyRules.libs, checkedDependencies, dependencyMap)
+    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep)))
+    val messages = generateMessages(bobbyRules, checkedDependencies, dependencyMap)
 
     messages.sortBy(_.moduleName).toList
   }

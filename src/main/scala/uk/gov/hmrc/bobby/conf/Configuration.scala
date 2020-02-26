@@ -19,8 +19,8 @@ package uk.gov.hmrc.bobby.conf
 import java.net.URL
 import java.time.LocalDate
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{Json, Reads, _}
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
 
@@ -32,23 +32,18 @@ object Configuration {
   val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
 
   case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
-  case class BobbyRulesConfig(libraries: Option[List[BobbyRuleConfig]], plugins: Option[List[BobbyRuleConfig]])
+  case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
 
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
-    implicit lazy val ruleConfigR = Json.reads[BobbyRuleConfig]
+    implicit lazy val ruleConfigR: Reads[BobbyRuleConfig] = Json.reads[BobbyRuleConfig]
     // Not using macro below to avoid false unused implicit warning
-    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] = (
-      (__ \ "libraries").readNullable[List[BobbyRuleConfig]] and
-        (__ \ "plugins").readNullable[List[BobbyRuleConfig]]
-      )(BobbyRulesConfig.apply _)
+    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] = (__ \ "rules").read[List[BobbyRuleConfig]].map(BobbyRulesConfig.apply)
 
-    def toBobbyRule(brc:BobbyRuleConfig)(`type`: DependencyType)  =
-      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from), `type`)
+    def toBobbyRule(brc:BobbyRuleConfig)  =
+      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from))
 
-    Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig)).map { c =>
-        c.libraries.getOrElse(List.empty).map(toBobbyRule(_)(Library)) ++
-        c.plugins.getOrElse(List.empty).map(toBobbyRule(_)(Plugin))
-    }.getOrElse(List.empty)
+    val config = Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig))
+    config.map(_.rules.map(toBobbyRule)).getOrElse(List.empty)
   }
 
   def extractMap(lines: List[String]): Map[String, String] = {
@@ -76,7 +71,7 @@ class Configuration(
   val jsonOutputFile: String = (jsonOutputFileOverride orElse configValue("json-output-file")).getOrElse(defaultJsonOutputFile)
   val textOutputFile: String = configValue("text-output-file").getOrElse(defaultTextOutputFile)
 
-  def loadBobbyRules(): BobbyRules = {
+  def loadBobbyRules(): List[BobbyRule] = {
 
     val resolvedRuleUrl: Option[URL] = bobbyRuleURL.map { url =>
       logger.info(s"[bobby] Bobby rule location was set explicitly in build")
@@ -93,7 +88,7 @@ class Configuration(
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-        BobbyRules(Configuration.parseConfig(Source.fromInputStream(inputStream).mkString))
+        Configuration.parseConfig(Source.fromInputStream(inputStream).mkString)
       } catch {
         case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }

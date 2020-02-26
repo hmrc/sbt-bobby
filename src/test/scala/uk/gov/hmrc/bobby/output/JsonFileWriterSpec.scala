@@ -18,19 +18,19 @@ package uk.gov.hmrc.bobby.output
 
 import java.time.LocalDate
 
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 import uk.gov.hmrc.bobby.conf.Configuration
-import uk.gov.hmrc.bobby.domain.{BobbyOk, BobbyRule, BobbyViolation, BobbyWarning, Dependency, Library, VersionRange}
 import uk.gov.hmrc.bobby.domain.MessageBuilder._
+import uk.gov.hmrc.bobby.domain._
 
 class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
 
   val jsonFileWriter: JsonFileWriter = new JsonFileWriter(Configuration.defaultJsonOutputFile)
 
   "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31") , Library)
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"))
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)))
 
     val jsonString: String = jsonFileWriter.renderText(messages, Flat)
@@ -54,7 +54,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "use the correct names for the results" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31") , Library)
+    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"))
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)), makeMessage(BobbyOk))
     val jsonString: String = jsonFileWriter.renderText(messages, Flat)
 

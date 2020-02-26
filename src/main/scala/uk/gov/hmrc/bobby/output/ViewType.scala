@@ -38,7 +38,7 @@ object DefaultRendering {
     val levelStr: Str = messageColour(m)(m.level.name)
     val dependencyStr: Str = {
       val dep = s"${m.checked.moduleID.moduleName}$prefix"
-      if(m.isPlugin) Color.Magenta(dep) else if (m.isLocal) Color.Blue(dep) else Str(dep)
+      if (m.isLocal) Color.Blue(dep) else Str(dep)
     }
     val viaStr: Str = Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse(""))
     val yourVersionStr: Str = Str(m.checked.moduleID.revision)
@@ -68,7 +68,7 @@ case object Nested extends ViewType {
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.levelStr),
-    if(m.isLocal || m.isPlugin) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
+    if(m.isLocal) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
     m.yourVersionStr,
     m.outlawedRangeStr,
     m.effectiveDateStr
