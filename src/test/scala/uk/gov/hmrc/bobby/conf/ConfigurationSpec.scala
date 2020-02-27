@@ -27,7 +27,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
   "The Configuration parser" should "read a well formatted json file with plugins and libraries and ignore anything else" in {
 
-    val deps = Configuration.parseConfig(
+    val deps = BobbyConfiguration.parseConfig(
       """{
         | "rules" : [
         |     { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" },
@@ -54,14 +54,14 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
   it should "fail-fast if all config is missing" in {
     val error = intercept[RuntimeException] {
-      new Configuration().loadBobbyRules()
+      BobbyConfiguration().loadBobbyRules()
     }
     error.getMessage shouldBe s"Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"
   }
 
   it should "fail-fast if unable to retrieve the bobby rules" in {
     val error = intercept[RuntimeException] {
-      new Configuration(bobbyRuleURL = Some(new URL("file://badfile"))).loadBobbyRules()
+      BobbyConfiguration(bobbyRulesURL = Some(new URL("file://badfile"))).loadBobbyRules()
     }
     error.getMessage.startsWith("Unable to load bobby rules from") shouldBe true
   }
@@ -73,7 +73,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
       "anotherkey=http://myurl?token=mytoken",
       " key =    value  "
     )
-    Configuration.extractMap(lines) shouldBe Map(
+    BobbyConfiguration.extractMap(lines) shouldBe Map(
       "deprecated-dependencies" -> "https://myurl",
       "somekey" -> "somevalue",
       "anotherkey" -> "http://myurl?token=mytoken",

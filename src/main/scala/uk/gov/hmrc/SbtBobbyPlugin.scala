@@ -19,7 +19,7 @@ package uk.gov.hmrc
 import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.conf.ConfigFile
+import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.{Bobby, GraphOps}
 
@@ -40,11 +40,11 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
   object BobbyKeys {
-    lazy val validate     = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
-    lazy val deprecatedDependenciesUrl =
-      SettingKey[Option[URL]]("dependencyUrl", "Override the URL used to get the list of deprecated dependencies")
-    lazy val jsonOutputFileOverride =
-      SettingKey[Option[String]]("jsonOutputFileOverride", "Override the file used to write json result file")
+    lazy val validate        = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
+    lazy val bobbyRulesURL =
+      SettingKey[Option[URL]]("bobbyRulesURL", "Override the URL used to get the list of bobby rules")
+    lazy val outputDirectoryOverride =
+      SettingKey[Option[String]]("outputDirectoryOverride", "Override the directory used to write the report files")
     lazy val bobbyStrictMode = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
     lazy val bobbyViewType = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
     lazy val bobbyConsoleColours = settingKey[Boolean]("If true (default), colours are rendered in the console output")
@@ -59,9 +59,9 @@ object SbtBobbyPlugin extends AutoPlugin {
       validate := {
         // Determine nodes to exclude which are this project or dependent projects from this build
         // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
-        val extracted = Project.extract(state.value)
+        val extractedRootProject = Project.extract(state.value)
         val internalModuleNodes = buildStructure.value.allProjectRefs.map( p =>
-          extracted.get(projectID in p)
+          extractedRootProject.get(projectID in p)
         ).distinct.map(_.toDependencyGraph)
 
         // Construct a complete module graph piggy-backing off `sbt-dependency-graph`
@@ -74,26 +74,30 @@ object SbtBobbyPlugin extends AutoPlugin {
         val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
 
         // Retrieve config settings
-        val bobbyConfigFile: ConfigFile = new ConfigFile(System.getProperty("user.home") + "/.sbt/bobby.conf")
+        val bobbyConfigFile: ConfigFile = ConfigFile(System.getProperty("user.home") + "/.sbt/bobby.conf")
+
+        val bobbyConfig = new BobbyConfiguration(
+          bobbyRulesURL = bobbyRulesURL.value,
+          outputDirectoryOverride = outputDirectoryOverride.value,
+          outputFileName = s"bobby-report-${thisProject.value.id}-${config.name}",
+          bobbyConfigFile = Some(bobbyConfigFile),
+          strictMode = bobbyStrictMode.value,
+          viewType = bobbyViewType.value,
+          consoleColours = bobbyConsoleColours.value
+        )
 
         Bobby.validateDependencies(
-          bobbyStrictMode.value,
           GraphOps.toSbtDependencyMap(dependencyMap), //Use vanilla sbt ModuleIDs
           projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
-          scalaVersion.value,
-          bobbyViewType.value,
-          bobbyConsoleColours.value,
-          deprecatedDependenciesUrl.value,
-          Some(bobbyConfigFile),
-          jsonOutputFileOverride.value
+          bobbyConfig
         )
       }
     )
   )
 
   override lazy val projectSettings = Seq(
-    deprecatedDependenciesUrl := None,
-    jsonOutputFileOverride := None,
+    bobbyRulesURL := None,
+    outputDirectoryOverride := None,
     parallelExecution in GlobalScope := true,
     bobbyViewType := sys.env.get(envKeyBobbyViewType).map(ViewType.apply).getOrElse(Compact),
     bobbyStrictMode := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),

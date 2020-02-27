@@ -23,13 +23,13 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
+import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 
 import scala.io.Source
 
-object Configuration {
+object BobbyConfiguration {
 
-  val defaultJsonOutputFile = "./target/bobby-reports/bobby-report.json"
-  val defaultTextOutputFile = "./target/bobby-reports/bobby-report.txt"
+  val defaultOutputDirectory = "./target/bobby-reports"
 
   case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
   case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
@@ -55,25 +55,30 @@ object Configuration {
 
 }
 
-class Configuration(
-  bobbyRuleURL: Option[URL] = None,
+case class BobbyConfiguration(
+  bobbyRulesURL: Option[URL] = None,
+  outputDirectoryOverride: Option[String] = None,
+  outputFileName: String = "bobby-report",
   bobbyConfigFile: Option[ConfigFile] = None,
-  jsonOutputFileOverride: Option[String] = None
+  strictMode: Boolean = false,
+  viewType: ViewType = Compact,
+  consoleColours: Boolean = true
 ) {
 
-  import Configuration._
+  import BobbyConfiguration._
 
   val timeout = 3000
   val logger  = ConsoleLogger()
 
   def configValue(key: String): Option[String] = bobbyConfigFile.flatMap(_.get(key))
 
-  val jsonOutputFile: String = (jsonOutputFileOverride orElse configValue("json-output-file")).getOrElse(defaultJsonOutputFile)
-  val textOutputFile: String = configValue("text-output-file").getOrElse(defaultTextOutputFile)
+  val outputDirectory: String = (outputDirectoryOverride orElse configValue("output-directory")).getOrElse(defaultOutputDirectory)
+  val jsonOutputFile: String = s"${outputDirectory}/${outputFileName}.json"
+  val textOutputFile: String = s"${outputDirectory}/${outputFileName}.txt"
 
   def loadBobbyRules(): List[BobbyRule] = {
 
-    val resolvedRuleUrl: Option[URL] = bobbyRuleURL.map { url =>
+    val resolvedRuleUrl: Option[URL] = bobbyRulesURL.map { url =>
       logger.info(s"[bobby] Bobby rule location was set explicitly in build")
       url
     } orElse {
@@ -88,7 +93,7 @@ class Configuration(
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-        Configuration.parseConfig(Source.fromInputStream(inputStream).mkString)
+        BobbyConfiguration.parseConfig(Source.fromInputStream(inputStream).mkString)
       } catch {
         case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }

@@ -34,7 +34,7 @@ case class ConfigFile(fileName: String) {
       val source = Source.fromFile(fileName)
       val lines = source.getLines().toList
       source.close()
-      Configuration.extractMap(lines)
+      BobbyConfiguration.extractMap(lines)
     } catch {
       case e: Exception =>
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")

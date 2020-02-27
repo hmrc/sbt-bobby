@@ -9,17 +9,21 @@ lazy val global = (project in file("."))
   ).aggregate(common, sub)
 
 lazy val common = project
+  .settings(
+    libraryDependencies := Seq(
+    "org.scalacheck"       %% "scalacheck" % "1.14.3"
+  ))
 
 lazy val sub = project
   .settings(
-    deprecatedDependenciesUrl := Some(file("bobby-rules.json").toURI.toURL),
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
     libraryDependencies := Seq(
       "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.20.0-play-26",
       "org.reactivemongo" %% "reactivemongo" % "0.17.0"
     ),
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
     TaskKey[Unit]("check") := {
-      val json = Json.parse(read(file("target/bobby-reports/bobby-report.json")))
+      val json = Json.parse(read(file("target/bobby-reports/bobby-report-sub-compile.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet
       val expected = Set("-", "Bad simple!")
 

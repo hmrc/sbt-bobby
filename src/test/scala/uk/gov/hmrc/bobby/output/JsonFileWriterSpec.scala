@@ -21,13 +21,13 @@ import java.time.LocalDate
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
-import uk.gov.hmrc.bobby.conf.Configuration
+import uk.gov.hmrc.bobby.conf.BobbyConfiguration
 import uk.gov.hmrc.bobby.domain.MessageBuilder._
 import uk.gov.hmrc.bobby.domain._
 
 class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
 
-  val jsonFileWriter: JsonFileWriter = new JsonFileWriter(Configuration.defaultJsonOutputFile)
+  val jsonFileWriter: JsonFileWriter = new JsonFileWriter(BobbyConfiguration.defaultOutputDirectory)
 
   "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
     val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"))

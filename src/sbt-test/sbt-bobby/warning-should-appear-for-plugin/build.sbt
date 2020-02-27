@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     scalaVersion := "2.12.10",
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
-    deprecatedDependenciesUrl := Some(file("bobby-rules.json").toURI.toURL),
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
 
     TaskKey[Unit]("check") := {
       val json = Json.parse(read(file("target/bobby-reports/bobby-report.json")))

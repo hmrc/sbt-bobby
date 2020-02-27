@@ -76,7 +76,7 @@ Bobby Rules are defined in a single `json` file, and look like this:
 
 Rules can be placed on both libraries and plugins, and will be enforced on all local and transitive dependencies.
 
-> In order to apply Bobby to the meta scope to validate plugin output, see the section below
+> In order to apply Bobby to the meta scope to validate plugin output, see the section below on 'Running in different configurations'
 
 ## Rule Schema
 Each rule takes the same form:
@@ -117,11 +117,11 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 
 Then, create your rules configuration as above. This file can live anywhere, you just need to tell Bobby where to find it.
 
-This can be done by setting a `deprecated-dependencies` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
+This can be done by setting a `bobby-rules-url` property in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
 ```
-deprecated-dependencies = https://some-url/deprecated-dependencies.json
-deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
+bobby-rules-url = https://some-url/deprecated-dependencies.json
+bobby-rules-url = file:///~/.sbt/deprecated-dependencies.json
 ```
 
 That's it!
@@ -190,8 +190,8 @@ So in order to disambiguate multiple rules, first Bobby partitions them to only 
 it will consider warnings. In each subset, the ordering is (in decreasing ordering of precedence):
 
 1. First consider the upper bound of the rule version. The one that is the *highest* takes precedence
-   a. No upper bound (None) first
-   b. Highest upper bound if both defined
+   1. No upper bound (None) first
+   1. Highest upper bound if both defined
 2. Inclusive upper bound over exclusive (when version numbers matching)
 3. Most recent rule first
 4. Undefined (very much an edge case, pick any)

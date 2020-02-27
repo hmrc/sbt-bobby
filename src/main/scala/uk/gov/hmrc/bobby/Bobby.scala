@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.bobby
 
-import java.net.URL
-
 import sbt._
-import uk.gov.hmrc.bobby.conf.{ConfigFile, Configuration}
+import uk.gov.hmrc.bobby.conf.BobbyConfiguration
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.{Output, ViewType}
+import uk.gov.hmrc.bobby.output.Output
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
@@ -30,7 +28,7 @@ object Bobby {
   private val logger         = ConsoleLogger()
   private val currentVersion = getClass.getPackage.getImplementationVersion
 
-  val bobbyLogo =
+  private val bobbyLogo =
     """
       |              ,
       |     __  _.-"` `'-.
@@ -44,31 +42,23 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
-    strictMode: Boolean,
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
-    scalaVersion: String,
-    viewType: ViewType,
-    consoleColours: Boolean,
-    bobbyRulesUrl: Option[URL] = None,
-    bobbyConfigFile: Option[ConfigFile] = None,
-    jsonOutputFileOverride: Option[String] = None): Unit = {
+    config: BobbyConfiguration): Unit = {
 
     logger.info(bobbyLogo)
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val config = new Configuration(bobbyRulesUrl, bobbyConfigFile, jsonOutputFileOverride)
-
     val messages =
       BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules())
 
-    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, viewType, consoleColours)
+    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
 
     if(messages.exists(_.isError))
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
 
-    if(strictMode && messages.exists(_.isWarning))
+    if(config.strictMode && messages.exists(_.isWarning))
       throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 
