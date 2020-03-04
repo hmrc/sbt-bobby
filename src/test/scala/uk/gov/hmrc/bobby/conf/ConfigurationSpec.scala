@@ -19,11 +19,13 @@ package uk.gov.hmrc.bobby.conf
 import java.net.URL
 import java.time.LocalDate
 
+import org.mockito.Mockito._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.bobby.domain.VersionRange
 
-class ConfigurationSpec extends AnyFlatSpec with Matchers {
+class ConfigurationSpec extends AnyFlatSpec with Matchers with MockitoSugar {
 
   "The Configuration parser" should "read a well formatted json file with plugins and libraries and ignore anything else" in {
 
@@ -56,7 +58,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     val error = intercept[RuntimeException] {
       BobbyConfiguration().loadBobbyRules()
     }
-    error.getMessage shouldBe s"Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"
+    error.getMessage shouldBe s"Bobby rule location unknown! - Set 'bobbyRulesURL' via the config file or explicitly in the build"
   }
 
   it should "fail-fast if unable to retrieve the bobby rules" in {
@@ -66,15 +68,27 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     error.getMessage.startsWith("Unable to load bobby rules from") shouldBe true
   }
 
+  it should "allow loading values from config file keys" in {
+    val c = mock[ConfigFile]
+    when(c.get("output-directory")).thenReturn(Some("test"))
+    when(c.get("bobby-rules-url")).thenReturn(Some("file://test"))
+
+    val bc = BobbyConfiguration(bobbyConfigFile = Some(c))
+    bc.resolvedRuleUrl shouldBe Some(new URL("file://test"))
+    bc.outputDirectory shouldBe "test"
+    verify(c, times(1)).get("output-directory")
+    verify(c, times(1)).get("bobby-rules-url")
+  }
+
   "extractMap" should "return a key value map" in {
     val lines = List(
-      "deprecated-dependencies = https://myurl",
+      "bobby-rules-url = https://myurl",
       "somekey=somevalue",
       "anotherkey=http://myurl?token=mytoken",
       " key =    value  "
     )
     BobbyConfiguration.extractMap(lines) shouldBe Map(
-      "deprecated-dependencies" -> "https://myurl",
+      "bobby-rules-url" -> "https://myurl",
       "somekey" -> "somevalue",
       "anotherkey" -> "http://myurl?token=mytoken",
       "key" -> "value"

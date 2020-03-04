@@ -5,13 +5,15 @@ import sbt.IO._
 lazy val global = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(
-    scalaVersion := "2.12.8"
+    scalaVersion := "2.12.8",
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL)
   ).aggregate(common, sub)
 
 lazy val common = project
   .settings(
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
     libraryDependencies := Seq(
-    "org.scalacheck"       %% "scalacheck" % "1.14.3"
+    "org.scalacheck"       %% "scalacheck" % "1.14.3",
   ))
 
 lazy val sub = project

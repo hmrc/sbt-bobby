@@ -76,16 +76,15 @@ case class BobbyConfiguration(
   val jsonOutputFile: String = s"${outputDirectory}/${outputFileName}.json"
   val textOutputFile: String = s"${outputDirectory}/${outputFileName}.txt"
 
+  val resolvedRuleUrl: Option[URL] = bobbyRulesURL.map { url =>
+    logger.info(s"[bobby] Bobby rule location was set explicitly in build")
+    url
+  } orElse {
+    logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile.map(_.fileName).getOrElse("Not set")}")
+    configValue("bobby-rules-url").map(new URL(_))
+  }
+
   def loadBobbyRules(): List[BobbyRule] = {
-
-    val resolvedRuleUrl: Option[URL] = bobbyRulesURL.map { url =>
-      logger.info(s"[bobby] Bobby rule location was set explicitly in build")
-      url
-    } orElse {
-      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile.map(_.fileName).getOrElse("Not set")}")
-      configValue("deprecated-dependencies").map(new URL(_))
-    }
-
     resolvedRuleUrl.map { url =>
       try {
         logger.info(s"[bobby] Loading bobby rules from: $url")
@@ -97,7 +96,7 @@ case class BobbyConfiguration(
       } catch {
         case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }
-    }.getOrElse(abort("Bobby rule location unknown! - Set 'deprecatedDependenciesUrl' via the config file or explicitly in the build"))
+    }.getOrElse(abort("Bobby rule location unknown! - Set 'bobbyRulesURL' via the config file or explicitly in the build"))
   }
 
   def abort(message: String): Nothing = {

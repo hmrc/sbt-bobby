@@ -245,7 +245,6 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info] | INFO  | org.slf4j.jul-to-slf4j T                                 | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
 [info] | INFO  | org.slf4j.slf4j-api T                                    | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
 [info] | INFO  | org.typelevel.macro-compat T                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              |
-[info] | INFO  | uk.gov.hmrc.sbt-auto-build P                             |                                  | 2.5.0          | -              | -              |
 [info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
 [warn]  (1) org.pegdown.pegdown (1.3.0)
@@ -255,9 +254,9 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [error]      Reason: Example: Required to use latest scalatest 3.1.0+
 [error]  (2) uk.gov.hmrc.simple-reactivemongo (7.13.0-play-26)
 [error]      Reason: Example: Uses a version of reactivemongo that has a memory leak
-[error] stack trace is suppressed; run last validate for the full output
-[error] (validate) uk.gov.hmrc.bobby.BobbyValidationFailedException: Build failed due to bobby violations. See previous output to resolve
-[error] Total time: 2 s, completed 07-Feb-2020 10:32:54
+[error] stack trace is suppressed; run last Compile / validate for the full output
+[error] (Compile / validate) uk.gov.hmrc.bobby.BobbyValidationFailedException: Build failed due to bobby violations. See previous output to resolve
+[error] Total time: 0 s, completed 27-Feb-2020 16:36:28
 ```
 
 The Bobby output consists of a table of all of the dependencies in your build, as well as a summary of any warnings and violations
@@ -268,11 +267,8 @@ with a level of `INFO`. Each row represents one dependency in the build, and whe
 build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation as it tells you 
 what you need to change in order to fix it.
 
-Note that the KEY and colour coding is only applicable when outputting to the console. There is a `bobby-report.txt` file generated
-with just the table. You can find it in the `target` folder, along with `bobby-report.json` which has the content in machine readable form.
-
->Note that the Via column is always empty for plugin dependencies (from your meta-build). This is because the dependency graph available
->at the meta-build level is not as rich in detail
+Note that the KEY and colour coding is only applicable when outputting to the console. There is a `bobby-report-<project>-<config>.txt` file generated
+with just the table. You can find it in the `target` folder, along with a `.txt` variant which has the content in machine readable form.
 
 ## Configuration Options
 
@@ -296,8 +292,8 @@ To change the strict mode you can:
 As shown above, you can configure the rules via a setting in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
 ```
-deprecated-dependencies = https://some-url/deprecated-dependencies.json
-deprecated-dependencies = file:///~/.sbt/deprecated-dependencies.json
+bobby-rules-url = https://some-url/deprecated-dependencies.json
+bobby-rules-url = file:///~/.sbt/deprecated-dependencies.json
 ```
 
 Alternatively, you can specify the location directly in your `build.sbt`:
@@ -305,11 +301,11 @@ Alternatively, you can specify the location directly in your `build.sbt`:
 First add the required imports:
 ```
 import java.net.URL
-import SbtBobbyPlugin.BobbyKeys.deprecatedDependenciesUrl
+import SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
 ```
 Then point to the rule file:
 ```
-deprecatedDependenciesUrl := Some(new URL("path to your bobby rules file")),
+bobbyRulesURL := Some(new URL("path to your bobby rules file")),
 ```
 
 ### Changing the file output location

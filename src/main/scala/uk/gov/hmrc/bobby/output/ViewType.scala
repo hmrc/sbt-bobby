@@ -29,15 +29,9 @@ sealed trait ViewType {
 
 object DefaultRendering {
   implicit class ExtendedMessage(m: Message) {
-
-    private val prefix = Str(m match {
-      case _ if !m.isLocal => " T"    //transitive
-      case _ => " L"                  //local
-    })
-
     val levelStr: Str = messageColour(m)(m.level.name)
     val dependencyStr: Str = {
-      val dep = s"${m.checked.moduleID.moduleName}$prefix"
+      val dep = s"${m.checked.moduleID.moduleName}"
       if (m.isLocal) Color.Blue(dep) else Str(dep)
     }
     val viaStr: Str = Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse(""))

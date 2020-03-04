@@ -1,4 +1,4 @@
--> validate
+-> validateAll
 $ exists target/bobby-reports/bobby-report-global-compile.json
 $ exists target/bobby-reports/bobby-report-global-compile.txt
 $ exists target/bobby-reports/bobby-report-common-compile.json
