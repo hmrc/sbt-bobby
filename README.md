@@ -203,15 +203,20 @@ a different violation each time.
 
 ## Understanding the Bobby output
 
-Bobby will write out a summary table to the console, as well as generating two report artifacts:
+Bobby will write out a summary table to the console, as well as generating two report artifacts for every project/configuration scope:
  
- * `target/bobby-report.json` 
- * `target/bobby-report.txt`
+ * `target/bobby-report-<project>-<configuration>.json` 
+ * `target/bobby-report-<project>-<configuration>.json`
+ 
+For example, if you are running `test:validate` from a project called `root`, the files generated will be:
+
+ * `target/bobby-report-root-test.json` 
+ * `target/bobby-report-root-test.json`
   
 These reports tell you of any rule violations that are preventing your job from building, as well as 
 highlighting any dependencies with warnings that will become violations in the future.
 
-An example output looks like this (taken from the `test-project` in this repo, see below):
+An example output looks like this (a snippet taken from the `test-project` in this repo, see below):
 
 ```
 [info] ************************************************************************************************************************
@@ -220,32 +225,32 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [info]  * WARN: Bobby Warnings => Your build will start to fail from the date the rules become enforced
 [info]  * INFO: Bobby Ok => No problems with this dependency
 [info]
-[info] Dependency KEY:
+[info] Dependency KEY:  validate 0s
 [info]  * L: Local Dependency => Highlights dependencies declared locally in your project
 [info]  * T: Transitive Dependency => Dependencies pulled in via your locally declared dependencies
 [info] ************************************************************************************************************************
-[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
-[info] | Level | Dependency                                               | Via                              | Your Version   | Outlawed Range | Effective From |
-[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
-[info] | ERROR | org.scalatest.scalatest L                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     |
-[info] | ERROR | uk.gov.hmrc.simple-reactivemongo L                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     |
-[info] | WARN  | org.pegdown.pegdown L                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     |
-[info] | INFO  | aopalliance.aopalliance T                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations T         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-core T                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
-[info] | INFO  | com.fasterxml.jackson.core.jackson-databind T            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              |
-[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8 T   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
-[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jsr310 T | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
-[info] | INFO  | com.github.nscala-time.nscala-time T                     | uk.gov.hmrc.simple-reactivemongo | 2.22.0         | -              | -              |
-[info] | INFO  | com.google.code.findbugs.jsr305 T                        | uk.gov.hmrc.simple-reactivemongo | 1.3.9          | -              | -              |
-[info] | INFO  | org.scala-lang.scala-reflect T                           | uk.gov.hmrc.simple-reactivemongo | 2.12.10        | -              | -              |
-[info] | INFO  | org.scala-stm.scala-stm T                                | uk.gov.hmrc.simple-reactivemongo | 0.8            | -              | -              |
-[info] | INFO  | org.scalactic.scalactic T                                | org.scalatest.scalatest          | 3.0.0          | -              | -              |
-[info] | INFO  | org.slf4j.jcl-over-slf4j T                               | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
-[info] | INFO  | org.slf4j.jul-to-slf4j T                                 | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
-[info] | INFO  | org.slf4j.slf4j-api T                                    | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
-[info] | INFO  | org.typelevel.macro-compat T                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              |
-[info] +-------+----------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
+[info] | Level | Dependency                                             | Via                              | Your Version   | Outlawed Range | Effective From |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
+[info] | ERROR | org.scalatest.scalatest                                |                                  | 3.0.0          | (,3.1.0)       | 2020-01-01     |
+[info] | ERROR | uk.gov.hmrc.simple-reactivemongo                       |                                  | 7.13.0-play-26 | [7.0.0,7.14.0] | 2020-01-01     |
+[info] | WARN  | org.pegdown.pegdown                                    |                                  | 1.3.0          | [0.0.0-0.0.0,) | 2099-01-01     |
+[info] | INFO  | aopalliance.aopalliance                                | uk.gov.hmrc.simple-reactivemongo | 1.0            | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-annotations         | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-core                | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.core.jackson-databind            | uk.gov.hmrc.simple-reactivemongo | 2.8.11.1       | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jdk8   | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.fasterxml.jackson.datatype.jackson-datatype-jsr310 | uk.gov.hmrc.simple-reactivemongo | 2.8.11         | -              | -              |
+[info] | INFO  | com.github.nscala-time.nscala-time                     | uk.gov.hmrc.simple-reactivemongo | 2.22.0         | -              | -              |
+[info] | INFO  | com.google.code.findbugs.jsr305                        | uk.gov.hmrc.simple-reactivemongo | 1.3.9          | -              | -              |
+[info] | INFO  | org.scala-lang.scala-reflect                           | uk.gov.hmrc.simple-reactivemongo | 2.12.10        | -              | -              |
+[info] | INFO  | org.scala-stm.scala-stm                                | uk.gov.hmrc.simple-reactivemongo | 0.8            | -              | -              |
+[info] | INFO  | org.scalactic.scalactic                                | org.scalatest.scalatest          | 3.0.0          | -              | -              |
+[info] | INFO  | org.slf4j.jcl-over-slf4j                               | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.slf4j.jul-to-slf4j                                 | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.slf4j.slf4j-api                                    | uk.gov.hmrc.simple-reactivemongo | 1.7.25         | -              | -              |
+[info] | INFO  | org.typelevel.macro-compat                             | uk.gov.hmrc.simple-reactivemongo | 1.1.1          | -              | -              |
+[info] +-------+--------------------------------------------------------+----------------------------------+----------------+----------------+----------------+
 [warn] WARNING: Your build has 1 bobby warning(s). Please take action to fix these before the listed date, or they will become violations that fail your build
 [warn]  (1) org.pegdown.pegdown (1.3.0)
 [warn]      Reason: Example: No pegdown dependencies will be allowed
@@ -256,7 +261,7 @@ An example output looks like this (taken from the `test-project` in this repo, s
 [error]      Reason: Example: Uses a version of reactivemongo that has a memory leak
 [error] stack trace is suppressed; run last Compile / validate for the full output
 [error] (Compile / validate) uk.gov.hmrc.bobby.BobbyValidationFailedException: Build failed due to bobby violations. See previous output to resolve
-[error] Total time: 0 s, completed 27-Feb-2020 16:36:28
+[error] Total time: 1 s, completed 04-Mar-2020 16:46:13
 ```
 
 The Bobby output consists of a table of all of the dependencies in your build, as well as a summary of any warnings and violations
@@ -292,8 +297,8 @@ To change the strict mode you can:
 As shown above, you can configure the rules via a setting in `~/.sbt/bobby.conf`. Bobby can read both local or remote files:
 
 ```
-bobby-rules-url = https://some-url/deprecated-dependencies.json
-bobby-rules-url = file:///~/.sbt/deprecated-dependencies.json
+bobby-rules-url = https://some-url/bobby-rules.json
+bobby-rules-url = file:///~/.sbt/bobby-rules.json
 ```
 
 Alternatively, you can specify the location directly in your `build.sbt`:
@@ -308,18 +313,17 @@ Then point to the rule file:
 bobbyRulesURL := Some(new URL("path to your bobby rules file")),
 ```
 
-### Changing the file output location
+### Changing the output directory
 
-You can override where the json file is written using the setting:
+You can override the directory where the reports are written using the setting:
 
 ```
-jsonOutputFileOverride := Some("target/changed-name-report.json")
+outputDirectoryOverride := Some("target/my-dir")
 ```
 
-And in the `bobby.conf` you can explicitly set the filename for each:
+Or in the `bobby.conf`:
 ```
-json-output-file = target/bobby-output.json
-text-output-file = target/bobby-output.txt
+output-directory = target/my-dir
 ```
 
 ### Turning off the console colours

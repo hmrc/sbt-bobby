@@ -92,7 +92,9 @@ case class BobbyConfiguration(
         conn.setConnectTimeout(timeout)
         conn.setReadTimeout(timeout)
         val inputStream = conn.getInputStream
-        BobbyConfiguration.parseConfig(Source.fromInputStream(inputStream).mkString)
+        val rules = BobbyConfiguration.parseConfig(Source.fromInputStream(inputStream).mkString)
+        logger.info(s"[bobby] Found ${rules.size} rules")
+        rules
       } catch {
         case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }
