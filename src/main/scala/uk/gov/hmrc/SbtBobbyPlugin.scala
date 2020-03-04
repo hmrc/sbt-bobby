@@ -19,7 +19,7 @@ package uk.gov.hmrc
 import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
-import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile}
+import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.{Bobby, GraphOps}
 
@@ -74,7 +74,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
 
         // Retrieve config settings
-        val bobbyConfigFile: ConfigFile = ConfigFile(System.getProperty("user.home") + "/.sbt/bobby.conf")
+        val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
 
         val bobbyConfig = new BobbyConfiguration(
           bobbyRulesURL = bobbyRulesURL.value,

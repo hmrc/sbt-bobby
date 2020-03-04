@@ -22,7 +22,12 @@ import sbt.ConsoleLogger
 
 import scala.io.Source
 
-case class ConfigFile(fileName: String) {
+trait ConfigFile {
+  def get(path: String): Option[String]
+  def fileName: String
+}
+
+case class ConfigFileImpl(fileName: String) extends ConfigFile {
   val logger = ConsoleLogger()
 
   if (!new File(fileName).exists()) {
