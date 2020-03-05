@@ -102,6 +102,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     bobbyViewType := sys.env.get(envKeyBobbyViewType).map(ViewType.apply).getOrElse(Compact),
     bobbyStrictMode := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true)
+  ) ++ validateSettings ++
     //Add a useful alias to run bobby validate for compile, test and plugins together (similar to old releases of bobby)
-  ) ++ validateSettings ++ addCommandAlias("validateAll", "validate; test:validate; reload plugins; validate; reload return")
+    addCommandAlias("validateAll", "validate; test:validate; reload plugins; validate; reload return")
 }
