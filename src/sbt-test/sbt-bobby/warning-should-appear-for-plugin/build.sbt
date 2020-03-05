@@ -7,10 +7,10 @@ lazy val root = (project in file("."))
   .settings(
     scalaVersion := "2.12.10",
     resolvers += Resolver.bintrayRepo("hmrc", "releases"),
-    deprecatedDependenciesUrl := Some(file("dependencies.json").toURI.toURL),
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
 
     TaskKey[Unit]("check") := {
-      val json = Json.parse(read(file("target/bobby-reports/bobby-report.json")))
+      val json = Json.parse(read(file("target/bobby-reports/bobby-report-project-compile.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet
 
       assert(reasons.contains("bad auto build"), "Did not find expected violations")

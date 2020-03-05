@@ -22,7 +22,12 @@ import sbt.ConsoleLogger
 
 import scala.io.Source
 
-class ConfigFile(fileName: String) {
+trait ConfigFile {
+  def get(path: String): Option[String]
+  def fileName: String
+}
+
+case class ConfigFileImpl(fileName: String) extends ConfigFile {
   val logger = ConsoleLogger()
 
   if (!new File(fileName).exists()) {
@@ -34,7 +39,7 @@ class ConfigFile(fileName: String) {
       val source = Source.fromFile(fileName)
       val lines = source.getLines().toList
       source.close()
-      Configuration.extractMap(lines)
+      BobbyConfiguration.extractMap(lines)
     } catch {
       case e: Exception =>
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")

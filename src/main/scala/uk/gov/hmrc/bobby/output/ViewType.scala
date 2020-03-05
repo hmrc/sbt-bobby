@@ -29,17 +29,10 @@ sealed trait ViewType {
 
 object DefaultRendering {
   implicit class ExtendedMessage(m: Message) {
-
-    private val prefix = Str(m match {
-      case _ if !m.isLocal => " T"    //transitive
-      case _ if m.isPlugin => " P"    //plugin
-      case _ => " L"                  //local
-    })
-
     val levelStr: Str = messageColour(m)(m.level.name)
     val dependencyStr: Str = {
-      val dep = s"${m.checked.moduleID.moduleName}$prefix"
-      if(m.isPlugin) Color.Magenta(dep) else if (m.isLocal) Color.Blue(dep) else Str(dep)
+      val dep = s"${m.checked.moduleID.moduleName}"
+      if (m.isLocal) Color.Blue(dep) else Str(dep)
     }
     val viaStr: Str = Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse(""))
     val yourVersionStr: Str = Str(m.checked.moduleID.revision)
@@ -62,7 +55,6 @@ case object Flat extends ViewType {
     m.effectiveDateStr,
     m.reasonStr
   )
-
 }
 
 case object Nested extends ViewType {
@@ -70,7 +62,7 @@ case object Nested extends ViewType {
 
   override def renderMessage(m: Message): Seq[Str] = Seq(
     messageColour(m)(m.levelStr),
-    if(m.isLocal || m.isPlugin) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
+    if(m.isLocal) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
     m.yourVersionStr,
     m.outlawedRangeStr,
     m.effectiveDateStr

@@ -1,4 +1,6 @@
+> reload plugins
 > validate
-$ exists target/bobby-reports/bobby-report.json
-$ exists target/bobby-reports/bobby-report.txt
+> reload return
+$ exists target/bobby-reports/bobby-report-project-compile.json
+$ exists target/bobby-reports/bobby-report-project-compile.txt
 > check

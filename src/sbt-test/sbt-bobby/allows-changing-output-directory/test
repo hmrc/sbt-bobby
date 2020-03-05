@@ -1,0 +1,3 @@
+> validate
+$ exists target/changed-dir/bobby-report-root-compile.json
+$ exists target/changed-dir/bobby-report-root-compile.txt

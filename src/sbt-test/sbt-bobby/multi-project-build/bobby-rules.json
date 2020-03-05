@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "organisation": "uk.gov.hmrc",
+      "name": "simple-reactivemongo",
+      "range": "[7.20.0]",
+      "reason": "Bad simple!",
+      "from": "2001-01-01"
+    }
+  ]
+}

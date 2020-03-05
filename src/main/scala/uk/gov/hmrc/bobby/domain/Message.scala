@@ -50,6 +50,5 @@ case class Message(
   val isOkay: Boolean = level.equals(MessageLevels.INFO)
 
   val isLocal: Boolean = dependencyChain.isEmpty
-  val isPlugin: Boolean = checked.`type` == Plugin
 
 }

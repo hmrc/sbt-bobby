@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import net.virtualvoid.sbt.graph.{Edge, Module, ModuleGraph, ModuleId}
 import org.scalacheck.Gen
 import org.scalacheck.Gen.{alphaChar, listOfN, _}
-import uk.gov.hmrc.bobby.domain.{Dependency, DependencyType, Library, Plugin}
+import uk.gov.hmrc.bobby.domain.Dependency
 
 import scala.util.Random
 
@@ -89,7 +89,5 @@ object Generators {
     org <- organisationGen
     name <- nonEmptyString
   } yield Dependency(org, name)
-
-  val dependencyTypeGen: Gen[DependencyType] = oneOf(Plugin, Library)
 
 }

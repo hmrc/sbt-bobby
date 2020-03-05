@@ -25,19 +25,14 @@ object BobbyValidator {
   val logger = ConsoleLogger()
 
   def applyBobbyRules(
-     projectDependencyMap: Map[ModuleID, Seq[ModuleID]],
-     projectDependencies: Seq[ModuleID],
-     pluginDependencies: Seq[ModuleID],
-     bobbyRules: BobbyRules): List[Message] = {
+    dependencyMap: Map[ModuleID, Seq[ModuleID]],
+    dependencies: Seq[ModuleID],
+    bobbyRules: List[BobbyRule]): List[Message] = {
 
-    val checkedProjectDependencies = projectDependencies.map(dep => BobbyChecked(dep, Library, calc(bobbyRules.libs, dep)))
-    val checkedPluginDependencies = pluginDependencies.map(dep => BobbyChecked(dep, Plugin, calc(bobbyRules.plugins, dep)))
+    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep)))
+    val messages = generateMessages(bobbyRules, checkedDependencies, dependencyMap)
 
-    val projectMessages = generateMessages(bobbyRules.libs, checkedProjectDependencies, projectDependencyMap)
-    val pluginMessages = generateMessages(bobbyRules.plugins, checkedPluginDependencies)
-
-    (projectMessages ++ pluginMessages).sortBy(_.moduleName).toList
-
+    messages.sortBy(_.moduleName).toList
   }
 
   def calc(bobbyRules: List[BobbyRule], dep: ModuleID, now: LocalDate = LocalDate.now()): BobbyResult = {

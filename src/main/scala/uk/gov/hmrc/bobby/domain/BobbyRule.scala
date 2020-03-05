@@ -18,32 +18,11 @@ package uk.gov.hmrc.bobby.domain
 
 import java.time.LocalDate
 
-sealed trait DependencyType
-
-object DependencyType {
-
-  def apply(s: String): DependencyType = s match {
-    case "plugins"   => Plugin
-    case "libraries" => Library
-    case _           => Unknown
-  }
-
-}
-
-case object Library extends DependencyType
-case object Plugin extends DependencyType
-case object Unknown extends DependencyType
-
 case class BobbyRule(
   dependency: Dependency,
   range: VersionRange,
   reason: String,
-  effectiveDate: LocalDate,
-  `type`: DependencyType)
-
-case class BobbyRules(rules: List[BobbyRule] = List.empty) {
-  lazy val (plugins, libs) = rules.partition(_.`type` == Plugin)
-}
+  effectiveDate: LocalDate)
 
 object BobbyRule {
 

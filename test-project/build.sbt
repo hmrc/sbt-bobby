@@ -15,6 +15,6 @@ lazy val root = (project in file("."))
       "uk.gov.hmrc"   %% "simple-reactivemongo"     % "7.13.0-play-26",
       "org.scalatest" %% "scalatest"                % "3.0.0" % "test"
     ),
-    deprecatedDependenciesUrl := Some(file("dependencies.json").toURI.toURL),
+    bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
   )
 
