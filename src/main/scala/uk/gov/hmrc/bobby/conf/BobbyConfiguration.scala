@@ -21,6 +21,7 @@ import java.time.LocalDate
 
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 import sbt.ConsoleLogger
 import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
@@ -36,8 +37,12 @@ object BobbyConfiguration {
 
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
     implicit lazy val ruleConfigR: Reads[BobbyRuleConfig] = Json.reads[BobbyRuleConfig]
-    // Not using macro below to avoid false unused implicit warning
-    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] = (__ \ "rules").read[List[BobbyRuleConfig]].map(BobbyRulesConfig.apply)
+    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] =
+      ((__ \ "libraries").read[List[BobbyRuleConfig]] ~
+        (__ \ "plugins").read[List[BobbyRuleConfig]]).tupled
+      .map { case(libs, plugins) =>
+        BobbyRulesConfig.apply(libs ++ plugins)
+      }
 
     def toBobbyRule(brc:BobbyRuleConfig)  =
       BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from))

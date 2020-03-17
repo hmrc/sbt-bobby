@@ -1,5 +1,5 @@
 {
-  "rules": [
+  "libraries": [
     {
       "organisation": "org.reactivemongo",
       "name": "reactivemongo",
@@ -28,5 +28,6 @@
       "reason": "Bad simple!",
       "from": "2001-01-01"
     }
-  ]
+  ],
+  "plugins" : []
 }
