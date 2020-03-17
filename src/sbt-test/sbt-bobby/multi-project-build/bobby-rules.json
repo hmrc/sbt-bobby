@@ -1,5 +1,5 @@
 {
-  "rules": [
+  "libraries": [
     {
       "organisation": "uk.gov.hmrc",
       "name": "simple-reactivemongo",
@@ -7,5 +7,6 @@
       "reason": "Bad simple!",
       "from": "2001-01-01"
     }
-  ]
+  ],
+  "plugins" : []
 }

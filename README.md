@@ -41,7 +41,7 @@ Bobby Rules are defined in a single `json` file, and look like this:
 
 ```
 {
-  "rules": [
+  "libraries": [
     {
       "organisation": "uk.gov.hmrc",
       "name": "my-library",
@@ -62,7 +62,9 @@ Bobby Rules are defined in a single `json` file, and look like this:
       "range": "[*-SNAPSHOT]",
       "reason": "You shouldn't be deploying a snapshot to production should you?",
       "from": "2000-01-01"
-    },
+    }
+  ],
+  "plugins" : [
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-auto-build",
@@ -75,6 +77,9 @@ Bobby Rules are defined in a single `json` file, and look like this:
 ```
 
 Rules can be placed on both libraries and plugins, and will be enforced on all local and transitive dependencies.
+
+>Note that as of version 3.2.0 the two lists are merged together by the plugin and used as one. They are only divided into two to preserve
+>backwards compatiblity with previous releases of `sbt-bobby`
 
 > In order to apply Bobby to the meta scope to validate plugin output, see the section below on 'Running in different configurations'
 

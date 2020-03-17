@@ -1,5 +1,5 @@
 {
-  "rules": [
+  "libraries": [
     {
       "organisation": "*",
       "name": "*",
@@ -27,7 +27,9 @@
       "range": "[0.0.0,)",
       "reason": "Example: No pegdown dependencies will be allowed",
       "from": "2099-01-01"
-    },
+    }
+  ],
+  "plugins" : [
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-settings",

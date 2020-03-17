@@ -29,8 +29,10 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
 
     val deps = BobbyConfiguration.parseConfig(
       """{
-        | "rules" : [
-        |     { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" },
+        | "libraries" : [
+        |     { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
+        | ],
+        | "plugins" : [
         |     { "organisation" : "uk.gov.hmrc", "name" : "some-plugin", "range" : "(,1.0.0)", "reason" : "1.0.0 is outdated", "from" : "2015-01-02" }
         | ]
         |}

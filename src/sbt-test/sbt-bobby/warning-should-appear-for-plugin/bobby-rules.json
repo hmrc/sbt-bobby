@@ -1,5 +1,6 @@
 {
-  "rules": [
+  "libraries" : [],
+  "plugins": [
     {
       "organisation": "uk.gov.hmrc",
       "name": "sbt-auto-build",
