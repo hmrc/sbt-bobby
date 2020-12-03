@@ -1,4 +1,4 @@
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/hmrc/sbt-bobby.svg)](https://travis-ci.org/hmrc/sbt-bobby) [ ![Download](https://api.bintray.com/packages/hmrc/sbt-plugin-releases/sbt-bobby/images/download.svg) ](https://bintray.com/hmrc/sbt-plugin-releases/sbt-bobby/_latestVersion)
+[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 
 ## Overview
 
