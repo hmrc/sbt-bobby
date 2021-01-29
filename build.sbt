@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     sbtPlugin := true,
     name := "sbt-bobby",
     scalaVersion := "2.12.10",
-    crossSbtVersions := Vector("0.13.18", "1.3.4"),
+    crossSbtVersions := Vector("0.13.18", "1.3.13"),
     // Use the code from the sbt-dependency-graph plugin as if it was a standard library dependency
     // We use the plugin to resolve the complete module graph for the purpose of validating bobby
     // rule violations across transitive dependencies
