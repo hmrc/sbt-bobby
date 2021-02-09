@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,17 +61,4 @@ object Bobby {
     if(config.strictMode && messages.exists(_.isWarning))
       throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
-
-  private[bobby] def filterDependencies(dependencies: Seq[ModuleID], ignoreList: Set[String]): Seq[ModuleID] =
-    compactDependencies(dependencies)
-      .filterNot(m => ignoreList.contains(m.organization))
-
-  private[bobby] def compactDependencies(dependencies: Seq[ModuleID]): Seq[ModuleID] = {
-    import Util._
-    dependencies
-      .groupBy(_.moduleName)
-      .map(_._2.head)
-      .toSeq
-  }
-
 }
