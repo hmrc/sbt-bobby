@@ -6,7 +6,7 @@ lazy val root = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(
     scalaVersion := "2.12.10",
-    resolvers += Resolver.bintrayRepo("hmrc", "releases"),
+    resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
     resolvers += Resolver.jcenterRepo,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest"                % "3.0.0",

@@ -23,7 +23,7 @@ lazy val sub = project
       "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.20.0-play-26",
       "org.reactivemongo" %% "reactivemongo" % "0.17.0"
     ),
-    resolvers += Resolver.bintrayRepo("hmrc", "releases"),
+    resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
     TaskKey[Unit]("check") := {
       val json = Json.parse(read(file("target/bobby-reports/bobby-report-sub-compile.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet

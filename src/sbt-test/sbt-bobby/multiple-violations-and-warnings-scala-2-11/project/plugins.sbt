@@ -1,5 +1,4 @@
-resolvers += Resolver.url("hmrc-sbt-plugin-releases", url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(
-  Resolver.ivyStylePatterns)
+resolvers += Resolver.url("HMRC-open-artefacts-ivy2", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.1"
 
