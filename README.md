@@ -113,9 +113,7 @@ This means:
 
 Just add the plugin to `./sbt/<version>/plugins/plugins.sbt`:
 ```
-resolvers += Resolver.url(
-  "hmrc-sbt-plugin-releases",
-    url("https://dl.bintray.com/hmrc/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.url("HMRC-open-artefacts-ivy2", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 ```

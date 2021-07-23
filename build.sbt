@@ -1,10 +1,9 @@
 
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
-  .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning, SbtArtifactory)
   .settings(
     majorVersion := 3,
-    makePublicallyAvailableOnBintray := true
+    isPublicArtefact := true
   )
   .settings(
     sbtPlugin := true,
