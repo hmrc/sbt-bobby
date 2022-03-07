@@ -57,7 +57,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectLibs = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, rules, "project")
 
       messages.head.level shouldBe ERROR
     }
@@ -66,7 +66,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -74,7 +74,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
 
       messages.head.level shouldBe ERROR
 
@@ -85,7 +85,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
       val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -103,7 +103,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)")
       )
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibraries, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibraries, rules, "project")
       messages.map(_.level) shouldBe List(ERROR, WARN, INFO)
     }
 
@@ -111,7 +111,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       messages.head.level shouldBe WARN
     }
 
@@ -119,7 +119,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       messages.head.checked.result shouldBe BobbyOk
     }
 
@@ -127,7 +127,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       messages.head.level shouldBe WARN
     }
 
@@ -136,7 +136,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = LocalDate.of(2000, 1, 1)))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies,rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies,rules, "project")
 
       Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
       Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
@@ -149,7 +149,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
       Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
     }
 
@@ -157,7 +157,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
 
       messages.size shouldBe 1
       messages.head.level shouldBe WARN
@@ -166,7 +166,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "show an INFO message for a library which is not a violation or warning" in {
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, List.empty)
+      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, List.empty, "project")
 
       messages.size shouldBe 1
       messages.head.level shouldBe INFO
@@ -180,7 +180,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       forAll(depedendencyGen) { dep =>
         val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule), m) shouldBe BobbyViolation(rule)
+        BobbyValidator.calc(List(rule), m, "project") shouldBe BobbyViolation(rule)
       }
     }
 
@@ -189,7 +189,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val now = LocalDate.now()
         val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule), m, now) shouldBe BobbyViolation(rule)
+        BobbyValidator.calc(List(rule), m, "project", now) shouldBe BobbyViolation(rule)
       }
     }
 
@@ -199,7 +199,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
         val rule2 = BobbyRule(dep, VersionRange("[0.1.0,)"), "some reason", now, List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+        BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
     }
 
@@ -209,7 +209,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val rule = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, List.empty)
         val rule2 = BobbyRule(dep, VersionRange("(,0.3.0]"), "some reason", now, List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+        BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
     }
 
@@ -219,7 +219,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val rule = BobbyRule(dep, VersionRange("(,0.1.0)"), "some reason", now, List.empty)
         val rule2 = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+        BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
     }
 
@@ -229,7 +229,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val rule = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(2), List.empty)
         val rule2 = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(1), List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule, rule2), m, now) shouldBe BobbyViolation(rule2)
+        BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
     }
 
@@ -253,7 +253,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         val now = LocalDate.now()
         val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
-        BobbyValidator.calc(List(rule), m, now.minusDays(1)) shouldBe BobbyWarning(rule)
+        BobbyValidator.calc(List(rule), m, "project", now.minusDays(1)) shouldBe BobbyWarning(rule)
       }
     }
 
@@ -261,7 +261,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       forAll(depedendencyGen) { dep =>
         val d = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), List.empty)
         val m = ModuleID(d.dependency.organisation, d.dependency.name, "0.1.1")
-        BobbyValidator.calc(List(d), m) shouldBe BobbyOk
+        BobbyValidator.calc(List(d), m, "project") shouldBe BobbyOk
       }
     }
   }

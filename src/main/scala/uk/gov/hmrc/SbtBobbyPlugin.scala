@@ -86,7 +86,10 @@ object SbtBobbyPlugin extends AutoPlugin {
           consoleColours = bobbyConsoleColours.value
         )
 
+        val projectName = extractedRootProject.get(name)
+
         Bobby.validateDependencies(
+          projectName,
           GraphOps.toSbtDependencyMap(dependencyMap), //Use vanilla sbt ModuleIDs
           projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
           bobbyConfig

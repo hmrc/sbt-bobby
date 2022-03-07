@@ -27,35 +27,66 @@ object BobbyValidator {
   def applyBobbyRules(
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
-    bobbyRules: List[BobbyRule]): List[Message] = {
+    bobbyRules: List[BobbyRule],
+    projectName: String
+  ): List[Message] = {
 
-    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep)))
+    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
     val messages = generateMessages(bobbyRules, checkedDependencies, dependencyMap)
 
     messages.sortBy(_.moduleName).toList
   }
 
-  def calc(bobbyRules: List[BobbyRule], dep: ModuleID, now: LocalDate = LocalDate.now()): BobbyResult = {
+  def calc(
+    bobbyRules: List[BobbyRule],
+    dep: ModuleID,
+    projectName: String,
+    now: LocalDate = LocalDate.now()
+  ): BobbyResult = {
+    val version =
+      Version(dep.revision)
 
-    val version = Version(dep.revision)
+    val matches =
+      bobbyRules
+        .filter { r =>
+          (r.dependency.organisation.equals(dep.organization) || r.dependency.organisation.equals("*")) &&
+            (r.dependency.name.equals(dep.name) || r.dependency.name.equals("*")) &&
+            r.range.includes(version)
+        }
+        .sorted
 
-    // First sort the rules according to the precedence we impose, and partition to warnings and violations
-    val (violations, warnings) = bobbyRules.sorted.partition(r => r.effectiveDate.isBefore(now) || r.effectiveDate.equals(now))
-
-    def matching(rules: List[BobbyRule]): List[BobbyRule] = rules.filter { rule =>
-      (rule.dependency.organisation.equals(dep.organization) || rule.dependency.organisation.equals("*")) &&
-        (rule.dependency.name.equals(dep.name) || rule.dependency.name.equals("*"))
-    }.filter(_.range.includes(version))
-
-    // Always consider violations before warnings
-    matching(violations).headOption.map(BobbyViolation)
-      .orElse(matching(warnings).headOption.map(BobbyWarning))
-      .getOrElse(BobbyOk)
-
+      matches
+        .foldLeft(BobbyScan()) { (bobbyScan,  rule) =>
+          if (rule.exemptProjects.contains(projectName))
+            bobbyScan.setExemption(BobbyExemption(rule))
+          else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
+            bobbyScan.setViolation(BobbyViolation(rule))
+          else
+            bobbyScan.setWarning(BobbyWarning(rule))
+        }.bobbyResult
   }
 
   def generateMessages(rules: Seq[BobbyRule], bobbyChecked: Seq[BobbyChecked],
                        dependencyMap: Map[ModuleID, Seq[ModuleID]] = Map.empty): Seq[Message] = {
     bobbyChecked.map ( bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)) )
+  }
+
+  private final case class BobbyScan(
+    violation: Option[BobbyViolation] = None,
+    warning: Option[BobbyWarning] = None,
+    exemption: Option[BobbyExemption] = None
+  ) {
+
+    def setViolation(bv: BobbyViolation): BobbyScan =
+      copy(violation = violation.orElse(Some(bv)))
+
+    def setWarning(bw: BobbyWarning): BobbyScan =
+      copy(warning = warning.orElse(Some(bw)))
+
+    def setExemption(be: BobbyExemption): BobbyScan =
+      copy(exemption = exemption.orElse(Some(be)))
+
+    def bobbyResult: BobbyResult =
+      violation.orElse(warning).orElse(exemption).getOrElse(BobbyOk)
   }
 }

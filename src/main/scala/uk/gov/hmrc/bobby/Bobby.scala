@@ -42,6 +42,7 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
+    projectName: String,
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
     config: BobbyConfiguration): Unit = {
@@ -51,7 +52,7 @@ object Bobby {
     logger.info(s"[bobby] Bobby version $currentVersion")
 
     val messages =
-      BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules())
+      BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
 
     Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
 
