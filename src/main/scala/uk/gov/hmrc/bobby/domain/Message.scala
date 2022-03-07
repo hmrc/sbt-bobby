@@ -36,6 +36,7 @@ case class Message(
 
   val level: MessageLevels.Level = checked.result match {
     case BobbyOk            => INFO
+    case BobbyExemption(_)  => WARN
     case BobbyWarning(_)    => WARN
     case BobbyViolation(_)  => ERROR
   }

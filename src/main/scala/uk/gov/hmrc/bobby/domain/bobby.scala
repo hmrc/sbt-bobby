@@ -36,6 +36,12 @@ case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   val name: String = "BobbyWarning"
 }
 
+case class BobbyExemption(r: BobbyRule) extends BobbyResult {
+  val rule: Option[BobbyRule] = Some(r)
+  val failed: Boolean = false
+  val name: String = "BobbyExemption"
+}
+
 case object BobbyOk extends BobbyResult {
   val rule: Option[BobbyRule] = None
   val failed: Boolean = false
