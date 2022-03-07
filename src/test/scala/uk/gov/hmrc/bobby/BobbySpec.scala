@@ -27,7 +27,8 @@ import java.time.LocalDate
 class BobbySpec extends AnyFlatSpec with Matchers {
 
   it should "order messages correctly" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now())
+    val rule =
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), List.empty)
 
     val messages = Seq(
       makeMessage(BobbyOk),

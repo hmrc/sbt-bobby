@@ -32,7 +32,15 @@ object BobbyConfiguration {
 
   val defaultOutputDirectory = "./target/bobby-reports"
 
-  case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
+  case class BobbyRuleConfig(
+    organisation: String,
+    name: String,
+    range: String,
+    reason: String,
+    from: String,
+    exemptProjects: Option[List[String]]
+  )
+
   case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
 
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
@@ -45,7 +53,13 @@ object BobbyConfiguration {
       }
 
     def toBobbyRule(brc:BobbyRuleConfig)  =
-      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from))
+      BobbyRule.apply(
+        Dependency(brc.organisation, brc.name),
+        VersionRange(brc.range),
+        brc.reason,
+        LocalDate.parse(brc.from),
+        brc.exemptProjects.getOrElse(List.empty)
+      )
 
     val config = Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig))
     config.map(_.rules.map(toBobbyRule)).getOrElse(List.empty)

@@ -30,7 +30,14 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     val deps = BobbyConfiguration.parseConfig(
       """{
         | "libraries" : [
-        |     { "organisation" : "uk.gov.hmrc", "name" : "some-frontend", "range" : "(,7.4.1)", "reason" : "7.4.1 has important security fixes", "from" : "2015-01-01" }
+        |     {
+        |       "organisation" : "uk.gov.hmrc",
+        |       "name" : "some-frontend",
+        |       "range" : "(,7.4.1)",
+        |       "reason" : "7.4.1 has important security fixes",
+        |       "from" : "2015-01-01",
+        |       "exemptProjects" : [ "some-project-1", "some-project-2" ]
+        |     }
         | ],
         | "plugins" : [
         |     { "organisation" : "uk.gov.hmrc", "name" : "some-plugin", "range" : "(,1.0.0)", "reason" : "1.0.0 is outdated", "from" : "2015-01-02" }
@@ -44,7 +51,8 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     deps.head.dependency.name         shouldBe "some-frontend"
     deps.head.range                   shouldBe VersionRange("(,7.4.1)")
     deps.head.reason                  shouldBe "7.4.1 has important security fixes"
-    deps.head.effectiveDate                    shouldBe LocalDate.of(2015, 1, 1)
+    deps.head.effectiveDate           shouldBe LocalDate.of(2015, 1, 1)
+    deps.head.exemptProjects          shouldBe List("some-project-1", "some-project-2")
 
     deps.last.dependency.organisation shouldBe "uk.gov.hmrc"
     deps.last.dependency.name         shouldBe "some-plugin"
