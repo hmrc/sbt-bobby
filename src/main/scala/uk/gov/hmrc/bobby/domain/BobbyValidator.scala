@@ -115,6 +115,9 @@ sealed abstract case class BobbyValidationResult(
 
   lazy val hasExemptions: Boolean =
     exemptions.nonEmpty
+
+  lazy val hasNoIssues: Boolean =
+    !(hasViolations || hasWarnings || hasExemptions)
 }
 
 object BobbyValidationResult {

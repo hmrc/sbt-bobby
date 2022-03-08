@@ -68,6 +68,8 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+
+      result.hasNoIssues shouldBe true
       result.maxLevel shouldBe INFO
       result.allMessages.head.checked.result shouldBe BobbyOk
     }

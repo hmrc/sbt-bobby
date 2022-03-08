@@ -20,20 +20,20 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sbt.librarymanagement.ModuleID
-import uk.gov.hmrc.bobby.domain.{BobbyChecked, BobbyOk, Message}
+import uk.gov.hmrc.bobby.domain.{BobbyChecked, BobbyOk, BobbyValidationResult, Message}
 
 class ConsoleWriterSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   "renderText" should "include ansi colour codes if set" in {
     val cw = new ConsoleWriter(true)
     val messages = List(Message(BobbyChecked(ModuleID("myorg", "myname", "0.1.0"), BobbyOk), Seq.empty))
-    cw.renderText(messages, Flat).contains(Console.GREEN) shouldBe true
+    cw.renderText(BobbyValidationResult(messages), Flat).contains(Console.GREEN) shouldBe true
   }
 
   it should "not include ansi colour codes if not set" in {
     val cw = new ConsoleWriter(false)
     val messages = List(Message(BobbyChecked(ModuleID("myorg", "myname", "0.1.0"), BobbyOk), Seq.empty))
-    cw.renderText(messages, Flat).contains(Console.GREEN) shouldBe false
+    cw.renderText(BobbyValidationResult(messages), Flat).contains(Console.GREEN) shouldBe false
   }
 
 }

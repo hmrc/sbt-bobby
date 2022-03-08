@@ -34,7 +34,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
       BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), List.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)))
 
-    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
+    val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 
     val jsValue: JsValue = Json.parse(jsonString)
 
@@ -58,7 +58,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
     val rule =
       BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), List.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)), makeMessage(BobbyOk))
-    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
+    val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 
     (Json.parse(jsonString) \\ "result").map(_.as[String]).toSet shouldBe Set("BobbyViolation", "BobbyWarning", "BobbyOk")
   }

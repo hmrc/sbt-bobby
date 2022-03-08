@@ -15,13 +15,13 @@
  */
 
 package uk.gov.hmrc.bobby.output
-import uk.gov.hmrc.bobby.domain.Message
 import uk.gov.hmrc.bobby.Util._
+import uk.gov.hmrc.bobby.domain.BobbyValidationResult
 
 class TextFileWriter(val filepath: String) extends TextWriter with FileWriter {
 
-  override def renderText(messages: List[Message], viewType: ViewType): String = {
-    val messageModel = buildModel(messages, viewType).map(_.map(_.plainText.fansi))
+  override def renderText(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): String = {
+    val messageModel = buildModel(bobbyValidationResult.allMessages, viewType).map(_.map(_.plainText.fansi))
 
     Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)
   }

@@ -54,7 +54,7 @@ object Bobby {
     val result =
       BobbyValidator.validate(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
 
-    Output.writeMessages(result.allMessages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
+    Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
 
     if (result.hasViolations)
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")

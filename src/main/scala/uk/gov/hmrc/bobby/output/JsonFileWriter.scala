@@ -17,14 +17,14 @@
 package uk.gov.hmrc.bobby.output
 
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.bobby.domain.{BobbyExemption, BobbyOk, BobbyViolation, BobbyWarning, Message}
+import uk.gov.hmrc.bobby.domain.{BobbyExemption, BobbyOk, BobbyValidationResult, BobbyViolation, BobbyWarning, Message}
 
 class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
 
-  override def renderText(messages: List[Message], viewType: ViewType): String = {
+  override def renderText(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): String = {
 
     val json: JsValue = Json.obj(
-      "results" -> messages.map { m =>
+      "results" -> bobbyValidationResult.allMessages.map { m =>
         Json.obj(
           "level" -> m.level.name,
           "message" -> jsonMessage(m),

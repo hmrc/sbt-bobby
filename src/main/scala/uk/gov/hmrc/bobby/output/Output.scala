@@ -23,7 +23,13 @@ object Output {
 
   val logger = ConsoleLogger()
 
-  def writeMessages(messages: List[Message], jsonFilePath: String, textFilePath: String, viewType: ViewType, consoleColours: Boolean): Unit = {
+  def writeValidationResult(
+    bobbyValidationResult: BobbyValidationResult,
+    jsonFilePath: String,
+    textFilePath: String,
+    viewType: ViewType,
+    consoleColours: Boolean
+  ): Unit = {
 
     val writers = Seq(
       new JsonFileWriter(jsonFilePath),
@@ -31,7 +37,7 @@ object Output {
       new ConsoleWriter(consoleColours)
     )
 
-    writers.foreach(_.write(messages, viewType))
+    writers.foreach(_.write(bobbyValidationResult, viewType))
   }
 
 }
