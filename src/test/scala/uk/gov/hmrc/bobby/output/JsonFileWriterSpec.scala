@@ -31,7 +31,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
 
   "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
     val rule =
-      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), List.empty)
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)))
 
     val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
@@ -56,7 +56,7 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
 
   it should "use the correct names for the results" in {
     val rule =
-      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), List.empty)
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)), makeMessage(BobbyOk))
     val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 

@@ -28,7 +28,7 @@ class BobbySpec extends AnyFlatSpec with Matchers {
 
   it should "order messages correctly" in {
     val rule =
-      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), List.empty)
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), Set.empty)
 
     val messages = Seq(
       makeMessage(BobbyOk),

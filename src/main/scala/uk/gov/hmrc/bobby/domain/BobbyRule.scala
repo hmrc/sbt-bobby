@@ -23,7 +23,7 @@ case class BobbyRule(
   range: VersionRange,
   reason: String,
   effectiveDate: LocalDate,
-  exemptProjects: List[String]
+  exemptProjects: Set[String]
 )
 
 object BobbyRule {

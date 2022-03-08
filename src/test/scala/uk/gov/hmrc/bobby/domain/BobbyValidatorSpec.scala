@@ -39,7 +39,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       VersionRange(version),
       "reason",
       LocalDate.now().plusWeeks(1),
-      List.empty
+      Set.empty
     )
 
   def deprecatedNow(
@@ -48,7 +48,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     version: String,
     reason: String                 = "reason",
     deadline: LocalDate            = LocalDate.now().minusWeeks(1)): BobbyRule =
-    BobbyRule(Dependency(org, name), VersionRange(version), reason, deadline, List.empty)
+    BobbyRule(Dependency(org, name), VersionRange(version), reason, deadline, Set.empty)
 
   def bobbyRules(rules: BobbyRule*): List[BobbyRule] = rules.toList
 
@@ -198,7 +198,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
     "give BobbyViolation if time is later than rule" in {
       forAll(depedendencyGen) { dep =>
-        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), List.empty)
+        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule), m, "project") shouldBe BobbyViolation(rule)
       }
@@ -207,7 +207,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "give BobbyViolation if time is equal to rule" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
+        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule), m, "project", now) shouldBe BobbyViolation(rule)
       }
@@ -216,8 +216,8 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "resolves correct rule when there are multiple matching rules (Priority 1a: takes no upper bound first)" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
-        val rule2 = BobbyRule(dep, VersionRange("[0.1.0,)"), "some reason", now, List.empty)
+        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, Set.empty)
+        val rule2 = BobbyRule(dep, VersionRange("[0.1.0,)"), "some reason", now, Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
@@ -226,8 +226,8 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "resolves correct rule when there are multiple matching rules (Priority 1b: takes highest upper bound)" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, List.empty)
-        val rule2 = BobbyRule(dep, VersionRange("(,0.3.0]"), "some reason", now, List.empty)
+        val rule = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, Set.empty)
+        val rule2 = BobbyRule(dep, VersionRange("(,0.3.0]"), "some reason", now, Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
@@ -236,8 +236,8 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "resolves correct rule when there are multiple matching rules (Priority 2: takes inclusive upper bound)" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("(,0.1.0)"), "some reason", now, List.empty)
-        val rule2 = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, List.empty)
+        val rule = BobbyRule(dep, VersionRange("(,0.1.0)"), "some reason", now, Set.empty)
+        val rule2 = BobbyRule(dep, VersionRange("(,0.1.0]"), "some reason", now, Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
@@ -246,8 +246,8 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "resolves correct rule when there are multiple matching rules (Priority 3: takes most recent)" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(2), List.empty)
-        val rule2 = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(1), List.empty)
+        val rule = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(2), Set.empty)
+        val rule2 = BobbyRule(dep, VersionRange("(0.1.0]"), "some reason", now.minusDays(1), Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule, rule2), m, "project", now) shouldBe BobbyViolation(rule2)
       }
@@ -257,12 +257,12 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
         val orderedList = List(
-          BobbyRule(dep, VersionRange("[1.0.0,)"), "some reason", now, List.empty),
-          BobbyRule(dep, VersionRange("(,99.99.99)"), "some reason", now, List.empty),
-          BobbyRule(dep, VersionRange("(,2.1.0)"), "some reason", now, List.empty),
-          BobbyRule(dep, VersionRange("(,1.2.0]"), "some reason", now, List.empty),
-          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now, List.empty),
-          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now.minusDays(1), List.empty)
+          BobbyRule(dep, VersionRange("[1.0.0,)"), "some reason", now, Set.empty),
+          BobbyRule(dep, VersionRange("(,99.99.99)"), "some reason", now, Set.empty),
+          BobbyRule(dep, VersionRange("(,2.1.0)"), "some reason", now, Set.empty),
+          BobbyRule(dep, VersionRange("(,1.2.0]"), "some reason", now, Set.empty),
+          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now, Set.empty),
+          BobbyRule(dep, VersionRange("(,1.2.0)"), "some reason", now.minusDays(1), Set.empty)
         )
         Random.shuffle(orderedList).sorted shouldBe orderedList
       }
@@ -271,7 +271,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
     "give BobbyWarning if time is before rule" in {
       forAll(depedendencyGen) { dep =>
         val now = LocalDate.now()
-        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, List.empty)
+        val rule = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", now, Set.empty)
         val m = ModuleID(rule.dependency.organisation, rule.dependency.name, "0.1.0")
         BobbyValidator.calc(List(rule), m, "project", now.minusDays(1)) shouldBe BobbyWarning(rule)
       }
@@ -279,7 +279,7 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
     "give BobbyOk if version is not in outlawed range" in {
       forAll(depedendencyGen) { dep =>
-        val d = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), List.empty)
+        val d = BobbyRule(dep, VersionRange("[0.1.0]"), "some reason", LocalDate.now(), Set.empty)
         val m = ModuleID(d.dependency.organisation, d.dependency.name, "0.1.1")
         BobbyValidator.calc(List(d), m, "project") shouldBe BobbyOk
       }

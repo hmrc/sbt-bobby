@@ -38,7 +38,7 @@ object BobbyConfiguration {
     range: String,
     reason: String,
     from: String,
-    exemptProjects: Option[List[String]]
+    exemptProjects: Option[Set[String]]
   )
 
   case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
@@ -58,7 +58,7 @@ object BobbyConfiguration {
         VersionRange(brc.range),
         brc.reason,
         LocalDate.parse(brc.from),
-        brc.exemptProjects.getOrElse(List.empty)
+        brc.exemptProjects.getOrElse(Set.empty)
       )
 
     val config = Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig))

@@ -52,7 +52,7 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     deps.head.range                   shouldBe VersionRange("(,7.4.1)")
     deps.head.reason                  shouldBe "7.4.1 has important security fixes"
     deps.head.effectiveDate           shouldBe LocalDate.of(2015, 1, 1)
-    deps.head.exemptProjects          shouldBe List("some-project-1", "some-project-2")
+    deps.head.exemptProjects          shouldBe Set("some-project-1", "some-project-2")
 
     deps.last.dependency.organisation shouldBe "uk.gov.hmrc"
     deps.last.dependency.name         shouldBe "some-plugin"
