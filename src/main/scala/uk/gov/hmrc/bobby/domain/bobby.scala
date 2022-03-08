@@ -18,34 +18,45 @@ package uk.gov.hmrc.bobby.domain
 
 import sbt.librarymanagement.ModuleID
 
-sealed trait BobbyResult {
+sealed trait BobbyResult extends Product with Serializable {
   def failed: Boolean
   def rule: Option[BobbyRule]
   def name: String
+  protected def ordering: Int
+}
+
+object BobbyResult {
+
+  implicit val ordering: Ordering[BobbyResult] =
+    Ordering.by(_.ordering)
 }
 
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   val rule: Option[BobbyRule] = Some(r)
   val failed: Boolean = true
   val name: String = "BobbyViolation"
+  val ordering: Int = 0
 }
 
 case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
   val failed: Boolean = false
   val name: String = "BobbyWarning"
+  val ordering: Int = 1
 }
 
 case class BobbyExemption(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
   val failed: Boolean = false
   val name: String = "BobbyExemption"
+  val ordering: Int = 2
 }
 
 case object BobbyOk extends BobbyResult {
   val rule: Option[BobbyRule] = None
   val failed: Boolean = false
   val name: String = "BobbyOk"
+  val ordering: Int = 3
 }
 
 case class BobbyChecked(moduleID: ModuleID, result: BobbyResult)

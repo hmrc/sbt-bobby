@@ -46,7 +46,7 @@ object BobbyValidator {
     val version =
       Version(dep.revision)
 
-    val matches =
+    val matchingRules =
       bobbyRules
         .filter { r =>
           (r.dependency.organisation.equals(dep.organization) || r.dependency.organisation.equals("*")) &&
@@ -55,40 +55,24 @@ object BobbyValidator {
         }
         .sorted
 
-      matches
-        .foldLeft(BobbyScan()) { (bobbyScan,  rule) =>
+      matchingRules
+        .map { rule =>
           if (rule.exemptProjects.contains(projectName))
-            bobbyScan.setExemption(BobbyExemption(rule))
+            BobbyExemption(rule)
           else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
-            bobbyScan.setViolation(BobbyViolation(rule))
+            BobbyViolation(rule)
           else
-            bobbyScan.setWarning(BobbyWarning(rule))
-        }.bobbyResult
+            BobbyWarning(rule)
+        }
+        .sorted
+        .headOption
+        .getOrElse(BobbyOk)
   }
 
   private def generateMessages(bobbyChecked: Seq[BobbyChecked], dependencyMap: Map[ModuleID, Seq[ModuleID]]): List[Message] =
     bobbyChecked
       .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
       .toList
-
-  private final case class BobbyScan(
-    violation: Option[BobbyViolation] = None,
-    warning: Option[BobbyWarning] = None,
-    exemption: Option[BobbyExemption] = None
-  ) {
-
-    def setViolation(bv: BobbyViolation): BobbyScan =
-      copy(violation = violation.orElse(Some(bv)))
-
-    def setWarning(bw: BobbyWarning): BobbyScan =
-      copy(warning = warning.orElse(Some(bw)))
-
-    def setExemption(be: BobbyExemption): BobbyScan =
-      copy(exemption = exemption.orElse(Some(be)))
-
-    def bobbyResult: BobbyResult =
-      violation.orElse(warning).orElse(exemption).getOrElse(BobbyOk)
-  }
 }
 
 sealed abstract case class BobbyValidationResult(
@@ -97,16 +81,6 @@ sealed abstract case class BobbyValidationResult(
   warnings: List[Message],
   exemptions: List[Message]
 ) {
-
-  lazy val maxLevel: MessageLevels.Level =
-    List(
-      violations.headOption,
-      warnings.headOption,
-      exemptions.headOption,
-      allMessages.headOption
-    ).collectFirst { case Some(message) => message.level }
-      .getOrElse(MessageLevels.INFO)
-
   lazy val hasViolations: Boolean =
     violations.nonEmpty
 

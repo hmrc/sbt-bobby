@@ -59,7 +59,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val result = BobbyValidator.validate(Map.empty, projectLibs, rules, "project")
 
-      result.maxLevel shouldBe ERROR
       result.hasViolations shouldBe true
     }
 
@@ -70,7 +69,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
       result.hasNoIssues shouldBe true
-      result.maxLevel shouldBe INFO
       result.allMessages.head.checked.result shouldBe BobbyOk
     }
 
@@ -80,7 +78,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
-      result.maxLevel shouldBe ERROR
       Flat.renderMessage(result.violations.head)(4).plainText shouldBe "[*-SNAPSHOT]"
     }
 
@@ -90,7 +87,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
-      result.maxLevel shouldBe INFO
       result.allMessages.head.checked.result shouldBe BobbyOk
     }
 
@@ -112,7 +108,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       result.hasViolations shouldBe true
       result.hasWarnings shouldBe true
-      result.maxLevel shouldBe ERROR
       result.allMessages.map(_.level) shouldBe List(ERROR, WARN, INFO)
     }
 
@@ -122,7 +117,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
-      result.maxLevel shouldBe WARN
       result.allMessages.head.level shouldBe WARN
       result.warnings shouldBe result.allMessages
     }
@@ -152,7 +146,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
 
       val result = BobbyValidator.validate(Map.empty, projectDependencies,rules, "project")
 
-      result.maxLevel shouldBe ERROR
       result.violations shouldBe result.allMessages
 
       Flat.renderMessage(result.allMessages.head)(0).plainText shouldBe "ERROR"
@@ -169,7 +162,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
       result.violations shouldBe result.allMessages
-      result.maxLevel shouldBe ERROR
       Flat.renderMessage(result.allMessages.head)(0).plainText shouldBe "ERROR"
     }
 
@@ -189,7 +181,6 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val result = BobbyValidator.validate(Map.empty, projectDependencies, List.empty, "project")
 
       result.allMessages.size shouldBe 1
-      result.maxLevel shouldBe INFO
     }
 
   }
