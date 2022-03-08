@@ -30,6 +30,11 @@ class ConsoleWriter(colours: Boolean) extends TextWriter {
 
     logger.info(renderText(bobbyValidationResult, viewType))
 
+    if (bobbyValidationResult.hasExemptions) {
+      logger.warn(s"WARNING: Your build has ${bobbyValidationResult.exemptions.size} bobby exemptions(s). You may wish to take action on these in case exemption is removed in the future.")
+      outputSummary(bobbyValidationResult.exemptions).foreach(logger.warn(_))
+    }
+
     if (bobbyValidationResult.hasWarnings) {
       logger.warn(s"WARNING: Your build has ${bobbyValidationResult.warnings.size} bobby warning(s). Please take action to fix these before the listed date, or they will " +
         s"become violations that fail your build")
