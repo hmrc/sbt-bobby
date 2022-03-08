@@ -57,36 +57,39 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectLibs = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibs, rules, "project")
+      val result = BobbyValidator.validate(Map.empty, projectLibs, rules, "project")
 
-      messages.head.level shouldBe ERROR
+      result.maxLevel shouldBe ERROR
+      result.hasViolations shouldBe true
     }
 
     "not return error if a library is not in the exclude range" in {
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      messages.head.checked.result shouldBe BobbyOk
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+      result.maxLevel shouldBe INFO
+      result.allMessages.head.checked.result shouldBe BobbyOk
     }
 
     "return error if a library is in the exclude range using wildcards for org, name and version number " in {
       val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1-SNAPSHOT"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
-      messages.head.level shouldBe ERROR
-
-      Flat.renderMessage(messages.head)(4).plainText shouldBe "[*-SNAPSHOT]"
+      result.maxLevel shouldBe ERROR
+      Flat.renderMessage(result.violations.head)(4).plainText shouldBe "[*-SNAPSHOT]"
     }
 
     "not return error for valid libraries that don't include snapshots" in {
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
       val rules = bobbyRules(deprecatedNow("*", "*", "[*-SNAPSHOT]"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      messages.head.checked.result shouldBe BobbyOk
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+
+      result.maxLevel shouldBe INFO
+      result.allMessages.head.checked.result shouldBe BobbyOk
     }
 
     "return error if one of several dependencies is in the exclude range" in {
@@ -103,32 +106,41 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedSoon("uk.gov.hmrc", "data-stream-plugin", "(0.2.0)")
       )
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectLibraries, rules, "project")
-      messages.map(_.level) shouldBe List(ERROR, WARN, INFO)
+      val result = BobbyValidator.validate(Map.empty, projectLibraries, rules, "project")
+
+      result.hasViolations shouldBe true
+      result.hasWarnings shouldBe true
+      result.maxLevel shouldBe ERROR
+      result.allMessages.map(_.level) shouldBe List(ERROR, WARN, INFO)
     }
 
     "not return error for libraries in the exclude range but not applicable yet" in {
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      messages.head.level shouldBe WARN
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+
+      result.maxLevel shouldBe WARN
+      result.allMessages.head.level shouldBe WARN
+      result.warnings shouldBe result.allMessages
     }
 
     "not return error for mandatory libraries which are superseded" in {
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "[3.2.1]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.2"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      messages.head.checked.result shouldBe BobbyOk
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+      result.allMessages.head.checked.result shouldBe BobbyOk
     }
 
     "produce warning message for mandatory libraries which will be enforced in the future" in {
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      messages.head.level shouldBe WARN
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+
+      result.hasWarnings shouldBe true
+      result.warnings shouldBe result.allMessages
     }
 
     "produce error message for mandatory libraries which are currently enforced" in {
@@ -136,40 +148,46 @@ class BobbyValidatorSpec extends AnyWordSpecLike with Matchers with ScalaCheckDr
         deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]", reason = "the reason", deadline = LocalDate.of(2000, 1, 1)))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.0"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies,rules, "project")
+      val result = BobbyValidator.validate(Map.empty, projectDependencies,rules, "project")
 
-      Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
-      Flat.renderMessage(messages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
-      Flat.renderMessage(messages.head)(2).plainText shouldBe ""
-      Flat.renderMessage(messages.head)(5).plainText shouldBe "2000-01-01"
-      Flat.renderMessage(messages.head)(6).plainText shouldBe "the reason"
+      result.maxLevel shouldBe ERROR
+      result.violations shouldBe result.allMessages
+
+      Flat.renderMessage(result.allMessages.head)(0).plainText shouldBe "ERROR"
+      Flat.renderMessage(result.allMessages.head)(1).plainText shouldBe "uk.gov.hmrc.auth"
+      Flat.renderMessage(result.allMessages.head)(2).plainText shouldBe ""
+      Flat.renderMessage(result.allMessages.head)(5).plainText shouldBe "2000-01-01"
+      Flat.renderMessage(result.allMessages.head)(6).plainText shouldBe "the reason"
     }
 
     "show a ERROR message for a library which is a bobby violation" in {
       val rules = bobbyRules(deprecatedNow("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
-      Flat.renderMessage(messages.head)(0).plainText shouldBe "ERROR"
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
+
+      result.violations shouldBe result.allMessages
+      result.maxLevel shouldBe ERROR
+      Flat.renderMessage(result.allMessages.head)(0).plainText shouldBe "ERROR"
     }
 
     "show a WARN message for a library which is a bobby warning" in {
       val rules = bobbyRules(deprecatedSoon("uk.gov.hmrc", "auth", "(,4.0.0]"))
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, rules, "project")
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, rules, "project")
 
-      messages.size shouldBe 1
-      messages.head.level shouldBe WARN
+      result.warnings.size shouldBe 1
+      result.warnings shouldBe result.allMessages
     }
 
     "show an INFO message for a library which is not a violation or warning" in {
       val projectDependencies = Seq(ModuleID("uk.gov.hmrc", "auth", "3.2.1"))
 
-      val messages = BobbyValidator.applyBobbyRules(Map.empty, projectDependencies, List.empty, "project")
+      val result = BobbyValidator.validate(Map.empty, projectDependencies, List.empty, "project")
 
-      messages.size shouldBe 1
-      messages.head.level shouldBe INFO
+      result.allMessages.size shouldBe 1
+      result.maxLevel shouldBe INFO
     }
 
   }

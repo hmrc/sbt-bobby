@@ -51,15 +51,15 @@ object Bobby {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val messages =
-      BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
+    val result =
+      BobbyValidator.validate(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
 
-    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
+    Output.writeMessages(result.allMessages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
 
-    if(messages.exists(_.isError))
+    if (result.hasViolations)
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
 
-    if(config.strictMode && messages.exists(_.isWarning))
+    if (config.strictMode && result.hasWarnings)
       throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 }

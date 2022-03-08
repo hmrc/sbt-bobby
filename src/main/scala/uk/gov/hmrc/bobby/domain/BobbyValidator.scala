@@ -24,17 +24,17 @@ object BobbyValidator {
 
   val logger = ConsoleLogger()
 
-  def applyBobbyRules(
+  def validate(
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
     bobbyRules: List[BobbyRule],
     projectName: String
-  ): List[Message] = {
+  ): BobbyValidationResult = {
 
     val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
-    val messages = generateMessages(bobbyRules, checkedDependencies, dependencyMap)
+    val messages = generateMessages(checkedDependencies, dependencyMap)
 
-    messages.sortBy(_.moduleName).toList
+    BobbyValidationResult(messages)
   }
 
   def calc(
@@ -66,10 +66,10 @@ object BobbyValidator {
         }.bobbyResult
   }
 
-  def generateMessages(rules: Seq[BobbyRule], bobbyChecked: Seq[BobbyChecked],
-                       dependencyMap: Map[ModuleID, Seq[ModuleID]] = Map.empty): Seq[Message] = {
-    bobbyChecked.map ( bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)) )
-  }
+  private def generateMessages(bobbyChecked: Seq[BobbyChecked], dependencyMap: Map[ModuleID, Seq[ModuleID]]): List[Message] =
+    bobbyChecked
+      .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
+      .toList
 
   private final case class BobbyScan(
     violation: Option[BobbyViolation] = None,
@@ -88,5 +88,52 @@ object BobbyValidator {
 
     def bobbyResult: BobbyResult =
       violation.orElse(warning).orElse(exemption).getOrElse(BobbyOk)
+  }
+}
+
+sealed abstract case class BobbyValidationResult(
+  allMessages: List[Message],
+  violations: List[Message],
+  warnings: List[Message],
+  exemptions: List[Message]
+) {
+
+  lazy val maxLevel: MessageLevels.Level =
+    List(
+      violations.headOption,
+      warnings.headOption,
+      exemptions.headOption,
+      allMessages.headOption
+    ).collectFirst { case Some(message) => message.level }
+      .getOrElse(MessageLevels.INFO)
+
+  lazy val hasViolations: Boolean =
+    violations.nonEmpty
+
+  lazy val hasWarnings: Boolean =
+    warnings.nonEmpty
+
+  lazy val hasExemptions: Boolean =
+    exemptions.nonEmpty
+}
+
+object BobbyValidationResult {
+
+  def apply(messages: List[Message]): BobbyValidationResult = {
+    val all =
+      messages.sortBy(_.moduleName)
+
+    val (violations, warnings, exemptions) = {
+      val byResult =
+        all.groupBy(_.checked.result.name)
+
+      (
+        byResult.getOrElse("BobbyViolation", List.empty),
+        byResult.getOrElse("BobbyWarning", List.empty),
+        byResult.getOrElse("BobbyExemption", List.empty)
+      )
+    }
+
+    new BobbyValidationResult(all, violations, warnings, exemptions) {}
   }
 }
