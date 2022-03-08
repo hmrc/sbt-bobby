@@ -54,7 +54,8 @@ Bobby Rules are defined in a single `json` file, and look like this:
       "name": "my-other-library",
       "range": "[1.2.0]",
       "reason": "1.2.0 has a bug",
-      "from": "2015-03-15"
+      "from": "2015-03-15",
+      "exemptProjects" : ["some-service-1", "some-service-2"]
     },
     {
       "organisation": "*",
@@ -91,7 +92,8 @@ Each rule takes the same form:
   "name": "sbt-plugin",
   "range": "(,2.5.19)",
   "reason": "Critical security upgrade",
-  "from": "2019-03-04"
+  "from": "2019-03-04",
+  "exemptProjects": ["some-service-1", "some-service-2"]
 }
 ```
 Where:
@@ -99,6 +101,7 @@ Where:
 * `range` is used to target minimum and maximum versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
 * `reason` is a short descriptive message to explain why the versions matching the range are outlawed
 * `from` is the date the rule will come into effect. The builds will fail after that day, and generate a warning up to it
+* `exemptProjects` is the optional set of sbt project names that are exempt from the rule
 
 ## How to setup and trigger Bobby?
 
