@@ -46,10 +46,5 @@ case class Message(
   val effectiveDate: Option[LocalDate]     =  checked.result.rule.map(_.effectiveDate)
   val moduleName: String                   = checked.moduleID.moduleName
 
-  val isError: Boolean = level.equals(MessageLevels.ERROR)
-  val isWarning: Boolean = level.equals(MessageLevels.WARN)
-  val isOkay: Boolean = level.equals(MessageLevels.INFO)
-
   val isLocal: Boolean = dependencyChain.isEmpty
-
 }
