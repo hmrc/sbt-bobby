@@ -99,17 +99,14 @@ object BobbyValidationResult {
     val all =
       messages.sortBy(_.moduleName)
 
-    val (violations, warnings, exemptions) =
-      all.foldRight((List.empty[Message], List.empty[Message], List.empty[Message])) {
-        case (message, acc @ (violations, warnings, exemptions)) =>
-          message.checked.result match {
-            case BobbyViolation(_) => (message :: violations, warnings, exemptions)
-            case BobbyWarning(_)   => (violations, message :: warnings, exemptions)
-            case BobbyExemption(_) => (violations, warnings, message :: exemptions)
-            case BobbyOk           => acc
-          }
-      }
+    val byName =
+      all.groupBy(_.checked.result.name)
 
-    new BobbyValidationResult(all, violations, warnings, exemptions) {}
+    new BobbyValidationResult(
+      allMessages = all,
+      violations  = byName.getOrElse(BobbyViolation.tag, List.empty),
+      warnings    = byName.getOrElse(BobbyWarning.tag, List.empty),
+      exemptions  = byName.getOrElse(BobbyExemption.tag, List.empty)
+    ) {}
   }
 }
