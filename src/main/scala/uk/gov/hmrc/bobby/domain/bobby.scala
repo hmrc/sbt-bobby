@@ -19,7 +19,6 @@ package uk.gov.hmrc.bobby.domain
 import sbt.librarymanagement.ModuleID
 
 sealed trait BobbyResult extends Product with Serializable {
-  def failed: Boolean
   def rule: Option[BobbyRule]
 
   final def name: String =
@@ -41,7 +40,6 @@ object BobbyResult {
 
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   val rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = true
   val ordering: Int = 0
 }
 
@@ -51,7 +49,6 @@ object BobbyViolation {
 
 case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = false
   val ordering: Int = 1
 }
 
@@ -61,7 +58,6 @@ object BobbyWarning {
 
 case class BobbyExemption(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = false
   val ordering: Int = 2
 }
 
@@ -71,7 +67,6 @@ object BobbyExemption {
 
 case object BobbyOk extends BobbyResult {
   val rule: Option[BobbyRule] = None
-  val failed: Boolean = false
   val ordering: Int = 3
   val tag: String = "BobbyOk"
 }
