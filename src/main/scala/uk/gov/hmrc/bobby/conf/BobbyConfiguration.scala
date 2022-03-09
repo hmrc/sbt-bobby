@@ -17,7 +17,6 @@
 package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
-import java.time.LocalDate
 
 import play.api.libs.json.Reads._
 import play.api.libs.json._
@@ -42,10 +41,7 @@ object BobbyConfiguration {
       )(_ ++ _)
     }
 
-    val config =
-      Json.fromJson(Json.parse(jsonConfig))(reads)
-
-    config.getOrElse(List.empty)
+    Json.fromJson(Json.parse(jsonConfig))(reads).getOrElse(List.empty)
   }
 
   def extractMap(lines: List[String]): Map[String, String] = {
