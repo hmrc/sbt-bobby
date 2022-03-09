@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,58 @@ package uk.gov.hmrc.bobby.domain
 import sbt.librarymanagement.ModuleID
 
 sealed trait BobbyResult {
-  def failed: Boolean
   def rule: Option[BobbyRule]
-  def name: String
+
+  final def name: String =
+    this match {
+      case BobbyViolation(_) => BobbyViolation.tag
+      case BobbyWarning(_)   => BobbyWarning.tag
+      case BobbyExemption(_) => BobbyExemption.tag
+      case BobbyOk           => BobbyOk.tag
+    }
+
+  final protected def ordering: Int =
+    this match {
+      case BobbyViolation(_) => 0
+      case BobbyWarning(_)   => 1
+      case BobbyExemption(_) => 2
+      case BobbyOk           => 3
+    }
+}
+
+object BobbyResult {
+
+  implicit val ordering: Ordering[BobbyResult] =
+    Ordering.by(_.ordering)
 }
 
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   val rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = true
-  val name: String = "BobbyViolation"
+}
+
+object BobbyViolation {
+  val tag: String = "BobbyViolation"
 }
 
 case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
-  val failed: Boolean = false
-  val name: String = "BobbyWarning"
+}
+
+object BobbyWarning {
+  val tag: String = "BobbyWarning"
+}
+
+case class BobbyExemption(r: BobbyRule) extends BobbyResult {
+  val rule: Option[BobbyRule] = Some(r)
+}
+
+object BobbyExemption {
+  val tag: String = "BobbyExemption"
 }
 
 case object BobbyOk extends BobbyResult {
   val rule: Option[BobbyRule] = None
-  val failed: Boolean = false
-  val name: String = "BobbyOk"
+  val tag: String = "BobbyOk"
 }
 
 case class BobbyChecked(moduleID: ModuleID, result: BobbyResult)

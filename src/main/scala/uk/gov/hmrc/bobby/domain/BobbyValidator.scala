@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,38 +24,100 @@ object BobbyValidator {
 
   val logger = ConsoleLogger()
 
-  def applyBobbyRules(
+  def validate(
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
-    bobbyRules: List[BobbyRule]): List[Message] = {
+    bobbyRules: List[BobbyRule],
+    projectName: String
+  ): BobbyValidationResult = {
+    val checkedDependencies =
+      dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
 
-    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep)))
-    val messages = generateMessages(bobbyRules, checkedDependencies, dependencyMap)
+    val messages =
+      checkedDependencies
+        .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
+        .toList
 
-    messages.sortBy(_.moduleName).toList
+    BobbyValidationResult(messages)
   }
 
-  def calc(bobbyRules: List[BobbyRule], dep: ModuleID, now: LocalDate = LocalDate.now()): BobbyResult = {
+  def calc(
+    bobbyRules: List[BobbyRule],
+    dep: ModuleID,
+    projectName: String,
+    now: LocalDate = LocalDate.now()
+  ): BobbyResult = {
+    val version =
+      Version(dep.revision)
 
-    val version = Version(dep.revision)
+    val matchingRules =
+      bobbyRules
+        .filter { r =>
+          (r.dependency.organisation.equals(dep.organization) || r.dependency.organisation.equals("*")) &&
+            (r.dependency.name.equals(dep.name) || r.dependency.name.equals("*")) &&
+            r.range.includes(version)
+        }
+        .sorted
 
-    // First sort the rules according to the precedence we impose, and partition to warnings and violations
-    val (violations, warnings) = bobbyRules.sorted.partition(r => r.effectiveDate.isBefore(now) || r.effectiveDate.equals(now))
-
-    def matching(rules: List[BobbyRule]): List[BobbyRule] = rules.filter { rule =>
-      (rule.dependency.organisation.equals(dep.organization) || rule.dependency.organisation.equals("*")) &&
-        (rule.dependency.name.equals(dep.name) || rule.dependency.name.equals("*"))
-    }.filter(_.range.includes(version))
-
-    // Always consider violations before warnings
-    matching(violations).headOption.map(BobbyViolation)
-      .orElse(matching(warnings).headOption.map(BobbyWarning))
-      .getOrElse(BobbyOk)
-
+      matchingRules
+        .map { rule =>
+          if (rule.exemptProjects.contains(projectName))
+            BobbyExemption(rule): BobbyResult
+          else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
+            BobbyViolation(rule)
+          else
+            BobbyWarning(rule)
+        }
+        .sorted
+        .headOption
+        .getOrElse(BobbyOk)
   }
+}
 
-  def generateMessages(rules: Seq[BobbyRule], bobbyChecked: Seq[BobbyChecked],
-                       dependencyMap: Map[ModuleID, Seq[ModuleID]] = Map.empty): Seq[Message] = {
-    bobbyChecked.map ( bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)) )
+sealed trait BobbyValidationResult {
+  def allMessages: List[Message]
+  def violations: List[Message]
+  def warnings: List[Message]
+  def exemptions: List[Message]
+  def hasViolations: Boolean
+  def hasWarnings: Boolean
+  def hasExemptions: Boolean
+  def hasNoIssues: Boolean
+}
+
+object BobbyValidationResult {
+
+  def apply(messages: List[Message]): BobbyValidationResult =
+    Impl(messages.sortBy(_.moduleName))
+
+  private final case class Impl(allMessages: List[Message]) extends BobbyValidationResult {
+
+    override lazy val violations: List[Message] =
+      byResultName
+        .getOrElse(BobbyViolation.tag, List.empty)
+
+    override lazy val warnings: List[Message] =
+      byResultName
+        .getOrElse(BobbyWarning.tag, List.empty)
+
+    override lazy val exemptions: List[Message] =
+      byResultName
+        .getOrElse(BobbyExemption.tag, List.empty)
+
+    override lazy val hasViolations: Boolean =
+      violations.nonEmpty
+
+    override lazy val hasWarnings: Boolean =
+      warnings.nonEmpty
+
+    override lazy val hasExemptions: Boolean =
+      exemptions.nonEmpty
+
+    override lazy val hasNoIssues: Boolean =
+      !(hasViolations || hasWarnings || hasExemptions)
+
+    private lazy val byResultName =
+      allMessages
+        .groupBy(_.checked.result.name)
   }
 }

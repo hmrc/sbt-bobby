@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package uk.gov.hmrc.bobby.domain
 
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import play.api.libs.functional.syntax._
+
 import java.time.LocalDate
 
 case class BobbyRule(
   dependency: Dependency,
   range: VersionRange,
   reason: String,
-  effectiveDate: LocalDate)
+  effectiveDate: LocalDate,
+  exemptProjects: Set[String]
+)
 
 object BobbyRule {
 
@@ -58,5 +64,19 @@ object BobbyRule {
       import scala.math.Ordering.Tuple3
       Ordering[(Option[Version], Boolean, LocalDate)].compare(first, second)
     }
+  }
+
+  val reads: Reads[BobbyRule] = {
+    val dependency =
+      ( (__ \ "organisation").read[String]
+      ~ (__ \ "name"        ).read[String]
+      )(Dependency)
+
+    ( dependency
+    ~ (__ \ "range"         ).read[String].map(VersionRange.apply)
+    ~ (__ \ "reason"        ).read[String]
+    ~ (__ \ "from"          ).read[LocalDate]
+    ~ (__ \ "exemptProjects").readWithDefault(Set.empty[String])
+    )(BobbyRule.apply _)
   }
 }

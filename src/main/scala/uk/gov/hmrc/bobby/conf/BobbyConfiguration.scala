@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package uk.gov.hmrc.bobby.conf
 
 import java.net.URL
-import java.time.LocalDate
 
 import play.api.libs.json.Reads._
 import play.api.libs.json._
@@ -32,23 +31,17 @@ object BobbyConfiguration {
 
   val defaultOutputDirectory = "./target/bobby-reports"
 
-  case class BobbyRuleConfig(organisation: String, name: String, range: String, reason: String, from: String)
-  case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
-
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
-    implicit lazy val ruleConfigR: Reads[BobbyRuleConfig] = Json.reads[BobbyRuleConfig]
-    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] =
-      ((__ \ "libraries").read[List[BobbyRuleConfig]] ~
-        (__ \ "plugins").read[List[BobbyRuleConfig]]).tupled
-      .map { case(libs, plugins) =>
-        BobbyRulesConfig.apply(libs ++ plugins)
-      }
+    val reads = {
+      val readsBobbyRules =
+        Reads.list(BobbyRule.reads)
 
-    def toBobbyRule(brc:BobbyRuleConfig)  =
-      BobbyRule.apply(Dependency(brc.organisation, brc.name), VersionRange(brc.range), brc.reason, LocalDate.parse(brc.from))
+      ( (__ \ "libraries").read(readsBobbyRules)
+      ~ (__ \ "plugins"  ).read(readsBobbyRules)
+      )(_ ++ _)
+    }
 
-    val config = Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig))
-    config.map(_.rules.map(toBobbyRule)).getOrElse(List.empty)
+    Json.fromJson(Json.parse(jsonConfig))(reads).getOrElse(List.empty)
   }
 
   def extractMap(lines: List[String]): Map[String, String] = {

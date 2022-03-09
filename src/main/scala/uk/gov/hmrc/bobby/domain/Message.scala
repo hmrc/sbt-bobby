@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ case class Message(
 
   val level: MessageLevels.Level = checked.result match {
     case BobbyOk            => INFO
+    case BobbyExemption(_)  => WARN
     case BobbyWarning(_)    => WARN
     case BobbyViolation(_)  => ERROR
   }
@@ -45,10 +46,5 @@ case class Message(
   val effectiveDate: Option[LocalDate]     =  checked.result.rule.map(_.effectiveDate)
   val moduleName: String                   = checked.moduleID.moduleName
 
-  val isError: Boolean = level.equals(MessageLevels.ERROR)
-  val isWarning: Boolean = level.equals(MessageLevels.WARN)
-  val isOkay: Boolean = level.equals(MessageLevels.INFO)
-
   val isLocal: Boolean = dependencyChain.isEmpty
-
 }

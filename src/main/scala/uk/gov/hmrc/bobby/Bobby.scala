@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
+    projectName: String,
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
     dependencies: Seq[ModuleID],
     config: BobbyConfiguration): Unit = {
@@ -50,15 +51,15 @@ object Bobby {
 
     logger.info(s"[bobby] Bobby version $currentVersion")
 
-    val messages =
-      BobbyValidator.applyBobbyRules(dependencyMap, dependencies, config.loadBobbyRules())
+    val result =
+      BobbyValidator.validate(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
 
-    Output.writeMessages(messages, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
+    Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
 
-    if(messages.exists(_.isError))
+    if (result.hasViolations)
       throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
 
-    if(config.strictMode && messages.exists(_.isWarning))
+    if (config.strictMode && result.hasWarnings)
       throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 }

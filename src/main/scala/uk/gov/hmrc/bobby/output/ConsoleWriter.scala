@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,41 +18,40 @@ package uk.gov.hmrc.bobby.output
 
 import fansi.{Color, Str}
 import uk.gov.hmrc.bobby.Util._
-import uk.gov.hmrc.bobby.domain.Message
+import uk.gov.hmrc.bobby.domain.{BobbyValidationResult, Message}
 
 class ConsoleWriter(colours: Boolean) extends TextWriter {
 
-  override def write(messages: List[Message], viewType: ViewType): Unit = {
+  override def write(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): Unit = {
     logger.info(
        "[bobby] For more information and documentation about Bobby, see the README at https://github.com/hmrc/sbt-bobby")
 
     logger.info(key().mkString("\n"))
 
-    val needsAttention = messages.filterNot(_.isOkay)
+    logger.info(renderText(bobbyValidationResult, viewType))
 
-    logger.info(renderText(messages, viewType))
-
-    if(needsAttention.nonEmpty){
-      val (violations, warnings) = needsAttention.partition(_.isError)
-
-      if(warnings.nonEmpty){
-        logger.warn(s"WARNING: Your build has ${warnings.size} bobby warning(s). Please take action to fix these before the listed date, or they will " +
-          s"become violations that fail your build")
-        outputSummary(warnings).foreach(logger.warn(_))
-      }
-
-      if(violations.nonEmpty){
-        logger.error(s"ERROR: Whistle blown! Your build has ${violations.size} bobby violation(s) and has been failed! Urgently fix the issues below:")
-        outputSummary(violations).foreach(logger.error(_))
-      }
-    } else {
-      logger.info(s"Woohoo, your build has no Bobby issues. Have a great day!")
+    if (bobbyValidationResult.hasExemptions) {
+      logger.warn(s"WARNING: Your build has ${bobbyValidationResult.exemptions.size} bobby exemptions(s). You may wish to take action on these in case exemption is removed in the future.")
+      outputSummary(bobbyValidationResult.exemptions).foreach(logger.warn(_))
     }
 
+    if (bobbyValidationResult.hasWarnings) {
+      logger.warn(s"WARNING: Your build has ${bobbyValidationResult.warnings.size} bobby warning(s). Please take action to fix these before the listed date, or they will " +
+        s"become violations that fail your build")
+      outputSummary(bobbyValidationResult.warnings).foreach(logger.warn(_))
+    }
+
+    if (bobbyValidationResult.hasViolations) {
+      logger.error(s"ERROR: Whistle blown! Your build has ${bobbyValidationResult.violations.size} bobby violation(s) and has been failed! Urgently fix the issues below:")
+      outputSummary(bobbyValidationResult.violations).foreach(logger.error(_))
+    }
+
+    if (bobbyValidationResult.hasNoIssues)
+      logger.info(s"Woohoo, your build has no Bobby issues. Have a great day!")
   }
 
-  override def renderText(messages: List[Message], viewType: ViewType): String = {
-    val colouredModel = buildModel(messages, viewType)
+  override def renderText(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): String = {
+    val colouredModel = buildModel(bobbyValidationResult.allMessages, viewType)
     val messageModel = if(colours) colouredModel else colouredModel.map(_.map(_.plainText.fansi))
 
     Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)

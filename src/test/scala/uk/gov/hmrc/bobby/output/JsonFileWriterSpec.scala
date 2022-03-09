@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,11 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
   val jsonFileWriter: JsonFileWriter = new JsonFileWriter(BobbyConfiguration.defaultOutputDirectory)
 
   "The JSON file output writer" should "format a list of maps describing the errors and warnings" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"))
+    val rule =
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)))
 
-    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
+    val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 
     val jsValue: JsValue = Json.parse(jsonString)
 
@@ -54,9 +55,10 @@ class JsonFileWriterSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "use the correct names for the results" in {
-    val rule = BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"))
+    val rule =
+      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
     val messages = List(makeMessage(BobbyViolation(rule)), makeMessage(BobbyWarning(rule)), makeMessage(BobbyOk))
-    val jsonString: String = jsonFileWriter.renderText(messages, Flat)
+    val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 
     (Json.parse(jsonString) \\ "result").map(_.as[String]).toSet shouldBe Set("BobbyViolation", "BobbyWarning", "BobbyOk")
   }

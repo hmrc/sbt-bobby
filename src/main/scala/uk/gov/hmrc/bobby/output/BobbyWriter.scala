@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package uk.gov.hmrc.bobby.output
 
 import java.io.File
 import java.nio.file.Files
-
 import sbt.ConsoleLogger
-import uk.gov.hmrc.bobby.domain.Message
+import uk.gov.hmrc.bobby.domain.BobbyValidationResult
 
 trait BobbyWriter {
 
   val logger = ConsoleLogger()
 
-  def write(messages: List[Message], viewType: ViewType): Unit
+  def write(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): Unit
 
-  def renderText(messages: List[Message], viewType: ViewType): String
+  def renderText(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): String
 
 }
 
@@ -36,12 +35,12 @@ trait FileWriter extends BobbyWriter {
 
   val filepath: String
 
-  def write(messages: List[Message], viewType: ViewType) {
+  def write(bobbyValidationResult: BobbyValidationResult, viewType: ViewType) {
     val file: File = new File(filepath)
     file.getParentFile.mkdirs()
     logger.info(s"[bobby] ${getClass.getSimpleName} - Writing Bobby report to: " + file.getAbsolutePath)
 
-    Files.write(file.toPath, renderText(messages, viewType).getBytes)
+    Files.write(file.toPath, renderText(bobbyValidationResult, viewType).getBytes)
   }
 
 }

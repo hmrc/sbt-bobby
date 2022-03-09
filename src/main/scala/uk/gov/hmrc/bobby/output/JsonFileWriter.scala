@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package uk.gov.hmrc.bobby.output
 
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.bobby.domain.{BobbyOk, BobbyViolation, BobbyWarning, Message}
+import uk.gov.hmrc.bobby.domain.{BobbyExemption, BobbyOk, BobbyValidationResult, BobbyViolation, BobbyWarning, Message}
 
 class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
 
-  override def renderText(messages: List[Message], viewType: ViewType): String = {
+  override def renderText(bobbyValidationResult: BobbyValidationResult, viewType: ViewType): String = {
 
     val json: JsValue = Json.obj(
-      "results" -> messages.map { m =>
+      "results" -> bobbyValidationResult.allMessages.map { m =>
         Json.obj(
           "level" -> m.level.name,
           "message" -> jsonMessage(m),
@@ -45,6 +45,7 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
 
   def jsonMessage(m: Message): String = m.checked.result match {
     case BobbyOk => "No issue"
+    case BobbyExemption(_) => "Exemption applies; may need attention"
     case BobbyWarning(_) => "Needs attention soon to avoid future violations"
     case BobbyViolation(_) => "Needs urgent attention - preventing build"
   }
