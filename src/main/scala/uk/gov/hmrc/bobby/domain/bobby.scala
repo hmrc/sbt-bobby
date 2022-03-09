@@ -18,7 +18,7 @@ package uk.gov.hmrc.bobby.domain
 
 import sbt.librarymanagement.ModuleID
 
-sealed trait BobbyResult extends Product with Serializable {
+sealed trait BobbyResult {
   def rule: Option[BobbyRule]
 
   final def name: String =

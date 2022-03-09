@@ -62,7 +62,7 @@ object BobbyValidator {
       matchingRules
         .map { rule =>
           if (rule.exemptProjects.contains(projectName))
-            BobbyExemption(rule)
+            BobbyExemption(rule): BobbyResult
           else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
             BobbyViolation(rule)
           else
