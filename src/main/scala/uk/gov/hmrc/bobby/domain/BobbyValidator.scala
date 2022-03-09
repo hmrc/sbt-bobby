@@ -30,9 +30,13 @@ object BobbyValidator {
     bobbyRules: List[BobbyRule],
     projectName: String
   ): BobbyValidationResult = {
+    val checkedDependencies =
+      dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
 
-    val checkedDependencies = dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
-    val messages = generateMessages(checkedDependencies, dependencyMap)
+    val messages =
+      checkedDependencies
+        .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
+        .toList
 
     BobbyValidationResult(messages)
   }
@@ -68,11 +72,6 @@ object BobbyValidator {
         .headOption
         .getOrElse(BobbyOk)
   }
-
-  private def generateMessages(bobbyChecked: Seq[BobbyChecked], dependencyMap: Map[ModuleID, Seq[ModuleID]]): List[Message] =
-    bobbyChecked
-      .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
-      .toList
 }
 
 sealed abstract case class BobbyValidationResult(
@@ -100,16 +99,16 @@ object BobbyValidationResult {
     val all =
       messages.sortBy(_.moduleName)
 
-    val (violations, warnings, exemptions) = {
-      val byResult =
-        all.groupBy(_.checked.result.name)
-
-      (
-        byResult.getOrElse("BobbyViolation", List.empty),
-        byResult.getOrElse("BobbyWarning", List.empty),
-        byResult.getOrElse("BobbyExemption", List.empty)
-      )
-    }
+    val (violations, warnings, exemptions) =
+      all.foldRight((List.empty[Message], List.empty[Message], List.empty[Message])) {
+        case (message, acc @ (violations, warnings, exemptions)) =>
+          message.checked.result match {
+            case BobbyViolation(_) => (message :: violations, warnings, exemptions)
+            case BobbyWarning(_)   => (violations, message :: warnings, exemptions)
+            case BobbyExemption(_) => (violations, warnings, message :: exemptions)
+            case BobbyOk           => acc
+          }
+      }
 
     new BobbyValidationResult(all, violations, warnings, exemptions) {}
   }
