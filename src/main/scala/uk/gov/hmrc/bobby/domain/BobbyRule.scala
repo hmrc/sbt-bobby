@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.bobby.domain
 
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import play.api.libs.functional.syntax._
+
 import java.time.LocalDate
 
 case class BobbyRule(
@@ -60,5 +64,19 @@ object BobbyRule {
       import scala.math.Ordering.Tuple3
       Ordering[(Option[Version], Boolean, LocalDate)].compare(first, second)
     }
+  }
+
+  val reads: Reads[BobbyRule] = {
+    val dependency =
+      ( (__ \ "organisation").read[String]
+      ~ (__ \ "name"        ).read[String]
+      )(Dependency)
+
+    ( dependency
+    ~ (__ \ "range"         ).read[String].map(VersionRange.apply)
+    ~ (__ \ "reason"        ).read[String]
+    ~ (__ \ "from"          ).read[LocalDate]
+    ~ (__ \ "exemptProjects").readWithDefault(Set.empty[String])
+    )(BobbyRule.apply _)
   }
 }

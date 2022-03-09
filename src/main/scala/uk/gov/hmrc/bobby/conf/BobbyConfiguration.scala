@@ -32,37 +32,20 @@ object BobbyConfiguration {
 
   val defaultOutputDirectory = "./target/bobby-reports"
 
-  case class BobbyRuleConfig(
-    organisation: String,
-    name: String,
-    range: String,
-    reason: String,
-    from: String,
-    exemptProjects: Option[Set[String]]
-  )
-
-  case class BobbyRulesConfig(rules: List[BobbyRuleConfig])
-
   def parseConfig(jsonConfig: String): List[BobbyRule] = {
-    implicit lazy val ruleConfigR: Reads[BobbyRuleConfig] = Json.reads[BobbyRuleConfig]
-    implicit lazy val rulesConfigR: Reads[BobbyRulesConfig] =
-      ((__ \ "libraries").read[List[BobbyRuleConfig]] ~
-        (__ \ "plugins").read[List[BobbyRuleConfig]]).tupled
-      .map { case(libs, plugins) =>
-        BobbyRulesConfig.apply(libs ++ plugins)
-      }
+    val reads = {
+      val readsBobbyRules =
+        Reads.list(BobbyRule.reads)
 
-    def toBobbyRule(brc:BobbyRuleConfig)  =
-      BobbyRule.apply(
-        Dependency(brc.organisation, brc.name),
-        VersionRange(brc.range),
-        brc.reason,
-        LocalDate.parse(brc.from),
-        brc.exemptProjects.getOrElse(Set.empty)
-      )
+      ( (__ \ "libraries").read(readsBobbyRules)
+      ~ (__ \ "plugins"  ).read(readsBobbyRules)
+      )(_ ++ _)
+    }
 
-    val config = Json.fromJson[BobbyRulesConfig](Json.parse(jsonConfig))
-    config.map(_.rules.map(toBobbyRule)).getOrElse(List.empty)
+    val config =
+      Json.fromJson(Json.parse(jsonConfig))(reads)
+
+    config.getOrElse(List.empty)
   }
 
   def extractMap(lines: List[String]): Map[String, String] = {
