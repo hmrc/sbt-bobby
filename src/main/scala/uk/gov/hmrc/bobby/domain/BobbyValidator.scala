@@ -74,39 +74,50 @@ object BobbyValidator {
   }
 }
 
-sealed abstract case class BobbyValidationResult(
-  allMessages: List[Message],
-  violations: List[Message],
-  warnings: List[Message],
-  exemptions: List[Message]
-) {
-  lazy val hasViolations: Boolean =
-    violations.nonEmpty
-
-  lazy val hasWarnings: Boolean =
-    warnings.nonEmpty
-
-  lazy val hasExemptions: Boolean =
-    exemptions.nonEmpty
-
-  lazy val hasNoIssues: Boolean =
-    !(hasViolations || hasWarnings || hasExemptions)
+sealed trait BobbyValidationResult {
+  def allMessages: List[Message]
+  def violations: List[Message]
+  def warnings: List[Message]
+  def exemptions: List[Message]
+  def hasViolations: Boolean
+  def hasWarnings: Boolean
+  def hasExemptions: Boolean
+  def hasNoIssues: Boolean
 }
 
 object BobbyValidationResult {
 
-  def apply(messages: List[Message]): BobbyValidationResult = {
-    val all =
-      messages.sortBy(_.moduleName)
+  def apply(messages: List[Message]): BobbyValidationResult =
+    Impl(messages.sortBy(_.moduleName))
 
-    val byName =
-      all.groupBy(_.checked.result.name)
+  private final case class Impl(allMessages: List[Message]) extends BobbyValidationResult {
 
-    new BobbyValidationResult(
-      allMessages = all,
-      violations  = byName.getOrElse(BobbyViolation.tag, List.empty),
-      warnings    = byName.getOrElse(BobbyWarning.tag, List.empty),
-      exemptions  = byName.getOrElse(BobbyExemption.tag, List.empty)
-    ) {}
+    override lazy val violations: List[Message] =
+      byResultName
+        .getOrElse(BobbyViolation.tag, List.empty)
+
+    override lazy val warnings: List[Message] =
+      byResultName
+        .getOrElse(BobbyWarning.tag, List.empty)
+
+    override lazy val exemptions: List[Message] =
+      byResultName
+        .getOrElse(BobbyExemption.tag, List.empty)
+
+    override lazy val hasViolations: Boolean =
+      violations.nonEmpty
+
+    override lazy val hasWarnings: Boolean =
+      warnings.nonEmpty
+
+    override lazy val hasExemptions: Boolean =
+      exemptions.nonEmpty
+
+    override lazy val hasNoIssues: Boolean =
+      !(hasViolations || hasWarnings || hasExemptions)
+
+    private lazy val byResultName =
+      allMessages
+        .groupBy(_.checked.result.name)
   }
 }
