@@ -29,7 +29,13 @@ sealed trait BobbyResult extends Product with Serializable {
       case BobbyOk           => BobbyOk.tag
     }
 
-  protected def ordering: Int
+  final protected def ordering: Int =
+    this match {
+      case BobbyViolation(_) => 0
+      case BobbyWarning(_)   => 1
+      case BobbyExemption(_) => 2
+      case BobbyOk           => 3
+    }
 }
 
 object BobbyResult {
@@ -40,7 +46,6 @@ object BobbyResult {
 
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   val rule: Option[BobbyRule] = Some(r)
-  val ordering: Int = 0
 }
 
 object BobbyViolation {
@@ -49,7 +54,6 @@ object BobbyViolation {
 
 case class BobbyWarning(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
-  val ordering: Int = 1
 }
 
 object BobbyWarning {
@@ -58,7 +62,6 @@ object BobbyWarning {
 
 case class BobbyExemption(r: BobbyRule) extends BobbyResult {
   val rule: Option[BobbyRule] = Some(r)
-  val ordering: Int = 2
 }
 
 object BobbyExemption {
@@ -67,7 +70,6 @@ object BobbyExemption {
 
 case object BobbyOk extends BobbyResult {
   val rule: Option[BobbyRule] = None
-  val ordering: Int = 3
   val tag: String = "BobbyOk"
 }
 
