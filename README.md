@@ -2,7 +2,7 @@
 
 ## Overview
 
-<img src="https://github.com/hmrc/sbt-bobby/blob/master/images/bobby.jpg" alt="Bobby">
+<img src="https://github.com/hmrc/sbt-bobby/blob/main/images/bobby.jpg" alt="Bobby">
 
 Bobby, a.k.a. your friendly neighbourhood build policeman, is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
@@ -12,7 +12,7 @@ If a violation is detected, the whistle is blown, and the build is failed.
 Bobby can help your team block a bad dependency with a known security issue or memory leak for example, or simply to enforce that
 libraries are upgraded.
 
-<img src="https://github.com/hmrc/sbt-bobby/blob/master/images/bobby-output.png" alt="Bobby Output">
+<img src="https://github.com/hmrc/sbt-bobby/blob/main/images/bobby-output.png" alt="Bobby Output">
 
 ## Background
 It can be hard to ensure that distributed teams do not use versions of dependencies that are known to contain bugs or security flaws. 
