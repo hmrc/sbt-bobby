@@ -35,23 +35,29 @@ object GraphOps {
    * Topological sort a ModuleGraph, returning just the sequence of ModuleId's
    */
   def topoSort(g: ModuleGraph): Seq[ModuleId] = {
-    def removeNodes(g: ModuleGraph, nodesForRemovalIds: Seq[ModuleId]): ModuleGraph = {
-      val updatedNodes = g.nodes.filter(n => !nodesForRemovalIds.contains(n.id))
-      val updatedEdges = g.edges.filter(e => !nodesForRemovalIds.contains(e._1))
-
-      ModuleGraph(updatedNodes, updatedEdges)
-    }
+    def removeNodes(g: ModuleGraph, nodesForRemovalIds: Seq[ModuleId]): ModuleGraph =
+      ModuleGraph(
+        nodes = g.nodes.filterNot(n => nodesForRemovalIds.contains(n.id)),
+        edges = g.edges.filterNot(e => nodesForRemovalIds.contains(e._1))
+      )
 
     // Recursively builds a list of ModuleIDs in sequence starting from the nodes, chopping off the nodes
     // and making a new graph, then repeating.
     @tailrec
-    def go(curGraph: ModuleGraph, acc: Seq[ModuleId]): Seq[ModuleId] = {
-      if (curGraph.nodes.isEmpty) acc
+    def go(curGraph: ModuleGraph, acc: Seq[ModuleId]): Seq[ModuleId] =
+      if (curGraph.nodes.isEmpty)
+        acc
+      else if (curGraph.roots.isEmpty)
+        sys.error(
+          s"""|Cycle detected:
+              |Nodes\n ${curGraph.nodes.mkString("\n")}")
+              |Edges\n ${curGraph.edges.mkString("\n")}")
+          """.stripMargin
+        )
       else {
         val roots = curGraph.roots.map(_.id).sortBy(_.name)
         go(removeNodes(curGraph, roots), acc ++ roots)
       }
-    }
 
     go(g, Seq.empty)
   }
@@ -66,40 +72,35 @@ object GraphOps {
    * So, we need only remove evicted nodes and their in-bound (and out-bound,
    * if they happen to exist) edges.
    */
-  def pruneEvicted(g: ModuleGraph): ModuleGraph = pruneNodes(g, m => m.isEvicted)
+  def pruneEvicted(g: ModuleGraph): ModuleGraph =
+    pruneNodes(g, _.isEvicted)
 
   def pruneNodes(g: ModuleGraph, pruneFn: Module => Boolean): ModuleGraph = {
-    val usedModules = g.nodes.filterNot(pruneFn)
+    val usedModules   = g.nodes.filterNot(pruneFn)
     val usedModuleIds = usedModules.map(_.id).toSet
-    val legitEdges = g.edges.filter {
-      case (from, to) =>
-        usedModuleIds.contains(from) && usedModuleIds.contains(to)
-    }
+    val legitEdges    = g.edges
+                          .filter { case (from, to) =>
+                            usedModuleIds.contains(from) && usedModuleIds.contains(to)
+                          }
 
     g.copy(
       nodes = usedModules,
       edges = legitEdges
     )
-
   }
 
-  def stripUnderscore(mid: ModuleId): ModuleId = {
-    val updatedName = mid.name.split("_2\\.\\d{2}").head
-    mid.copy(name = updatedName)
-  }
+  def stripUnderscore(mid: ModuleId): ModuleId =
+    mid.copy(name = mid.name.split("_2\\.\\d{2}").head)
 
   // The full module graph includes the full artifact with names like:
   // uk.gov.hmrc.simple-reactivemongo_2.11
   // We want to strip off the _2.11 suffix so that the output from transitive dependencies matches what is shown
   // for local libraryDependencies
-  def stripScalaVersionSuffix(g: ModuleGraph): ModuleGraph = {
+  def stripScalaVersionSuffix(g: ModuleGraph): ModuleGraph =
     g.copy(
       nodes = g.nodes.map(n => n.copy(id = stripUnderscore(n.id))),
-      edges = g.edges.map {
-        case (from, to) => stripUnderscore(from) -> stripUnderscore(to)
-      }
+      edges = g.edges.map { case (from, to) => stripUnderscore(from) -> stripUnderscore(to) }
     )
-  }
 
   // Build a dependency map which is keyed by the leaves, and contains a linear sequence of nodes that lead to the root that
   // brought in that particular leaf dependency
@@ -107,13 +108,12 @@ object GraphOps {
   // i.e. if we have a->b->c :
   // With sbt-dependency-graph we'll get a map: C->B, B->A. i.e. C does not contain the line all the way back to A
   // With this method, we return a richer map: C->B,A B->A  i.e. each node has all of the connections to get right back to the root
-  def reverseDependencyMap(graph: ModuleGraph, moduleIDs: Seq[ModuleId]): Map[ModuleId, Seq[ModuleId]] = {
+  def reverseDependencyMap(graph: ModuleGraph, moduleIDs: Seq[ModuleId]): Map[ModuleId, Seq[ModuleId]] =
     moduleIDs.map { id =>
       val localGraph = GraphTransformations.reverseGraphStartingAt(graph, id)
       val topoSorted = GraphOps.topoSort(localGraph)
       id -> topoSorted.filterNot(i => i == id) //Filter out the nodes themselves from the ancestry line, i.e. instead of C->C,B,A leave just C->B,A
     }.toMap
-  }
 
   def toSbtDependencyMap(map: Map[ModuleId, Seq[ModuleId]]): Map[ModuleID, Seq[ModuleID]] =
     map.map { case (k, v) => k.toSbt -> v.map(_.toSbt)}
@@ -129,5 +129,4 @@ object GraphOps {
     // Remove the '_2.11' suffixes etc from the artefact names
     stripScalaVersionSuffix(pruned)
   }
-
 }
