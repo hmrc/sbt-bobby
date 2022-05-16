@@ -76,16 +76,16 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
 
   "pruneNodes" should "remove a particular node c in a->b->c" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
-      edges = Seq((A,B), (B,C))
+      edges = Seq(A -> B, B -> C)
     )
-    val pruned = GraphOps.pruneNodes(graph, m => m.id == C)
+    val pruned = GraphOps.pruneNodes(graph, _.id == C)
     pruned.nodes.map(_.id) shouldBe Seq(A, B)
   }
 
   it should "remove any arbitrary node" in {
     forAll(moduleGraphGen()) { graph =>
       val toPrune = graph.nodes.head
-      val pruned = GraphOps.pruneNodes(graph, m => m.id == toPrune.id)
+      val pruned = GraphOps.pruneNodes(graph, _.id == toPrune.id)
       pruned.nodes.map(_.id).contains(toPrune.id) shouldBe false
       pruned.nodes.size shouldBe graph.nodes.size - 1
     }
@@ -93,23 +93,23 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
 
   "topoSort" should "do a basic sort a->b" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
-      edges = Seq((A,B))
+      edges = Seq(A -> B)
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(A,B)
+    topoSorted shouldBe Seq(A, B)
   }
 
   it should "do a basic sort b->a" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
-      edges = Seq((B,A))
+      edges = Seq(B -> A)
     )
     val topoSorted = GraphOps.topoSort(graph)
-    topoSorted shouldBe Seq(B,A)
+    topoSorted shouldBe Seq(B, A)
   }
 
   it should "do a basic sort a->b->c" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
-      edges = Seq((A,B), (B,C))
+      edges = Seq(A -> B, B -> C)
     )
     val topoSorted = GraphOps.topoSort(graph)
     topoSorted shouldBe Seq(A, B, C)
@@ -117,7 +117,7 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
 
   it should "do a basic sort a->c->b" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
-      edges = Seq((A,C), (C,B))
+      edges = Seq(A -> C, C -> B)
     )
     val topoSorted = GraphOps.topoSort(graph)
     topoSorted shouldBe Seq(A, C, B)
@@ -126,7 +126,7 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
   it should "do a complex sort a->b, c->e->d (->a), g->h, j->k->i->f" in {
 
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C), Module(D), Module(E), Module(F), Module(G), Module(H), Module(I), Module(J),Module(K)),
-      edges = Seq((A,B), (C,E), (E,D), (G,H), (J,K), (K,I), (I,F), (D,A))
+      edges = Seq(A -> B, C -> E, E -> D, G -> H, J -> K, K -> I, I -> F, D -> A)
     )
     val topoSorted = GraphOps.topoSort(graph)
     topoSorted shouldBe Seq(C,G,J,E,H,K,D,I,A,F,B)
@@ -141,9 +141,30 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
     }
   }
 
+  it should "reject cycles" in {
+    import net.virtualvoid.sbt.graph.Edge
+
+    def cycleGraphGen(): Gen[ModuleGraph] =
+      for {
+        moduleGraph <- moduleGraphGen
+        n           <- Gen.atLeastOne(moduleGraph.nodes)
+        cycle       =  n.sliding(2).flatMap {
+                         case Seq(l, r) => Seq(Edge(l.id, r.id))
+                         case Seq(l)    => Seq.empty
+                       }.toSeq :+ Edge(n.last.id, n.head.id)
+      } yield moduleGraph.copy(edges = moduleGraph.edges ++ cycle)
+
+    forAll(cycleGraphGen()) { moduleGraph =>
+      val thrown = intercept[Exception] {
+        GraphOps.topoSort(moduleGraph)
+      }
+      assert(thrown.getMessage.startsWith("Cycle detected"))
+    }
+  }
+
   "dependencyMap" should "map basic a->b" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B)),
-      edges = Seq((A,B))
+      edges = Seq(A -> B)
     )
     val map = GraphOps.reverseDependencyMap(graph, Seq(A,B))
     map shouldBe Map(B -> Seq(A), A -> Seq.empty)
@@ -151,7 +172,7 @@ class GraphOpsSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenProper
 
   it should "map with indirect edges a->b->c" in {
     val graph = ModuleGraph(nodes = Seq(Module(A), Module(B), Module(C)),
-      edges = Seq((A,B), (B,C))
+      edges = Seq(A -> B, B -> C)
     )
     val map = GraphOps.reverseDependencyMap(graph, Seq(A,B,C))
     map shouldBe Map(C -> Seq(B, A), B -> Seq(A), A -> Seq.empty)

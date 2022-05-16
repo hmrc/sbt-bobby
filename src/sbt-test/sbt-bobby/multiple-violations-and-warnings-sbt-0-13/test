@@ -1,4 +1,0 @@
--> validate
-$ exists target/bobby-reports/bobby-report-root-compile.json
-$ exists target/bobby-reports/bobby-report-root-compile.txt
-> check

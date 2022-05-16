@@ -19,3 +19,9 @@ dist
 test-project/project/project
 test-project/project/target
 test-project/target
+.bloop/
+.metals/
+.vscode/
+project/.bloop/
+project/metals.sbt
+
