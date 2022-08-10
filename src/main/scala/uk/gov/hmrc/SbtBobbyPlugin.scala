@@ -34,24 +34,23 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   // Environment variable keys for customising bobby
   object BobbyEnvKeys {
-    lazy val envKeyBobbyViewType = "BOBBY_VIEW_TYPE"
-    lazy val envKeyBobbyStrictMode = "BOBBY_STRICT_MODE"
+    lazy val envKeyBobbyViewType       = "BOBBY_VIEW_TYPE"
+    lazy val envKeyBobbyStrictMode     = "BOBBY_STRICT_MODE"
     lazy val envKeyBobbyConsoleColours = "BOBBY_CONSOLE_COLOURS"
   }
 
   object BobbyKeys {
-    lazy val validate        = TaskKey[Unit]("validate", "Run Bobby to validate dependencies")
-    lazy val bobbyRulesURL =
-      SettingKey[Option[URL]]("bobbyRulesURL", "Override the URL used to get the list of bobby rules")
-    lazy val outputDirectoryOverride =
-      SettingKey[Option[String]]("outputDirectoryOverride", "Override the directory used to write the report files")
-    lazy val bobbyStrictMode = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
-    lazy val bobbyViewType = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
-    lazy val bobbyConsoleColours = settingKey[Boolean]("If true (default), colours are rendered in the console output")
+    lazy val validate                = taskKey[Unit]("Run Bobby to validate dependencies")
+    lazy val bobbyRulesURL           = settingKey[Option[URL]]("Override the URL used to get the list of bobby rules")
+    lazy val outputDirectoryOverride = settingKey[Option[String]]("Override the directory used to write the report files")
+    lazy val bobbyStrictMode         = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
+    lazy val bobbyViewType           = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
+    lazy val bobbyConsoleColours     = settingKey[Boolean]("If true (default), colours are rendered in the console output")
   }
 
   def validateSettings: Seq[Def.Setting[_]] =
-    Seq(Compile, Test, IntegrationTest, Runtime, Provided, Optional).flatMap(validateTaskForConfig)
+    Seq(Compile, Test, IntegrationTest, Runtime, Provided, Optional)
+      .flatMap(validateTaskForConfig)
 
   // Define the validate task for the given configuration
   def validateTaskForConfig(config: Configuration): Seq[Def.Setting[_]] = inConfig(config)(
@@ -60,12 +59,15 @@ object SbtBobbyPlugin extends AutoPlugin {
         // Determine nodes to exclude which are this project or dependent projects from this build
         // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
         val extractedRootProject = Project.extract(state.value)
-        val internalModuleNodes = buildStructure.value.allProjectRefs.map( p =>
-          extractedRootProject.get(projectID in p)
-        ).distinct.map(_.toDependencyGraph)
+        val internalModuleNodes =
+          buildStructure.value
+          .allProjectRefs
+          .map(p => extractedRootProject.get(p / projectID))
+          .distinct
+          .map(_.toDependencyGraph)
 
         // Construct a complete module graph piggy-backing off `sbt-dependency-graph`
-        val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((moduleGraph in config).value, excludeNodes = internalModuleNodes)
+        val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((config / moduleGraph).value, excludeNodes = internalModuleNodes)
 
         // Retrieve just the resolved module IDs, in topologically sorted order
         val projectDependencies = GraphOps.topoSort(GraphOps.transpose(projectDependencyGraph))
@@ -77,13 +79,13 @@ object SbtBobbyPlugin extends AutoPlugin {
         val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
 
         val bobbyConfig = new BobbyConfiguration(
-          bobbyRulesURL = bobbyRulesURL.value,
+          bobbyRulesURL           = bobbyRulesURL.value,
           outputDirectoryOverride = outputDirectoryOverride.value,
-          outputFileName = s"bobby-report-${thisProject.value.id}-${config.name}",
-          bobbyConfigFile = Some(bobbyConfigFile),
-          strictMode = bobbyStrictMode.value,
-          viewType = bobbyViewType.value,
-          consoleColours = bobbyConsoleColours.value
+          outputFileName          = s"bobby-report-${thisProject.value.id}-${config.name}",
+          bobbyConfigFile         = Some(bobbyConfigFile),
+          strictMode              = bobbyStrictMode.value,
+          viewType                = bobbyViewType.value,
+          consoleColours          = bobbyConsoleColours.value
         )
 
         val projectName = name.value
@@ -99,11 +101,11 @@ object SbtBobbyPlugin extends AutoPlugin {
   )
 
   override lazy val projectSettings = Seq(
-    bobbyRulesURL := None,
-    outputDirectoryOverride := None,
-    parallelExecution in GlobalScope := true,
-    bobbyViewType := sys.env.get(envKeyBobbyViewType).map(ViewType.apply).getOrElse(Compact),
-    bobbyStrictMode := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
+    bobbyRulesURL                   := None,
+    outputDirectoryOverride         := None,
+    GlobalScope / parallelExecution := true,
+    bobbyViewType       := sys.env.get(envKeyBobbyViewType).map(ViewType.apply).getOrElse(Compact),
+    bobbyStrictMode     := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true)
   ) ++ validateSettings ++
     //Add a useful alias to run bobby validate for compile, test and plugins together (similar to old releases of bobby)
