@@ -1,4 +1,4 @@
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
+[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Overview
 
@@ -6,32 +6,32 @@
 
 Bobby, a.k.a. your friendly neighbourhood build policeman, is an SBT plugin that prevents outdated dependencies and plugins from being used by your project.
 
-You create a set of rules which outlaw particular versions of a library or plugin, and task Bobby to enforce those rules. 
+You create a set of rules which outlaw particular versions of a library or plugin, and task Bobby to enforce those rules.
 If a violation is detected, the whistle is blown, and the build is failed.
- 
+
 Bobby can help your team block a bad dependency with a known security issue or memory leak for example, or simply to enforce that
 libraries are upgraded.
 
 <img src="https://github.com/hmrc/sbt-bobby/blob/main/images/bobby-output.png" alt="Bobby Output">
 
 ## Background
-It can be hard to ensure that distributed teams do not use versions of dependencies that are known to contain bugs or security flaws. 
+It can be hard to ensure that distributed teams do not use versions of dependencies that are known to contain bugs or security flaws.
 
-If a new bug is found in a library and it should be outlawed across your platform, it can be difficult to ensure upgrades happen. 
+If a new bug is found in a library and it should be outlawed across your platform, it can be difficult to ensure upgrades happen.
 
-Using Bobby, this can be enforced by adding a simple rule which outlaws that bad dependency, possibly future dated to give some leadtime to 
+Using Bobby, this can be enforced by adding a simple rule which outlaws that bad dependency, possibly future dated to give some leadtime to
 perform the update.
 
-Ideally communications will be in place to ensure updates happen organically but Bobby acts as a safety net of last resort. 
+Ideally communications will be in place to ensure updates happen organically but Bobby acts as a safety net of last resort.
 
 ## How does Bobby work?
 
-Bobby inspects the build and pulls out all of the dependencies you've declared, and all the transitive dependencies that those pull in. 
+Bobby inspects the build and pulls out all of the dependencies you've declared, and all the transitive dependencies that those pull in.
 
 It will then check each against the set of rules and tag them as either:
 
 * _BobbyViolation_ => A dependency that has been outlawed, is active now, and will cause the build to fail with an exception. This must be urgently fixed before the build can be allowed to continue
-* _BobbyWarning_ => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a 
+* _BobbyWarning_ => A dependency that will become outlawed from a given date in the future. It will not fail the build today, but will become a
 BobbyViolation from the specified date, so should be looked at with high priority
 * _BobbyOk_ => A dependency that is clean and has no rules against it. No issue to take
 
@@ -132,9 +132,9 @@ bobby-rules-url = file:///~/.sbt/deprecated-dependencies.json
 
 That's it!
 
-Now you can run bobby with `sbt validate`. 
+Now you can run bobby with `sbt validate`.
 
-If your build is making use of any outlawed dependencies, an exception will be thrown. 
+If your build is making use of any outlawed dependencies, an exception will be thrown.
 Otherwise, all is good and you can carry on with your day.
 
 > See the 'Configuration Options' section below for more configuration options
@@ -143,8 +143,9 @@ Otherwise, all is good and you can carry on with your day.
 
 Bobby respects the configuration scoping mechanisms built into sbt, which means you can run:
 
-`sbt validate` to validate _compile_ dependencies 
-`sbt test:validate` to validate _test_ dependencies
+`sbt validate` to validate _compile_ dependencies
+`sbt 'Test / validate'` to validate _test_ dependencies
+`sbt 'IntegrationTest / validate'` to validate _it_ dependencies
 `sbt "reload plugins; validate; reload return"` to validate _plugin_ dependencies
 
 There is also a helper command alias which runs all three of these in one:
@@ -152,12 +153,12 @@ There is also a helper command alias which runs all three of these in one:
 `sbt validateAll`
 
 >Prior to major version 3, Bobby tried to pull out both local and plugin dependencies in one task. This has been
->changed to better integrate with the sbt [scoping](https://www.scala-sbt.org/1.x/docs/Scopes.html) ecosystem 
+>changed to better integrate with the sbt [scoping](https://www.scala-sbt.org/1.x/docs/Scopes.html) ecosystem
 
 ### Sbt 1.x
- 
+
  Since major version 1, this plugin is cross compiled for sbt 1.x (specifically 1.3.4).
- 
+
  | Sbt version | Plugin version |
  | ----------- | -------------- |
  | `0.13.x`    | `any`          |
@@ -165,7 +166,7 @@ There is also a helper command alias which runs all three of these in one:
 
 ## Supported Version Ranges
 
-The range that is outlawed can be configured using Ivy style syntax. 
+The range that is outlawed can be configured using Ivy style syntax.
 
 | Range          | Applies to                            |
 |----------------|---------------------------------------|
@@ -189,7 +190,7 @@ versions <= `2.0.0`. You would then have two rules with ranges:
 2. (,2.0.0]     Effective from T-1  (so a BobbyViolation )
 ```
 If a build then has a dependency on `myawesomelib % 1.2.0` then both rules match. We clearly want to apply the second rule
-that is already in effect and results in a violation, over the first that would allow the build to continue with only a 
+that is already in effect and results in a violation, over the first that would allow the build to continue with only a
 warning.
 
 So in order to disambiguate multiple rules, first Bobby partitions them to only consider violations first. If none match,
@@ -204,22 +205,22 @@ it will consider warnings. In each subset, the ordering is (in decreasing orderi
 
 Precedence is in this order so that a blanket ban across a range takes effect over a ban on a single version. The reasoning
 behind this is in the case where you had a specific rule on versions V1, V2, V3 and V1-3. If a build tries to use V1,
-the preference is to show them it is blocked because of the V1-3 rule, saving them trying upgrading to V2, then V3 first and getting 
+the preference is to show them it is blocked because of the V1-3 rule, saving them trying upgrading to V2, then V3 first and getting
 a different violation each time.
 
 ## Understanding the Bobby output
 
 Bobby will write out a summary table to the console, as well as generating two report artifacts for every project/configuration scope:
- 
- * `target/bobby-report-<project>-<configuration>.json` 
+
  * `target/bobby-report-<project>-<configuration>.json`
- 
+ * `target/bobby-report-<project>-<configuration>.json`
+
 For example, if you are running `test:validate` from a project called `root`, the files generated will be:
 
- * `target/bobby-report-root-test.json` 
  * `target/bobby-report-root-test.json`
-  
-These reports tell you of any rule violations that are preventing your job from building, as well as 
+ * `target/bobby-report-root-test.json`
+
+These reports tell you of any rule violations that are preventing your job from building, as well as
 highlighting any dependencies with warnings that will become violations in the future.
 
 An example output looks like this (a snippet taken from the `test-project` in this repo, see below):
@@ -275,7 +276,7 @@ that are detected.
 
 The table lists violations and warnings at the top (with a level of `ERROR` or `WARN` respectively), and those with no issues after that
 with a level of `INFO`. Each row represents one dependency in the build, and where it is pulled in transitively, the actual dependency in your
-build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation as it tells you 
+build that caused it to be pulled in will be shown in the 'Via' column. This is useful as in the case of a transitive violation as it tells you
 what you need to change in order to fix it.
 
 Note that the KEY and colour coding is only applicable when outputting to the console. There is a `bobby-report-<project>-<config>.txt` file generated
@@ -351,7 +352,7 @@ By default, the console output will show with ANSI colours. To turn this off you
 Bobby can display the output table in a few different variations. Currently these are:
 
 * Flat => The standard table, with all columns
-* Compact => The standard table, minus the reason column 
+* Compact => The standard table, minus the reason column
 * Nested => Shows the local dependencies with their transitives underneath them and indented
 
 To change the view type you can:
@@ -367,9 +368,9 @@ To change the view type you can:
     ```
 ## How do I change the Bobby rules enforced by Jenkins?
 
-On Jenkins, Bobby sources its config remotely. Current rules can be found at https://github.com/hmrc/bobby-config (available only for people in the HMRC org on github). 
+On Jenkins, Bobby sources its config remotely. Current rules can be found at https://github.com/hmrc/bobby-config (available only for people in the HMRC org on github).
 
-Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests and once merged the new rules will take effect immediately. 
+Anyone working on the Tax Platform can add/change bobby rules. We accept pull requests and once merged the new rules will take effect immediately.
 
 An example commit is as follows. Note that we should always try to stick to one rule per dependency. https://github.com/hmrc/bobby-config/commit/f1b1b180cde857d64e3b1c2fb5322bc400c18c8a
 
@@ -381,17 +382,17 @@ An example commit is as follows. Note that we should always try to stick to one 
 cd test-project
 sbt validate
 ```
- 
+
 * Bobby uses [scripted](https://www.scala-sbt.org/1.x/docs/Testing-sbt-plugins.html) tests which are executed with ```sbt scripted```
 
-## Notice 
+## Notice
 
-From major version 2, `sbt-bobby` makes use of the [sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph) plugin to compute 
+From major version 2, `sbt-bobby` makes use of the [sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph) plugin to compute
 the transitive module graph. In previous versions only the locally declared dependencies were considered.
 
 It also takes some inspiration from [sbt-blockade](https://github.com/Verizon/sbt-blockade)
 
 ## License
- 
+
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
 
