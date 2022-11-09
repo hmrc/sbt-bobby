@@ -11,6 +11,7 @@ lazy val root = (project in file("."))
     // Use the code from the sbt-dependency-graph plugin as if it was a standard library dependency
     // We use the plugin to resolve the complete module graph for the purpose of validating bobby
     // rule violations across transitive dependencies
+    // TODO can we drop this now? ensure everyone is sbt 1.4+...
     addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",

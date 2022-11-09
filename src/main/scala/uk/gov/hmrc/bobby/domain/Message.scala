@@ -25,26 +25,30 @@ import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 object Message {
 
   implicit object MessageOrdering extends Ordering[Message] {
-    def compare(a: Message, b: Message): Int = a.level compare b.level
+    def compare(a: Message, b: Message): Int =
+      a.level.compare(b.level)
   }
 
 }
 
 case class Message(
-  checked: BobbyChecked,
-  dependencyChain: Seq[ModuleID]) {
+  checked        : BobbyChecked,
+  dependencyChain: Seq[ModuleID]
+) {
 
-  val level: MessageLevels.Level = checked.result match {
-    case BobbyOk            => INFO
-    case BobbyExemption(_)  => WARN
-    case BobbyWarning(_)    => WARN
-    case BobbyViolation(_)  => ERROR
-  }
+  val level: MessageLevels.Level =
+    checked.result match {
+      case BobbyOk            => INFO
+      case BobbyExemption(_)  => WARN
+      case BobbyWarning(_)    => WARN
+      case BobbyViolation(_)  => ERROR
+    }
 
   val deprecationReason: Option[String]    = checked.result.rule.map(_.reason)
-  val deprecationFrom: Option[LocalDate]   = checked.result.rule.map(_.effectiveDate)
-  val effectiveDate: Option[LocalDate]     =  checked.result.rule.map(_.effectiveDate)
-  val moduleName: String                   = checked.moduleID.moduleName
+  val deprecationFrom  : Option[LocalDate] = checked.result.rule.map(_.effectiveDate) // TODO why need the alias?
+  val effectiveDate    : Option[LocalDate] = checked.result.rule.map(_.effectiveDate)
+  val moduleName       : String            = checked.moduleID.moduleName
 
-  val isLocal: Boolean = dependencyChain.isEmpty
+  val isLocal: Boolean =
+    dependencyChain.isEmpty
 }

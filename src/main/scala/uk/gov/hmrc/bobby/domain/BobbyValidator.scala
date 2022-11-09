@@ -26,26 +26,29 @@ object BobbyValidator {
 
   def validate(
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
-    dependencies: Seq[ModuleID],
-    bobbyRules: List[BobbyRule],
-    projectName: String
+    dependencies : Seq[ModuleID],
+    bobbyRules   : List[BobbyRule],
+    projectName  : String
   ): BobbyValidationResult = {
     val checkedDependencies =
       dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
 
     val messages =
       checkedDependencies
-        .map(bc => Message(bc, dependencyMap.getOrElse(bc.moduleID, Seq.empty)))
+        .map(bc => Message(
+                    checked         = bc,
+                    dependencyChain = dependencyMap.getOrElse(bc.moduleID, Seq.empty)
+            ))
         .toList
 
     BobbyValidationResult(messages)
   }
 
   def calc(
-    bobbyRules: List[BobbyRule],
-    dep: ModuleID,
+    bobbyRules : List[BobbyRule],
+    dep        : ModuleID,
     projectName: String,
-    now: LocalDate = LocalDate.now()
+    now        : LocalDate = LocalDate.now()
   ): BobbyResult = {
     val version =
       Version(dep.revision)

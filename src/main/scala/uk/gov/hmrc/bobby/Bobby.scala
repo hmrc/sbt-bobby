@@ -42,10 +42,11 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
-    projectName: String,
+    projectName  : String,
     dependencyMap: Map[ModuleID, Seq[ModuleID]],
-    dependencies: Seq[ModuleID],
-    config: BobbyConfiguration): Unit = {
+    dependencies : Seq[ModuleID],
+    config       : BobbyConfiguration
+  ): Unit = {
 
     logger.info(bobbyLogo)
 

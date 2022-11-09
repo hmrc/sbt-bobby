@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc
+package uk.gov.hmrc // TODO move to bobby package
 
 import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
+import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.{Bobby, GraphOps}
+import uk.gov.hmrc.graph.DependencyGraphParser
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -46,6 +48,8 @@ object SbtBobbyPlugin extends AutoPlugin {
     lazy val bobbyStrictMode         = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
     lazy val bobbyViewType           = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
     lazy val bobbyConsoleColours     = settingKey[Boolean]("If true (default), colours are rendered in the console output")
+    lazy val validateDot = // or replace validate?
+      taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
   }
 
   def validateSettings: Seq[Def.Setting[_]] =
@@ -100,14 +104,122 @@ object SbtBobbyPlugin extends AutoPlugin {
     )
   )
 
+    private def validateDotTask() =
+    Def.task {
+      val dependencyGraphParser = new DependencyGraphParser
+      val dir = target.value
+      val projectName = name.value
+
+
+      // Retrieve config settings
+      val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
+
+      val outputFileName = s"bobby-report" //s"bobby-report-${thisProject.value.id}-${config.name}"
+
+      val config = new BobbyConfiguration(
+          bobbyRulesURL           = bobbyRulesURL.value,
+          outputDirectoryOverride = outputDirectoryOverride.value,
+          outputFileName          = outputFileName,
+          bobbyConfigFile         = Some(bobbyConfigFile),
+          strictMode              = bobbyStrictMode.value,
+          viewType                = bobbyViewType.value,
+          consoleColours          = bobbyConsoleColours.value
+        )
+
+      val bobbyRules = config.loadBobbyRules()
+
+      val today = java.time.LocalDate.now()
+
+      // Determine nodes to exclude which are this project or dependent projects from this build
+      // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
+      val extractedRootProject = Project.extract(state.value)
+      val internalModuleNodes =
+        buildStructure.value
+        .allProjectRefs
+        .map(p => extractedRootProject.get(p / projectID))
+        .distinct
+
+      dir.listFiles().map { file =>
+        if (file.getName.startsWith("dependencies") && file.getName.endsWith(".dot")) { // TODO regex
+
+          //what about plugin scope?
+          //"project/target/dependencies-compile.dot"
+          println(s"Found $file")
+          val content = IO.read(file)
+          val graph = dependencyGraphParser.parse(content)
+          val dependencies =
+            graph.dependencies.filterNot { n1 =>
+              internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
+            }
+
+
+          val messages =
+            dependencies.map { dependency =>
+
+              val matchingRules =
+                bobbyRules
+                  .filter { rule =>
+                    (rule.dependency.organisation.equals(dependency.group) || rule.dependency.organisation.equals("*")) &&
+                      (rule.dependency.name.equals(dependency.artefactWithoutScalaVersion) || rule.dependency.name.equals("*")) &&
+                      rule.range.includes(Version(dependency.version))
+                  }
+                  .sorted
+
+              val result =
+                matchingRules
+                .map { rule =>
+                  if (rule.exemptProjects.contains(projectName))
+                    BobbyExemption(rule): BobbyResult
+                  else if (rule.effectiveDate.isBefore(today) || rule.effectiveDate.isEqual(today))
+                    BobbyViolation(rule)
+                  else
+                    BobbyWarning(rule)
+                }
+                .sorted
+                .headOption
+                .getOrElse(BobbyOk)
+
+
+              Message(
+                checked         = BobbyChecked(
+                                    moduleID = ModuleID(dependency.group, dependency.artefact, dependency.version),
+                                    result   = result
+                                  ),
+                dependencyChain = graph.pathToRoot(dependency).map(d => ModuleID(d.group, d.artefact, d.version)).dropRight(1) // last one is the project itself
+              )
+            }
+
+          val result = BobbyValidationResult(messages.toList)
+
+          uk.gov.hmrc.bobby.output.Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
+
+          if (result.hasViolations)
+            throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
+
+          if (config.strictMode && result.hasWarnings)
+            throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
+        }
+      }
+    }
+
+    private val currentVersion =
+      getClass.getPackage.getImplementationVersion // This requires that the class is in a package unique to that build (not currently true!)
+
+    private def message(projectName: String, msg: String): String =
+      s"SbtBobby [$currentVersion] ($projectName) - $msg"
+
+
   override lazy val projectSettings = Seq(
     bobbyRulesURL                   := None,
     outputDirectoryOverride         := None,
     GlobalScope / parallelExecution := true,
     bobbyViewType       := sys.env.get(envKeyBobbyViewType).map(ViewType.apply).getOrElse(Compact),
     bobbyStrictMode     := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
-    bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true)
+    bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true),
+    validateDot         := validateDotTask().value
   ) ++ validateSettings ++
     //Add a useful alias to run bobby validate for compile, test and plugins together (similar to old releases of bobby)
-    addCommandAlias("validateAll", ";validate; Test / validate; IntegrationTest / validate; reload plugins; validate; reload return")
+    //addCommandAlias("validateAll", ";Compile / validate; Test / validate; IntegrationTest / validate; reload plugins; validate; reload return")
+    // TODO the dependencyDot on build server may have already been extracted.
+    addCommandAlias("validateAll", ";Compile / dependencyDot; Test / dependencyDot; IntegrationTest / dependencyDot; reload plugins; dependencyDot; reload return; validateDot")
 }

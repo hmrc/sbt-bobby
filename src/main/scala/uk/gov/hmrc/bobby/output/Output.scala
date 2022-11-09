@@ -25,10 +25,10 @@ object Output {
 
   def writeValidationResult(
     bobbyValidationResult: BobbyValidationResult,
-    jsonFilePath: String,
-    textFilePath: String,
-    viewType: ViewType,
-    consoleColours: Boolean
+    jsonFilePath         : String,
+    textFilePath         : String,
+    viewType             : ViewType,
+    consoleColours       : Boolean
   ): Unit = {
 
     val writers = Seq(

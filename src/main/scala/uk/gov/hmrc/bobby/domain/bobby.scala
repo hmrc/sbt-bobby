@@ -44,6 +44,8 @@ object BobbyResult {
     Ordering.by(_.ordering)
 }
 
+// TODO move the following into BobbyResult companion object
+
 case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
   val rule: Option[BobbyRule] = Some(r)
 }
