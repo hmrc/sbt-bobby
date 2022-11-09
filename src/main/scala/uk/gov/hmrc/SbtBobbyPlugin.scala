@@ -16,23 +16,20 @@
 
 package uk.gov.hmrc // TODO move to bobby package
 
-import net.virtualvoid.sbt.graph.ModuleGraph
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.{Bobby, GraphOps}
 import uk.gov.hmrc.graph.DependencyGraphParser
+import uk.gov.hmrc.bobby.Util._
 
 object SbtBobbyPlugin extends AutoPlugin {
 
   override def trigger = allRequirements
 
-  import net.virtualvoid.sbt.graph.DependencyGraphKeys._
   import BobbyEnvKeys._
   import BobbyKeys._
-  import uk.gov.hmrc.bobby.Util._
 
   // Environment variable keys for customising bobby
   object BobbyEnvKeys {
@@ -52,59 +49,7 @@ object SbtBobbyPlugin extends AutoPlugin {
       taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
   }
 
-  def validateSettings: Seq[Def.Setting[_]] =
-    Seq(Compile, Test, IntegrationTest, Runtime, Provided, Optional)
-      .flatMap(validateTaskForConfig)
-
-  // Define the validate task for the given configuration
-  def validateTaskForConfig(config: Configuration): Seq[Def.Setting[_]] = inConfig(config)(
-    Seq(
-      validate := {
-        // Determine nodes to exclude which are this project or dependent projects from this build
-        // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
-        val extractedRootProject = Project.extract(state.value)
-        val internalModuleNodes =
-          buildStructure.value
-          .allProjectRefs
-          .map(p => extractedRootProject.get(p / projectID))
-          .distinct
-          .map(_.toDependencyGraph)
-
-        // Construct a complete module graph piggy-backing off `sbt-dependency-graph`
-        val projectDependencyGraph: ModuleGraph = GraphOps.cleanGraph((config / moduleGraph).value, excludeNodes = internalModuleNodes)
-
-        // Retrieve just the resolved module IDs, in topologically sorted order
-        val projectDependencies = GraphOps.topoSort(GraphOps.transpose(projectDependencyGraph))
-
-        // Construct a dependency map from each ModuleId -> Sequential list of transitive ModuleIds that brought it in, the tail being the origin
-        val dependencyMap = GraphOps.reverseDependencyMap(projectDependencyGraph, projectDependencies)
-
-        // Retrieve config settings
-        val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
-
-        val bobbyConfig = new BobbyConfiguration(
-          bobbyRulesURL           = bobbyRulesURL.value,
-          outputDirectoryOverride = outputDirectoryOverride.value,
-          outputFileName          = s"bobby-report-${thisProject.value.id}-${config.name}",
-          bobbyConfigFile         = Some(bobbyConfigFile),
-          strictMode              = bobbyStrictMode.value,
-          viewType                = bobbyViewType.value,
-          consoleColours          = bobbyConsoleColours.value
-        )
-
-        val projectName = name.value
-
-        Bobby.validateDependencies(
-          projectName,
-          GraphOps.toSbtDependencyMap(dependencyMap), //Use vanilla sbt ModuleIDs
-          projectDependencies.map(_.toSbt),           //Use vanilla sbt ModuleIDs
-          bobbyConfig
-        )
-      }
-    )
-  )
-
-    private def validateDotTask() =
+  private def validateDotTask() =
     Def.task {
       val dependencyGraphParser = new DependencyGraphParser
       val dir = target.value
@@ -128,8 +73,6 @@ object SbtBobbyPlugin extends AutoPlugin {
 
       val bobbyRules = config.loadBobbyRules()
 
-      val today = java.time.LocalDate.now()
-
       // Determine nodes to exclude which are this project or dependent projects from this build
       // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
       val extractedRootProject = Project.extract(state.value)
@@ -145,53 +88,32 @@ object SbtBobbyPlugin extends AutoPlugin {
           //what about plugin scope?
           //"project/target/dependencies-compile.dot"
           println(s"Found $file")
-          val content = IO.read(file)
-          val graph = dependencyGraphParser.parse(content)
-          val dependencies =
-            graph.dependencies.filterNot { n1 =>
-              internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
-            }
-
+          val content      = IO.read(file)
+          val graph        = dependencyGraphParser.parse(content)
+          val dependencies = graph.dependencies.filterNot { n1 =>
+                               internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
+                             }
 
           val messages =
             dependencies.map { dependency =>
-
-              val matchingRules =
-                bobbyRules
-                  .filter { rule =>
-                    (rule.dependency.organisation.equals(dependency.group) || rule.dependency.organisation.equals("*")) &&
-                      (rule.dependency.name.equals(dependency.artefactWithoutScalaVersion) || rule.dependency.name.equals("*")) &&
-                      rule.range.includes(Version(dependency.version))
-                  }
-                  .sorted
-
-              val result =
-                matchingRules
-                .map { rule =>
-                  if (rule.exemptProjects.contains(projectName))
-                    BobbyExemption(rule): BobbyResult
-                  else if (rule.effectiveDate.isBefore(today) || rule.effectiveDate.isEqual(today))
-                    BobbyViolation(rule)
-                  else
-                    BobbyWarning(rule)
-                }
-                .sorted
-                .headOption
-                .getOrElse(BobbyOk)
-
+              val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, projectName)
 
               Message(
                 checked         = BobbyChecked(
-                                    moduleID = ModuleID(dependency.group, dependency.artefact, dependency.version),
+                                    moduleID = dependency.toModuleID,
                                     result   = result
                                   ),
-                dependencyChain = graph.pathToRoot(dependency).map(d => ModuleID(d.group, d.artefact, d.version)).dropRight(1) // last one is the project itself
+                dependencyChain = graph.pathToRoot(dependency).map(_.toModuleID).dropRight(1) // last one is the project itself
               )
             }
 
+          // TODO we can combine all the messages together and display as one
+          // Include Scope in Message?
           val result = BobbyValidationResult(messages.toList)
 
+          println(s"Result from $file:")
           uk.gov.hmrc.bobby.output.Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
+
 
           if (result.hasViolations)
             throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
@@ -217,7 +139,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     bobbyStrictMode     := sys.env.get(envKeyBobbyStrictMode).map(_.toBoolean).getOrElse(false),
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true),
     validateDot         := validateDotTask().value
-  ) ++ validateSettings ++
+  ) ++
     //Add a useful alias to run bobby validate for compile, test and plugins together (similar to old releases of bobby)
     //addCommandAlias("validateAll", ";Compile / validate; Test / validate; IntegrationTest / validate; reload plugins; validate; reload return")
     // TODO the dependencyDot on build server may have already been extracted.

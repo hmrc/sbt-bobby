@@ -16,78 +16,41 @@
 
 package uk.gov.hmrc.bobby
 
-import net.virtualvoid.sbt.graph.{Edge, Module, ModuleGraph, ModuleId}
 import org.scalacheck.Gen
-import org.scalacheck.Gen.{alphaChar, listOfN, _}
+import org.scalacheck.Gen.{alphaChar, chooseNum, listOfN, oneOf}
 import uk.gov.hmrc.bobby.domain.Dependency
-
-import scala.util.Random
 
 object Generators {
 
-  val r = new Random()
+  val strGen: Int => Gen[String] =
+    (n: Int) => listOfN(n, alphaChar).map(_.mkString)
 
-  val strGen: Int => Gen[String] = (n: Int) => listOfN(n, alphaChar).map(_.mkString)
+  val nonEmptyString: Gen[String] =
+    chooseNum(2, 3).flatMap(n => strGen(n))
 
-  val nonEmptyString: Gen[String] = chooseNum(2, 3).flatMap(n => strGen(n))
-
-  val organisationGen: Gen[String] = for {
-    letter <- nonEmptyString
-    number <- chooseNum(1,10)
-  } yield s"uk.gov.$letter$number"
-
-  val versionGen: Gen[String] = for {
-    major <- chooseNum(0, 10)
-    minor <- chooseNum(0, 100)
-    patch <- chooseNum(0, 100)
-    suffix <- oneOf("-SNAPSHOT", "-RC1", "")
-  } yield s"$major.$minor.$patch$suffix"
-
-  val artifactNameGen: Gen[String] = for {
-    name <- nonEmptyString
-    scalaVersion <- oneOf("_2.10", "_2.11", "_2.12", "")
-  } yield s"$name$scalaVersion"
-
-  def moduleIdGen(_nameGen: Gen[String] = artifactNameGen): Gen[ModuleId] =
+  val organisationGen: Gen[String] =
     for {
-      organisation <- organisationGen
-      name <- _nameGen
-      version <- versionGen
-    } yield ModuleId(organisation, name, version)
+      letter <- nonEmptyString
+      number <- chooseNum(1,10)
+    } yield s"uk.gov.$letter$number"
 
-  def moduleGen(_moduleIdGen: Gen[ModuleId] = moduleIdGen(),
-               _evictedByVersionGen: Gen[Option[String]] = option(versionGen)): Gen[Module] =
+  val versionGen: Gen[String] =
     for {
-      moduleId <- _moduleIdGen
-      evictedByVersion <- _evictedByVersionGen
-    } yield Module(moduleId, evictedByVersion = evictedByVersion)
+      major  <- chooseNum(0, 10)
+      minor  <- chooseNum(0, 100)
+      patch  <- chooseNum(0, 100)
+      suffix <- oneOf("-SNAPSHOT", "-RC1", "")
+    } yield s"$major.$minor.$patch$suffix"
 
-  def edgeGen(nodes: Seq[ModuleId]): Gen[Seq[Edge]] = {
-    if (nodes.size < 2)
-      // Not enough nodes to make an edge
-      Gen.const(Seq.empty)
-    else {
-      val numEdges = if (nodes.size < 2) 0 else r.nextInt(nodes.size)
-      val edges = (0 until numEdges).map { fromNode =>
-        // Always pick a node that is further down the chain from where we are now
-        val toNode = fromNode + 1 + r.nextInt(numEdges - fromNode)
-
-        Edge(nodes(fromNode), nodes(toNode))
-      }
-      Gen.const(edges)
-    }
-  }
-
-  def moduleGraphGen(): Gen[ModuleGraph] =
+  val artifactNameGen: Gen[String] =
     for {
-      num <- chooseNum(10, 30)
-      nodes <- listOfN(num, moduleGen())
-      edges <- edgeGen(nodes.map(_.id))
-    } yield ModuleGraph(nodes, edges)
+      name         <- nonEmptyString
+      scalaVersion <- oneOf("_2.10", "_2.11", "_2.12", "")
+    } yield s"$name$scalaVersion"
 
-  val depedendencyGen: Gen[Dependency] = for {
-    org <- organisationGen
-    name <- nonEmptyString
-  } yield Dependency(org, name)
-
+  val depedendencyGen: Gen[Dependency] =
+    for {
+      org  <- organisationGen
+      name <- nonEmptyString
+    } yield Dependency(org, name)
 }

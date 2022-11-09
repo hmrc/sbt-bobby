@@ -1,0 +1,16 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "uk.gov.hmrc:my-slug_2.12:2.22.0"[label=<uk.gov.hmrc<BR/><B>my-slug_2.12</B><BR/>2.22.0> style=""]
+    "org.typelevel:cats-core_2.12:2.2.0"[label=<org.typelevel<BR/><B>cats-core_2.12</B><BR/>2.2.0> style=""]
+    "com.typesafe.play:filters-helpers_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.7.5> style=""]
+    "com.typesafe.play:filters-helpers_2.12:2.7.4"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.7.4> style="stroke-dasharray: 5,5"]
+    "org.typelevel:cats-kernel_2.12:2.2.0"[label=<org.typelevel<BR/><B>cats-kernel_2.12</B><BR/>2.2.0> style=""]
+    "uk.gov.hmrc:my-slug_2.12:2.22.0" -> "org.typelevel:cats-core_2.12:2.2.0"
+    "uk.gov.hmrc:my-slug_2.12:2.22.0" -> "com.typesafe.play:filters-helpers_2.12:2.7.5"
+    "org.typelevel:cats-core_2.12:2.2.0" -> "org.typelevel:cats-kernel_2.12:2.2.0"
+    "org.typelevel:cats-kernel_2.12:2.2.0" -> "com.typesafe.play:filters-helpers_2.12:2.7.4"
+    "com.typesafe.play:filters-helpers_2.12:2.7.4" -> "com.typesafe.play:filters-helpers_2.12:2.7.5" [label="Evicted By" style="stroke-dasharray: 5,5"]
+}

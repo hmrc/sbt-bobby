@@ -1,0 +1,220 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "default:project:0.1.0-SNAPSHOT"[label=<default<BR/><B>project</B><BR/>0.1.0-SNAPSHOT> style=""]
+    "com.typesafe:config:1.3.4"[label=<com.typesafe<BR/><B>config</B><BR/>1.3.4> style=""]
+    "com.typesafe:config:1.3.3"[label=<com.typesafe<BR/><B>config</B><BR/>1.3.3> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala-compiler:2.12.12"[label=<org.scala-lang<BR/><B>scala-compiler</B><BR/>2.12.12> style=""]
+    "org.yaml:snakeyaml:1.25"[label=<org.yaml<BR/><B>snakeyaml</B><BR/>1.25> style=""]
+    "net.java.dev.jna:jna:5.5.0"[label=<net.java.dev.jna<BR/><B>jna</B><BR/>5.5.0> style=""]
+    "net.java.dev.jna:jna:4.2.2"[label=<net.java.dev.jna<BR/><B>jna</B><BR/>4.2.2> style="stroke-dasharray: 5,5"]
+    "com.typesafe.sbt:sbt-git:1.0.0"[label=<com.typesafe.sbt<BR/><B>sbt-git</B><BR/>1.0.0> style=""]
+    "org.joda:joda-convert:2.2.0"[label=<org.joda<BR/><B>joda-convert</B><BR/>2.2.0> style=""]
+    "uk.gov.hmrc:sbt-distributables:2.1.0"[label=<uk.gov.hmrc<BR/><B>sbt-distributables</B><BR/>2.1.0> style=""]
+    "org.scala-lang.modules:scala-xml_2.12:1.2.0"[label=<org.scala-lang.modules<BR/><B>scala-xml_2.12</B><BR/>1.2.0> style=""]
+    "org.scala-lang.modules:scala-xml_2.12:1.1.1"[label=<org.scala-lang.modules<BR/><B>scala-xml_2.12</B><BR/>1.1.1> style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-xml_2.12:1.0.6"[label=<org.scala-lang.modules<BR/><B>scala-xml_2.12</B><BR/>1.0.6> style="stroke-dasharray: 5,5"]
+    "com.github.eldis:tool-launcher:0.2.2"[label=<com.github.eldis<BR/><B>tool-launcher</B><BR/>0.2.2> style=""]
+    "org.webjars:webjars-locator-core:0.36"[label=<org.webjars<BR/><B>webjars-locator-core</B><BR/>0.36> style=""]
+    "org.webjars:webjars-locator-core:0.32"[label=<org.webjars<BR/><B>webjars-locator-core</B><BR/>0.32> style="stroke-dasharray: 5,5"]
+    "joda-time:joda-time:2.10.1"[label=<joda-time<BR/><B>joda-time</B><BR/>2.10.1> style=""]
+    "com.typesafe.play:sbt-routes-compiler_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>sbt-routes-compiler_2.12</B><BR/>2.7.5> style=""]
+    "org.apache.httpcomponents:httpclient:4.5.2"[label=<org.apache.httpcomponents<BR/><B>httpclient</B><BR/>4.5.2> style=""]
+    "org.typelevel:cats-core_2.12:1.2.0"[label=<org.typelevel<BR/><B>cats-core_2.12</B><BR/>1.2.0> style=""]
+    "uk.gov.hmrc:sbt-git-versioning:2.4.0"[label=<uk.gov.hmrc<BR/><B>sbt-git-versioning</B><BR/>2.4.0> style=""]
+    "com.eed3si9n:sbt-buildinfo:0.7.0"[label=<com.eed3si9n<BR/><B>sbt-buildinfo</B><BR/>0.7.0> style=""]
+    "uk.gov.hmrc:release-versioning_2.12:0.17.0"[label=<uk.gov.hmrc<BR/><B>release-versioning_2.12</B><BR/>0.17.0> style=""]
+    "com.typesafe.play:run-support_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>run-support_2.12</B><BR/>2.7.5> style=""]
+    "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"[label=<org.scala-lang.modules<BR/><B>scala-parser-combinators_2.12</B><BR/>1.1.2> style=""]
+    "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1"[label=<org.scala-lang.modules<BR/><B>scala-parser-combinators_2.12</B><BR/>1.1.1> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-simple:1.7.26"[label=<org.slf4j<BR/><B>slf4j-simple</B><BR/>1.7.26> style=""]
+    "org.scala-lang.modules:scala-java8-compat_2.12:0.8.0"[label=<org.scala-lang.modules<BR/><B>scala-java8-compat_2.12</B><BR/>0.8.0> style=""]
+    "uk.gov.hmrc:sbt-auto-build:3.6.0"[label=<uk.gov.hmrc<BR/><B>sbt-auto-build</B><BR/>3.6.0> style=""]
+    "com.typesafe:jse_2.12:1.2.4"[label=<com.typesafe<BR/><B>jse_2.12</B><BR/>1.2.4> style=""]
+    "com.typesafe:jse_2.12:1.2.3"[label=<com.typesafe<BR/><B>jse_2.12</B><BR/>1.2.3> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala-reflect:2.12.12"[label=<org.scala-lang<BR/><B>scala-reflect</B><BR/>2.12.12> style=""]
+    "io.methvin:directory-watcher:0.9.9"[label=<io.methvin<BR/><B>directory-watcher</B><BR/>0.9.9> style=""]
+    "com.jcraft:jzlib:1.1.1"[label=<com.jcraft<BR/><B>jzlib</B><BR/>1.1.1> style=""]
+    "io.apigee.trireme:trireme-core:0.9.4"[label=<io.apigee.trireme<BR/><B>trireme-core</B><BR/>0.9.4> style=""]
+    "com.typesafe.sbt:sbt-native-packager:1.5.1"[label=<com.typesafe.sbt<BR/><B>sbt-native-packager</B><BR/>1.5.1> style=""]
+    "com.typesafe.sbt:sbt-native-packager:1.3.20"[label=<com.typesafe.sbt<BR/><B>sbt-native-packager</B><BR/>1.3.20> style="stroke-dasharray: 5,5"]
+    "de.heikoseeberger:sbt-header:5.0.0"[label=<de.heikoseeberger<BR/><B>sbt-header</B><BR/>5.0.0> style=""]
+    "de.heikoseeberger:sbt-header:4.1.0"[label=<de.heikoseeberger<BR/><B>sbt-header</B><BR/>4.1.0> style="stroke-dasharray: 5,5"]
+    "org.irundaia.sbt:sbt-sassify:1.4.11"[label=<org.irundaia.sbt<BR/><B>sbt-sassify</B><BR/>1.4.11> style=""]
+    "org.apache.commons:commons-compress:1.19"[label=<org.apache.commons<BR/><B>commons-compress</B><BR/>1.19> style=""]
+    "org.apache.commons:commons-compress:1.18"[label=<org.apache.commons<BR/><B>commons-compress</B><BR/>1.18> style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-compress:1.18"[label=<org.apache.commons<BR/><B>commons-compress</B><BR/>1.18> style="stroke-dasharray: 5,5"]
+    "org.mozilla:rhino:1.7.10"[label=<org.mozilla<BR/><B>rhino</B><BR/>1.7.10> style=""]
+    "uk.gov.hmrc:sbt-git-stamp:6.2.0"[label=<uk.gov.hmrc<BR/><B>sbt-git-stamp</B><BR/>6.2.0> style=""]
+    "org.typelevel:cats-macros_2.12:1.2.0"[label=<org.typelevel<BR/><B>cats-macros_2.12</B><BR/>1.2.0> style=""]
+    "com.typesafe.akka:akka-actor_2.12:2.5.18"[label=<com.typesafe.akka<BR/><B>akka-actor_2.12</B><BR/>2.5.18> style=""]
+    "com.typesafe.akka:akka-actor_2.12:2.5.4"[label=<com.typesafe.akka<BR/><B>akka-actor_2.12</B><BR/>2.5.4> style="stroke-dasharray: 5,5"]
+    "com.typesafe.akka:akka-actor_2.12:2.5.17"[label=<com.typesafe.akka<BR/><B>akka-actor_2.12</B><BR/>2.5.17> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.9.7"[label=<com.fasterxml.jackson.core<BR/><B>jackson-core</B><BR/>2.9.7> style=""]
+    "org.apache.commons:commons-lang3:3.8.1"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.8.1> style=""]
+    "commons-codec:commons-codec:1.9"[label=<commons-codec<BR/><B>commons-codec</B><BR/>1.9> style=""]
+    "uk.gov.hmrc:sbt-setting-keys:0.3.0"[label=<uk.gov.hmrc<BR/><B>sbt-setting-keys</B><BR/>0.3.0> style=""]
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r"[label=<org.eclipse.jgit<BR/><B>org.eclipse.jgit</B><BR/>4.11.9.201909030838-r> style=""]
+    "org.eclipse.jgit:org.eclipse.jgit:4.9.0.201710071750-r"[label=<org.eclipse.jgit<BR/><B>org.eclipse.jgit</B><BR/>4.9.0.201710071750-r> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.4.2"[label=<com.typesafe.play<BR/><B>twirl-api_2.12</B><BR/>1.4.2> style=""]
+    "org.apache.ant:ant-launcher:1.10.5"[label=<org.apache.ant<BR/><B>ant-launcher</B><BR/>1.10.5> style=""]
+    "com.github.nscala-time:nscala-time_2.12:2.22.0"[label=<com.github.nscala-time<BR/><B>nscala-time_2.12</B><BR/>2.22.0> style=""]
+    "org.apache.httpcomponents:httpcore:4.4.4"[label=<org.apache.httpcomponents<BR/><B>httpcore</B><BR/>4.4.4> style=""]
+    "com.github.scopt:scopt_2.12:3.7.1"[label=<com.github.scopt<BR/><B>scopt_2.12</B><BR/>3.7.1> style=""]
+    "commons-logging:commons-logging:1.2"[label=<commons-logging<BR/><B>commons-logging</B><BR/>1.2> style=""]
+    "com.typesafe.play:twirl-compiler_2.12:1.4.2"[label=<com.typesafe.play<BR/><B>twirl-compiler_2.12</B><BR/>1.4.2> style=""]
+    "com.typesafe.play:play-exceptions:2.7.5"[label=<com.typesafe.play<BR/><B>play-exceptions</B><BR/>2.7.5> style=""]
+    "com.typesafe.sbt:sbt-js-engine:1.2.3"[label=<com.typesafe.sbt<BR/><B>sbt-js-engine</B><BR/>1.2.3> style=""]
+    "com.github.pathikrit:better-files_2.12:2.17.1"[label=<com.github.pathikrit<BR/><B>better-files_2.12</B><BR/>2.17.1> style=""]
+    "com.typesafe.play:sbt-plugin:2.7.5"[label=<com.typesafe.play<BR/><B>sbt-plugin</B><BR/>2.7.5> style=""]
+    "org.typelevel:cats-kernel_2.12:1.2.0"[label=<org.typelevel<BR/><B>cats-kernel_2.12</B><BR/>1.2.0> style=""]
+    "com.typesafe:npm_2.12:1.2.1"[label=<com.typesafe<BR/><B>npm_2.12</B><BR/>1.2.1> style=""]
+    "com.typesafe.sbt:sbt-web:1.4.4"[label=<com.typesafe.sbt<BR/><B>sbt-web</B><BR/>1.4.4> style=""]
+    "com.typesafe.sbt:sbt-web:1.4.2"[label=<com.typesafe.sbt<BR/><B>sbt-web</B><BR/>1.4.2> style="stroke-dasharray: 5,5"]
+    "com.lightbend.sbt:sbt-javaagent:0.1.4"[label=<com.lightbend.sbt<BR/><B>sbt-javaagent</B><BR/>0.1.4> style=""]
+    "io.spray:spray-json_2.12:1.3.5"[label=<io.spray<BR/><B>spray-json_2.12</B><BR/>1.3.5> style=""]
+    "io.apigee.trireme:trireme-kernel:0.9.4"[label=<io.apigee.trireme<BR/><B>trireme-kernel</B><BR/>0.9.4> style=""]
+    "com.typesafe.play:twirl-parser_2.12:1.4.2"[label=<com.typesafe.play<BR/><B>twirl-parser_2.12</B><BR/>1.4.2> style=""]
+    "io.apigee.trireme:trireme-node10src:0.9.4"[label=<io.apigee.trireme<BR/><B>trireme-node10src</B><BR/>0.9.4> style=""]
+    "org.typelevel:machinist_2.12:0.6.4"[label=<org.typelevel<BR/><B>machinist_2.12</B><BR/>0.6.4> style=""]
+    "com.typesafe.play:build-link:2.7.5"[label=<com.typesafe.play<BR/><B>build-link</B><BR/>2.7.5> style=""]
+    "uk.gov.hmrc:sbt-settings:4.10.0"[label=<uk.gov.hmrc<BR/><B>sbt-settings</B><BR/>4.10.0> style=""]
+    "com.jcraft:jsch:0.1.54"[label=<com.jcraft<BR/><B>jsch</B><BR/>0.1.54> style=""]
+    "org.webjars:npm:4.2.0"[label=<org.webjars<BR/><B>npm</B><BR/>4.2.0> style=""]
+    "org.apache.ant:ant:1.10.5"[label=<org.apache.ant<BR/><B>ant</B><BR/>1.10.5> style=""]
+    "com.lightbend.play:play-file-watch_2.12:1.1.12"[label=<com.lightbend.play<BR/><B>play-file-watch_2.12</B><BR/>1.1.12> style=""]
+    "org.slf4j:slf4j-api:1.7.29"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.29> style=""]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.2> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.2> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.2> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.2> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.26"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.26> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.7"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.sbt:sbt-twirl:1.4.2"[label=<com.typesafe.sbt<BR/><B>sbt-twirl</B><BR/>1.4.2> style=""]
+    "com.googlecode.javaewah:JavaEWAH:1.1.6"[label=<com.googlecode.javaewah<BR/><B>JavaEWAH</B><BR/>1.1.6> style=""]
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe:config:1.3.4"
+    "com.typesafe.akka:akka-actor_2.12:2.5.18" -> "com.typesafe:config:1.3.3"
+    "com.typesafe.play:twirl-compiler_2.12:1.4.2" -> "org.scala-lang:scala-compiler:2.12.12"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "org.yaml:snakeyaml:1.25"
+    "io.methvin:directory-watcher:0.9.9" -> "net.java.dev.jna:jna:5.5.0"
+    "org.irundaia.sbt:sbt-sassify:1.4.11" -> "net.java.dev.jna:jna:4.2.2"
+    "uk.gov.hmrc:sbt-git-versioning:2.4.0" -> "com.typesafe.sbt:sbt-git:1.0.0"
+    "com.github.nscala-time:nscala-time_2.12:2.22.0" -> "org.joda:joda-convert:2.2.0"
+    "default:project:0.1.0-SNAPSHOT" -> "uk.gov.hmrc:sbt-distributables:2.1.0"
+    "com.typesafe.play:twirl-api_2.12:1.4.2" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0"
+    "com.typesafe.sbt:sbt-native-packager:1.5.1" -> "org.scala-lang.modules:scala-xml_2.12:1.1.1"
+    "org.scala-lang:scala-compiler:2.12.12" -> "org.scala-lang.modules:scala-xml_2.12:1.0.6"
+    "com.typesafe.sbt:sbt-native-packager:1.5.1" -> "com.github.eldis:tool-launcher:0.2.2"
+    "com.typesafe.sbt:sbt-web:1.4.4" -> "org.webjars:webjars-locator-core:0.36"
+    "com.typesafe:npm_2.12:1.2.1" -> "org.webjars:webjars-locator-core:0.32"
+    "com.github.nscala-time:nscala-time_2.12:2.22.0" -> "joda-time:joda-time:2.10.1"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.play:sbt-routes-compiler_2.12:2.7.5"
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" -> "org.apache.httpcomponents:httpclient:4.5.2"
+    "uk.gov.hmrc:release-versioning_2.12:0.17.0" -> "org.typelevel:cats-core_2.12:1.2.0"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "uk.gov.hmrc:sbt-git-versioning:2.4.0"
+    "uk.gov.hmrc:sbt-settings:4.10.0" -> "com.eed3si9n:sbt-buildinfo:0.7.0"
+    "uk.gov.hmrc:sbt-git-versioning:2.4.0" -> "uk.gov.hmrc:release-versioning_2.12:0.17.0"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.play:run-support_2.12:2.7.5"
+    "com.typesafe.play:sbt-routes-compiler_2.12:2.7.5" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"
+    "com.typesafe.sbt:sbt-native-packager:1.5.1" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "org.slf4j:slf4j-simple:1.7.26"
+    "com.typesafe.akka:akka-actor_2.12:2.5.18" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.8.0"
+    "default:project:0.1.0-SNAPSHOT" -> "uk.gov.hmrc:sbt-auto-build:3.6.0"
+    "com.typesafe.sbt:sbt-js-engine:1.2.3" -> "com.typesafe:jse_2.12:1.2.4"
+    "com.typesafe:npm_2.12:1.2.1" -> "com.typesafe:jse_2.12:1.2.3"
+    "org.typelevel:machinist_2.12:0.6.4" -> "org.scala-lang:scala-reflect:2.12.12"
+    "org.scala-lang:scala-compiler:2.12.12" -> "org.scala-lang:scala-reflect:2.12.12"
+    "com.lightbend.play:play-file-watch_2.12:1.1.12" -> "io.methvin:directory-watcher:0.9.9"
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" -> "com.jcraft:jzlib:1.1.1"
+    "io.apigee.trireme:trireme-node10src:0.9.4" -> "io.apigee.trireme:trireme-core:0.9.4"
+    "com.typesafe:jse_2.12:1.2.4" -> "io.apigee.trireme:trireme-core:0.9.4"
+    "uk.gov.hmrc:sbt-distributables:2.1.0" -> "com.typesafe.sbt:sbt-native-packager:1.5.1"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.sbt:sbt-native-packager:1.3.20"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "de.heikoseeberger:sbt-header:5.0.0"
+    "uk.gov.hmrc:sbt-settings:4.10.0" -> "de.heikoseeberger:sbt-header:4.1.0"
+    "default:project:0.1.0-SNAPSHOT" -> "org.irundaia.sbt:sbt-sassify:1.4.11"
+    "uk.gov.hmrc:sbt-distributables:2.1.0" -> "org.apache.commons:commons-compress:1.19"
+    "com.typesafe.sbt:sbt-native-packager:1.5.1" -> "org.apache.commons:commons-compress:1.18"
+    "org.webjars:webjars-locator-core:0.36" -> "org.apache.commons:commons-compress:1.18"
+    "io.apigee.trireme:trireme-node10src:0.9.4" -> "org.mozilla:rhino:1.7.10"
+    "io.apigee.trireme:trireme-core:0.9.4" -> "org.mozilla:rhino:1.7.10"
+    "uk.gov.hmrc:sbt-settings:4.10.0" -> "uk.gov.hmrc:sbt-git-stamp:6.2.0"
+    "org.typelevel:cats-core_2.12:1.2.0" -> "org.typelevel:cats-macros_2.12:1.2.0"
+    "com.typesafe:jse_2.12:1.2.4" -> "com.typesafe.akka:akka-actor_2.12:2.5.18"
+    "com.typesafe:npm_2.12:1.2.1" -> "com.typesafe.akka:akka-actor_2.12:2.5.4"
+    "com.typesafe.sbt:sbt-web:1.4.4" -> "com.typesafe.akka:akka-actor_2.12:2.5.17"
+    "org.webjars:webjars-locator-core:0.36" -> "com.fasterxml.jackson.core:jackson-core:2.9.7"
+    "org.webjars:webjars-locator-core:0.36" -> "org.apache.commons:commons-lang3:3.8.1"
+    "org.apache.httpcomponents:httpclient:4.5.2" -> "commons-codec:commons-codec:1.9"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "uk.gov.hmrc:sbt-setting-keys:0.3.0"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r"
+    "uk.gov.hmrc:sbt-git-stamp:6.2.0" -> "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r"
+    "com.typesafe.sbt:sbt-git:1.0.0" -> "org.eclipse.jgit:org.eclipse.jgit:4.9.0.201710071750-r"
+    "com.typesafe.play:twirl-compiler_2.12:1.4.2" -> "com.typesafe.play:twirl-api_2.12:1.4.2"
+    "com.typesafe.play:sbt-routes-compiler_2.12:2.7.5" -> "com.typesafe.play:twirl-api_2.12:1.4.2"
+    "org.apache.ant:ant:1.10.5" -> "org.apache.ant:ant-launcher:1.10.5"
+    "uk.gov.hmrc:sbt-git-stamp:6.2.0" -> "com.github.nscala-time:nscala-time_2.12:2.22.0"
+    "org.apache.httpcomponents:httpclient:4.5.2" -> "org.apache.httpcomponents:httpcore:4.4.4"
+    "uk.gov.hmrc:release-versioning_2.12:0.17.0" -> "com.github.scopt:scopt_2.12:3.7.1"
+    "org.apache.httpcomponents:httpclient:4.5.2" -> "commons-logging:commons-logging:1.2"
+    "com.typesafe.sbt:sbt-twirl:1.4.2" -> "com.typesafe.play:twirl-compiler_2.12:1.4.2"
+    "com.typesafe.play:build-link:2.7.5" -> "com.typesafe.play:play-exceptions:2.7.5"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.sbt:sbt-js-engine:1.2.3"
+    "com.lightbend.play:play-file-watch_2.12:1.1.12" -> "com.github.pathikrit:better-files_2.12:2.17.1"
+    "default:project:0.1.0-SNAPSHOT" -> "com.typesafe.play:sbt-plugin:2.7.5"
+    "org.typelevel:cats-core_2.12:1.2.0" -> "org.typelevel:cats-kernel_2.12:1.2.0"
+    "com.typesafe.sbt:sbt-js-engine:1.2.3" -> "com.typesafe:npm_2.12:1.2.1"
+    "com.typesafe.sbt:sbt-js-engine:1.2.3" -> "com.typesafe.sbt:sbt-web:1.4.4"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.sbt:sbt-web:1.4.4"
+    "org.irundaia.sbt:sbt-sassify:1.4.11" -> "com.typesafe.sbt:sbt-web:1.4.2"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.lightbend.sbt:sbt-javaagent:0.1.4"
+    "com.typesafe:jse_2.12:1.2.4" -> "io.spray:spray-json_2.12:1.3.5"
+    "io.apigee.trireme:trireme-node10src:0.9.4" -> "io.apigee.trireme:trireme-kernel:0.9.4"
+    "io.apigee.trireme:trireme-core:0.9.4" -> "io.apigee.trireme:trireme-kernel:0.9.4"
+    "com.typesafe.play:twirl-compiler_2.12:1.4.2" -> "com.typesafe.play:twirl-parser_2.12:1.4.2"
+    "com.typesafe:jse_2.12:1.2.4" -> "io.apigee.trireme:trireme-node10src:0.9.4"
+    "org.typelevel:cats-core_2.12:1.2.0" -> "org.typelevel:machinist_2.12:0.6.4"
+    "org.typelevel:cats-macros_2.12:1.2.0" -> "org.typelevel:machinist_2.12:0.6.4"
+    "com.typesafe.play:run-support_2.12:2.7.5" -> "com.typesafe.play:build-link:2.7.5"
+    "uk.gov.hmrc:sbt-auto-build:3.6.0" -> "uk.gov.hmrc:sbt-settings:4.10.0"
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" -> "com.jcraft:jsch:0.1.54"
+    "com.typesafe:npm_2.12:1.2.1" -> "org.webjars:npm:4.2.0"
+    "com.typesafe.sbt:sbt-native-packager:1.5.1" -> "org.apache.ant:ant:1.10.5"
+    "com.typesafe.play:run-support_2.12:2.7.5" -> "com.lightbend.play:play-file-watch_2.12:1.1.12"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.lightbend.play:play-file-watch_2.12:1.1.12"
+    "io.methvin:directory-watcher:0.9.9" -> "org.slf4j:slf4j-api:1.7.29"
+    "com.typesafe:jse_2.12:1.2.4" -> "org.slf4j:slf4j-api:1.7.25"
+    "io.apigee.trireme:trireme-core:0.9.4" -> "org.slf4j:slf4j-api:1.7.2"
+    "io.apigee.trireme:trireme-kernel:0.9.4" -> "org.slf4j:slf4j-api:1.7.2"
+    "io.apigee.trireme:trireme-node10src:0.9.4" -> "org.slf4j:slf4j-api:1.7.2"
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" -> "org.slf4j:slf4j-api:1.7.2"
+    "org.slf4j:slf4j-simple:1.7.26" -> "org.slf4j:slf4j-api:1.7.26"
+    "org.webjars:webjars-locator-core:0.36" -> "org.slf4j:slf4j-api:1.7.7"
+    "com.typesafe.play:sbt-plugin:2.7.5" -> "com.typesafe.sbt:sbt-twirl:1.4.2"
+    "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" -> "com.googlecode.javaewah:JavaEWAH:1.1.6"
+    "com.typesafe:config:1.3.3" -> "com.typesafe:config:1.3.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "net.java.dev.jna:jna:4.2.2" -> "net.java.dev.jna:jna:5.5.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-xml_2.12:1.1.1" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-xml_2.12:1.0.6" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.webjars:webjars-locator-core:0.32" -> "org.webjars:webjars-locator-core:0.36" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe:jse_2.12:1.2.3" -> "com.typesafe:jse_2.12:1.2.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.sbt:sbt-native-packager:1.3.20" -> "com.typesafe.sbt:sbt-native-packager:1.5.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "de.heikoseeberger:sbt-header:4.1.0" -> "de.heikoseeberger:sbt-header:5.0.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-compress:1.18" -> "org.apache.commons:commons-compress:1.19" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-compress:1.18" -> "org.apache.commons:commons-compress:1.19" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.akka:akka-actor_2.12:2.5.4" -> "com.typesafe.akka:akka-actor_2.12:2.5.18" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.akka:akka-actor_2.12:2.5.17" -> "com.typesafe.akka:akka-actor_2.12:2.5.18" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jgit:org.eclipse.jgit:4.9.0.201710071750-r" -> "org.eclipse.jgit:org.eclipse.jgit:4.11.9.201909030838-r" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.sbt:sbt-web:1.4.2" -> "com.typesafe.sbt:sbt-web:1.4.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.2" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.26" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.7" -> "org.slf4j:slf4j-api:1.7.29" [label="Evicted By" style="stroke-dasharray: 5,5"]
+}

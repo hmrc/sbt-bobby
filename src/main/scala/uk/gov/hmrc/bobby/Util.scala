@@ -17,41 +17,26 @@
 package uk.gov.hmrc.bobby
 
 import fansi.Str
-import net.virtualvoid.sbt.graph.ModuleId
 import sbt.librarymanagement.ModuleID
 import uk.gov.hmrc.bobby.domain.Dependency
-
-import scala.util.{Failure, Success, Try}
+import uk.gov.hmrc.graph.DependencyGraphParser
 
 object Util {
 
-  implicit class ExtendedModuleId(id: ModuleId) {
-    def toSbt = ModuleID(id.organisation, id.name, id.version)
-    def toDependency() = Dependency(id.organisation, id.name)
+  implicit class ExtendedSbtModuleID(id: ModuleID) {
+    def toDependency() =
+      Dependency(id.organization, id.name)
+
+    def moduleName =
+      s"${id.organization}.${id.name}"
   }
 
-  implicit class ExtendedSbtModuleID(id: ModuleID) {
-    def toDependencyGraph = ModuleId(id.organization, id.name, id.revision)
-    def toDependency() = Dependency(id.organization, id.name)
-    def moduleName = s"${id.organization}.${id.name}"
+  implicit class ExtendedNode(node: DependencyGraphParser.Node) {
+    def toModuleID =
+      ModuleID(node.group, node.artefact, node.version)
   }
 
   implicit class FansiStr(s: String) {
     def fansi = Str(s)
   }
-
-  implicit class RichOption[A](opt: Option[A]) {
-    def toTry(onNone: Exception): Try[A] = opt match {
-      case Some(a) => Success(a)
-      case None    => Failure(onNone)
-    }
-  }
-
-  implicit class RichTry[A](ty: Try[A]) {
-    def getOrElseWith(e: Throwable => A) = ty match {
-      case Success(a) => a
-      case Failure(t) => e(t)
-    }
-  }
-
 }

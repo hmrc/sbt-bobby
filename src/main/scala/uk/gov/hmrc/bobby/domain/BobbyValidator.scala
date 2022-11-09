@@ -55,10 +55,10 @@ object BobbyValidator {
 
     val matchingRules =
       bobbyRules
-        .filter { r =>
-          (r.dependency.organisation.equals(dep.organization) || r.dependency.organisation.equals("*")) &&
-            (r.dependency.name.equals(dep.name) || r.dependency.name.equals("*")) &&
-            r.range.includes(version)
+        .filter { rule =>
+          (rule.dependency.organisation == dep.organization || rule.dependency.organisation == "*") &&
+            (rule.dependency.name == dep.name || rule.dependency.name == "*") &&
+            rule.range.includes(version)
         }
         .sorted
 
@@ -78,14 +78,14 @@ object BobbyValidator {
 }
 
 sealed trait BobbyValidationResult {
-  def allMessages: List[Message]
-  def violations: List[Message]
-  def warnings: List[Message]
-  def exemptions: List[Message]
+  def allMessages  : List[Message]
+  def violations   : List[Message]
+  def warnings     : List[Message]
+  def exemptions   : List[Message]
   def hasViolations: Boolean
-  def hasWarnings: Boolean
+  def hasWarnings  : Boolean
   def hasExemptions: Boolean
-  def hasNoIssues: Boolean
+  def hasNoIssues  : Boolean
 }
 
 object BobbyValidationResult {

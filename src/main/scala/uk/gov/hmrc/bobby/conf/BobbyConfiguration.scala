@@ -44,23 +44,22 @@ object BobbyConfiguration {
     Json.fromJson(Json.parse(jsonConfig))(reads).getOrElse(List.empty)
   }
 
-  def extractMap(lines: List[String]): Map[String, String] = {
+  def extractMap(lines: List[String]): Map[String, String] =
     (for {
-      line <- lines
-      Array(key, value) = line.split("=", 2)
-    } yield key.trim -> value.trim).toMap
-  }
-
+       line              <- lines
+       Array(key, value) =  line.split("=", 2)
+     } yield key.trim -> value.trim
+    ).toMap
 }
 
 case class BobbyConfiguration(
-  bobbyRulesURL: Option[URL] = None,
-  outputDirectoryOverride: Option[String] = None,
-  outputFileName: String = "bobby-report",
-  bobbyConfigFile: Option[ConfigFile] = None,
-  strictMode: Boolean = false,
-  viewType: ViewType = Compact,
-  consoleColours: Boolean = true
+  bobbyRulesURL          : Option[URL]        = None,
+  outputDirectoryOverride: Option[String]     = None,
+  outputFileName         : String             = "bobby-report",
+  bobbyConfigFile        : Option[ConfigFile] = None,
+  strictMode             : Boolean            = false,
+  viewType               : ViewType           = Compact,
+  consoleColours         : Boolean            = true
 ) {
 
   import BobbyConfiguration._
@@ -68,21 +67,28 @@ case class BobbyConfiguration(
   val timeout = 3000
   val logger  = ConsoleLogger()
 
-  def configValue(key: String): Option[String] = bobbyConfigFile.flatMap(_.get(key))
+  def configValue(key: String): Option[String] =
+    bobbyConfigFile.flatMap(_.get(key))
 
-  val outputDirectory: String = (outputDirectoryOverride orElse configValue("output-directory")).getOrElse(defaultOutputDirectory)
-  val jsonOutputFile: String = s"${outputDirectory}/${outputFileName}.json"
-  val textOutputFile: String = s"${outputDirectory}/${outputFileName}.txt"
+  val outputDirectory: String =
+    (outputDirectoryOverride orElse configValue("output-directory")).getOrElse(defaultOutputDirectory)
 
-  val resolvedRuleUrl: Option[URL] = bobbyRulesURL.map { url =>
-    logger.info(s"[bobby] Bobby rule location was set explicitly in build")
-    url
-  } orElse {
-    logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile.map(_.fileName).getOrElse("Not set")}")
-    configValue("bobby-rules-url").map(new URL(_))
-  }
+  val jsonOutputFile: String =
+    s"${outputDirectory}/${outputFileName}.json"
 
-  def loadBobbyRules(): List[BobbyRule] = {
+  val textOutputFile: String =
+    s"${outputDirectory}/${outputFileName}.txt"
+
+  val resolvedRuleUrl: Option[URL] =
+    bobbyRulesURL.map { url =>
+      logger.info(s"[bobby] Bobby rule location was set explicitly in build")
+      url
+    }.orElse {
+      logger.info(s"[bobby] Looking for bobby rule location in config file: ${bobbyConfigFile.map(_.fileName).getOrElse("Not set")}")
+      configValue("bobby-rules-url").map(new URL(_))
+    }
+
+  def loadBobbyRules(): List[BobbyRule] =
     resolvedRuleUrl.map { url =>
       try {
         logger.info(s"[bobby] Loading bobby rules from: $url")
@@ -97,11 +103,9 @@ case class BobbyConfiguration(
         case e: Exception => abort(s"Unable to load bobby rules from $url: ${e.getMessage}")
       }
     }.getOrElse(abort("Bobby rule location unknown! - Set 'bobbyRulesURL' via the config file or explicitly in the build"))
-  }
 
   def abort(message: String): Nothing = {
     logger.error(s"[bobby] $message")
     sys.error(message)
   }
-
 }

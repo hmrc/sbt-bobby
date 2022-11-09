@@ -1,0 +1,1198 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0"[label=<uk.gov.hmrc<BR/><B>build-and-deploy-canary-service_2.12</B><BR/>0.19421.0> style=""]
+    "com.fasterxml.jackson.module:jackson-module-paranamer:2.11.4"[label=<com.fasterxml.jackson.module<BR/><B>jackson-module-paranamer</B><BR/>2.11.4> style=""]
+    "commons-io:commons-io:2.8.0"[label=<commons-io<BR/><B>commons-io</B><BR/>2.8.0> style=""]
+    "commons-io:commons-io:2.8.0"[label=<commons-io<BR/><B>commons-io</B><BR/>2.8.0> style=""]
+    "commons-io:commons-io:2.2"[label=<commons-io<BR/><B>commons-io</B><BR/>2.2> style="stroke-dasharray: 5,5"]
+    "commons-io:commons-io:2.6"[label=<commons-io<BR/><B>commons-io</B><BR/>2.6> style="stroke-dasharray: 5,5"]
+    "commons-io:commons-io:2.6"[label=<commons-io<BR/><B>commons-io</B><BR/>2.6> style="stroke-dasharray: 5,5"]
+    "org.scalatestplus:selenium-3-141_2.12:3.1.1.0"[label=<org.scalatestplus<BR/><B>selenium-3-141_2.12</B><BR/>3.1.1.0> style=""]
+    "com.typesafe:config:1.4.1"[label=<com.typesafe<BR/><B>config</B><BR/>1.4.1> style=""]
+    "com.typesafe:config:1.3.4"[label=<com.typesafe<BR/><B>config</B><BR/>1.3.4> style="stroke-dasharray: 5,5"]
+    "com.typesafe:config:1.4.0"[label=<com.typesafe<BR/><B>config</B><BR/>1.4.0> style="stroke-dasharray: 5,5"]
+    "com.typesafe:config:1.4.0"[label=<com.typesafe<BR/><B>config</B><BR/>1.4.0> style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-opera-driver</B><BR/>3.141.59> style=""]
+    "org.scala-sbt:test-interface:1.0"[label=<org.scala-sbt<BR/><B>test-interface</B><BR/>1.0> style=""]
+    "org.conscrypt:conscrypt-openjdk-uber:2.1.0"[label=<org.conscrypt<BR/><B>conscrypt-openjdk-uber</B><BR/>2.1.0> style=""]
+    "org.apache.httpcomponents:httpmime:4.5.12"[label=<org.apache.httpcomponents<BR/><B>httpmime</B><BR/>4.5.12> style=""]
+    "org.apache.httpcomponents:httpmime:4.5.12"[label=<org.apache.httpcomponents<BR/><B>httpmime</B><BR/>4.5.12> style=""]
+    "org.eclipse.jetty.http2:http2-common:9.4.20.v20190813"[label=<org.eclipse.jetty.http2<BR/><B>http2-common</B><BR/>9.4.20.v20190813> style=""]
+    "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-superscript</B><BR/>0.36.8> style=""]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4"[label=<com.fasterxml.jackson.datatype<BR/><B>jackson-datatype-jsr310</B><BR/>2.11.4> style=""]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1"[label=<com.fasterxml.jackson.datatype<BR/><B>jackson-datatype-jsr310</B><BR/>2.10.1> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-server:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-server</B><BR/>9.4.20.v20190813> style=""]
+    "org.scalatest:scalatest-refspec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-refspec_2.12</B><BR/>3.2.3> style=""]
+    "com.google.inject:guice:4.2.3"[label=<com.google.inject<BR/><B>guice</B><BR/>4.2.3> style=""]
+    "org.joda:joda-convert:2.2.0"[label=<org.joda<BR/><B>joda-convert</B><BR/>2.2.0> style=""]
+    "com.typesafe.play:shaded-oauth:2.1.3"[label=<com.typesafe.play<BR/><B>shaded-oauth</B><BR/>2.1.3> style=""]
+    "uk.gov.hmrc:url-builder_2.12:3.5.0-play-28"[label=<uk.gov.hmrc<BR/><B>url-builder_2.12</B><BR/>3.5.0-play-28> style=""]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-remote-driver</B><BR/>3.141.59> style=""]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-remote-driver</B><BR/>3.141.59> style=""]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.8.1"[label=<org.seleniumhq.selenium<BR/><B>selenium-remote-driver</B><BR/>3.8.1> style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.8.1"[label=<org.seleniumhq.selenium<BR/><B>selenium-remote-driver</B><BR/>3.8.1> style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-xml_2.12:1.2.0"[label=<org.scala-lang.modules<BR/><B>scala-xml_2.12</B><BR/>1.2.0> style=""]
+    "org.scala-lang.modules:scala-xml_2.12:1.0.6"[label=<org.scala-lang.modules<BR/><B>scala-xml_2.12</B><BR/>1.0.6> style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0"[label=<org.seleniumhq.selenium<BR/><B>htmlunit-driver</B><BR/>2.39.0> style=""]
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0"[label=<org.seleniumhq.selenium<BR/><B>htmlunit-driver</B><BR/>2.39.0> style=""]
+    "org.seleniumhq.selenium:htmlunit-driver:2.36.0"[label=<org.seleniumhq.selenium<BR/><B>htmlunit-driver</B><BR/>2.36.0> style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:htmlunit-driver:2.36.0"[label=<org.seleniumhq.selenium<BR/><B>htmlunit-driver</B><BR/>2.36.0> style="stroke-dasharray: 5,5"]
+    "com.google.inject.extensions:guice-assistedinject:4.2.3"[label=<com.google.inject.extensions<BR/><B>guice-assistedinject</B><BR/>4.2.3> style=""]
+    "com.iheart:ficus_2.12:1.4.7"[label=<com.iheart<BR/><B>ficus_2.12</B><BR/>1.4.7> style=""]
+    "com.typesafe.akka:akka-http-core_2.12:10.1.13"[label=<com.typesafe.akka<BR/><B>akka-http-core_2.12</B><BR/>10.1.13> style=""]
+    "io.dropwizard.metrics:metrics-core:4.1.17"[label=<io.dropwizard.metrics<BR/><B>metrics-core</B><BR/>4.1.17> style=""]
+    "io.dropwizard.metrics:metrics-core:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-core</B><BR/>4.0.5> style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-core</B><BR/>4.0.5> style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-core</B><BR/>4.0.5> style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-core</B><BR/>4.0.5> style="stroke-dasharray: 5,5"]
+    "jakarta.activation:jakarta.activation-api:1.2.2"[label=<jakarta.activation<BR/><B>jakarta.activation-api</B><BR/>1.2.2> style=""]
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-jira-converter</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-xwiki-macros:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-xwiki-macros</B><BR/>0.36.8> style=""]
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-firefox-driver</B><BR/>3.141.59> style=""]
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-profile-pegdown</B><BR/>0.36.8> style=""]
+    "joda-time:joda-time:2.10.5"[label=<joda-time<BR/><B>joda-time</B><BR/>2.10.5> style=""]
+    "net.sf.jopt-simple:jopt-simple:5.0.3"[label=<net.sf.jopt-simple<BR/><B>jopt-simple</B><BR/>5.0.3> style=""]
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0"[label=<uk.gov.hmrc<BR/><B>bootstrap-test-play-28_2.12</B><BR/>5.20.0> style=""]
+    "net.bytebuddy:byte-buddy:1.8.15"[label=<net.bytebuddy<BR/><B>byte-buddy</B><BR/>1.8.15> style=""]
+    "com.vladsch.flexmark:flexmark-ext-media-tags:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-media-tags</B><BR/>0.36.8> style=""]
+    "org.scalatest:scalatest-funspec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-funspec_2.12</B><BR/>3.2.3> style=""]
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-edge-driver</B><BR/>3.141.59> style=""]
+    "org.apache.httpcomponents:httpclient:4.5.12"[label=<org.apache.httpcomponents<BR/><B>httpclient</B><BR/>4.5.12> style=""]
+    "org.apache.httpcomponents:httpclient:4.5.12"[label=<org.apache.httpcomponents<BR/><B>httpclient</B><BR/>4.5.12> style=""]
+    "org.apache.httpcomponents:httpclient:4.5.6"[label=<org.apache.httpcomponents<BR/><B>httpclient</B><BR/>4.5.6> style="stroke-dasharray: 5,5"]
+    "org.apache.httpcomponents:httpclient:4.5.6"[label=<org.apache.httpcomponents<BR/><B>httpclient</B><BR/>4.5.6> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-security:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-security</B><BR/>9.4.20.v20190813> style=""]
+    "com.vladsch.flexmark:flexmark-util:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-util</B><BR/>0.36.8> style=""]
+    "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0"[label=<uk.gov.hmrc<BR/><B>play-auditing-play-28_2.12</B><BR/>7.10.0> style=""]
+    "xml-apis:xml-apis:1.4.01"[label=<xml-apis<BR/><B>xml-apis</B><BR/>1.4.01> style=""]
+    "xml-apis:xml-apis:1.4.01"[label=<xml-apis<BR/><B>xml-apis</B><BR/>1.4.01> style=""]
+    "com.typesafe.play:play-ws-standalone-xml_2.12:2.1.3"[label=<com.typesafe.play<BR/><B>play-ws-standalone-xml_2.12</B><BR/>2.1.3> style=""]
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-ie-driver</B><BR/>3.141.59> style=""]
+    "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gitlab</B><BR/>0.36.8> style=""]
+    "com.typesafe.play:filters-helpers_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:filters-helpers_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:filters-helpers_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:filters-helpers_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>filters-helpers_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest-featurespec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-featurespec_2.12</B><BR/>3.2.3> style=""]
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-ahc-ws_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.1"[label=<com.typesafe.play<BR/><B>play-ahc-ws_2.12</B><BR/>2.8.1> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-yaml-front-matter</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-common</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-common</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-io:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-io:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-io</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "commons-fileupload:commons-fileupload:1.4"[label=<commons-fileupload<BR/><B>commons-fileupload</B><BR/>1.4> style=""]
+    "org.apache.commons:commons-exec:1.3"[label=<org.apache.commons<BR/><B>commons-exec</B><BR/>1.3> style=""]
+    "org.eclipse.jetty:jetty-servlet:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-servlet</B><BR/>9.4.20.v20190813> style=""]
+    "uk.gov.hmrc:bootstrap-health-play-28_2.12:5.20.0"[label=<uk.gov.hmrc<BR/><B>bootstrap-health-play-28_2.12</B><BR/>5.20.0> style=""]
+    "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"[label=<org.scala-lang.modules<BR/><B>scala-parser-combinators_2.12</B><BR/>1.1.2> style=""]
+    "org.scalatest:scalatest-freespec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-freespec_2.12</B><BR/>3.2.3> style=""]
+    "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-attributes</B><BR/>0.36.8> style=""]
+    "com.google.j2objc:j2objc-annotations:1.3"[label=<com.google.j2objc<BR/><B>j2objc-annotations</B><BR/>1.3> style=""]
+    "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-emoji</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty:jetty-continuation:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-continuation</B><BR/>9.4.20.v20190813> style=""]
+    "com.google.errorprone:error_prone_annotations:2.3.4"[label=<com.google.errorprone<BR/><B>error_prone_annotations</B><BR/>2.3.4> style=""]
+    "com.vladsch.flexmark:flexmark-html-parser:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-html-parser</B><BR/>0.36.8> style=""]
+    "org.reactivestreams:reactive-streams:1.0.3"[label=<org.reactivestreams<BR/><B>reactive-streams</B><BR/>1.0.3> style=""]
+    "com.github.tomakehurst:wiremock-jre8:2.26.3"[label=<com.github.tomakehurst<BR/><B>wiremock-jre8</B><BR/>2.26.3> style=""]
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-client</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-client</B><BR/>9.4.27.v20200227> style=""]
+    "org.scala-lang.modules:scala-java8-compat_2.12:0.9.1"[label=<org.scala-lang.modules<BR/><B>scala-java8-compat_2.12</B><BR/>0.9.1> style=""]
+    "org.scala-lang.modules:scala-java8-compat_2.12:0.8.0"[label=<org.scala-lang.modules<BR/><B>scala-java8-compat_2.12</B><BR/>0.8.0> style="stroke-dasharray: 5,5"]
+    "aopalliance:aopalliance:1.0"[label=<aopalliance<BR/><B>aopalliance</B><BR/>1.0> style=""]
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-safari-driver</B><BR/>3.141.59> style=""]
+    "com.typesafe.play:play-server_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-server_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-server_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>play-server_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-server_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-server_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-server_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:secure_2.12:8.1.0"[label=<uk.gov.hmrc<BR/><B>secure_2.12</B><BR/>8.1.0> style=""]
+    "org.apache.pdfbox:xmpbox:2.0.8"[label=<org.apache.pdfbox<BR/><B>xmpbox</B><BR/>2.0.8> style=""]
+    "org.eclipse.jetty:jetty-xml:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-xml</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-xml:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-xml</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-xml:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-xml</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.slf4j:jul-to-slf4j:1.7.30"[label=<org.slf4j<BR/><B>jul-to-slf4j</B><BR/>1.7.30> style=""]
+    "net.sourceforge.htmlunit:neko-htmlunit:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>neko-htmlunit</B><BR/>2.39.0> style=""]
+    "net.sourceforge.htmlunit:neko-htmlunit:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>neko-htmlunit</B><BR/>2.39.0> style=""]
+    "org.jsoup:jsoup:1.13.1"[label=<org.jsoup<BR/><B>jsoup</B><BR/>1.13.1> style=""]
+    "org.jsoup:jsoup:1.8.3"[label=<org.jsoup<BR/><B>jsoup</B><BR/>1.8.3> style="stroke-dasharray: 5,5"]
+    "org.jsoup:jsoup:1.10.2"[label=<org.jsoup<BR/><B>jsoup</B><BR/>1.10.2> style="stroke-dasharray: 5,5"]
+    "org.jsoup:jsoup:1.10.2"[label=<org.jsoup<BR/><B>jsoup</B><BR/>1.10.2> style="stroke-dasharray: 5,5"]
+    "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0"[label=<org.scalatestplus.play<BR/><B>scalatestplus-play_2.12</B><BR/>5.1.0> style=""]
+    "org.scalatestplus.play:scalatestplus-play_2.12:4.0.3"[label=<org.scalatestplus.play<BR/><B>scalatestplus-play_2.12</B><BR/>4.0.3> style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:http-core_2.12:2.5.0"[label=<uk.gov.hmrc<BR/><B>http-core_2.12</B><BR/>2.5.0> style=""]
+    "org.apache.pdfbox:fontbox:2.0.8"[label=<org.apache.pdfbox<BR/><B>fontbox</B><BR/>2.0.8> style=""]
+    "uk.gov.hmrc.webjars:hmrc-frontend:4.3.0"[label=<uk.gov.hmrc.webjars<BR/><B>hmrc-frontend</B><BR/>4.3.0> style=""]
+    "ch.qos.logback:logback-classic:1.2.3"[label=<ch.qos.logback<BR/><B>logback-classic</B><BR/>1.2.3> style=""]
+    "com.typesafe.play:play_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe.akka:akka-parsing_2.12:10.1.13"[label=<com.typesafe.akka<BR/><B>akka-parsing_2.12</B><BR/>10.1.13> style=""]
+    "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-autolink</B><BR/>0.36.8> style=""]
+    "org.apache.pdfbox:pdfbox:2.0.8"[label=<org.apache.pdfbox<BR/><B>pdfbox</B><BR/>2.0.8> style=""]
+    "org.scalatest:scalatest-flatspec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-flatspec_2.12</B><BR/>3.2.3> style=""]
+    "org.scala-lang:scala-reflect:2.12.13"[label=<org.scala-lang<BR/><B>scala-reflect</B><BR/>2.12.13> style=""]
+    "io.dropwizard.metrics:metrics-graphite:4.1.17"[label=<io.dropwizard.metrics<BR/><B>metrics-graphite</B><BR/>4.1.17> style=""]
+    "com.jayway.jsonpath:json-path:2.4.0"[label=<com.jayway.jsonpath<BR/><B>json-path</B><BR/>2.4.0> style=""]
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28"[label=<uk.gov.hmrc<BR/><B>play-language_2.12</B><BR/>5.1.0-play-28> style=""]
+    "uk.gov.hmrc:play-language_2.12:5.0.0-play-28"[label=<uk.gov.hmrc<BR/><B>play-language_2.12</B><BR/>5.0.0-play-28> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:cachecontrol_2.12:2.0.0"[label=<com.typesafe.play<BR/><B>cachecontrol_2.12</B><BR/>2.0.0> style=""]
+    "org.checkerframework:checker-qual:2.10.0"[label=<org.checkerframework<BR/><B>checker-qual</B><BR/>2.10.0> style=""]
+    "org.lz4:lz4-java:1.7.1"[label=<org.lz4<BR/><B>lz4-java</B><BR/>1.7.1> style=""]
+    "uk.gov.hmrc:http-verbs_2.12:13.12.0"[label=<uk.gov.hmrc<BR/><B>http-verbs_2.12</B><BR/>13.12.0> style=""]
+    "com.flipkart.zjsonpatch:zjsonpatch:0.4.4"[label=<com.flipkart.zjsonpatch<BR/><B>zjsonpatch</B><BR/>0.4.4> style=""]
+    "org.eclipse.jetty.http2:http2-server:9.4.20.v20190813"[label=<org.eclipse.jetty.http2<BR/><B>http2-server</B><BR/>9.4.20.v20190813> style=""]
+    "com.google.code.findbugs:jsr305:3.0.2"[label=<com.google.code.findbugs<BR/><B>jsr305</B><BR/>3.0.2> style=""]
+    "de.rototor.pdfbox:graphics2d:0.12"[label=<de.rototor.pdfbox<BR/><B>graphics2d</B><BR/>0.12> style=""]
+    "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-wikilink</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-servlets</B><BR/>9.4.20.v20190813> style=""]
+    "log4j:log4j:1.2.17"[label=<log4j<BR/><B>log4j</B><BR/>1.2.17> style=""]
+    "com.novocode:junit-interface:0.11"[label=<com.novocode<BR/><B>junit-interface</B><BR/>0.11> style=""]
+    "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-jekyll-front-matter</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty.websocket:websocket-api:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-api</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty.websocket:websocket-api:9.4.27.v20200227"[label=<org.eclipse.jetty.websocket<BR/><B>websocket-api</B><BR/>9.4.27.v20200227> style=""]
+    "com.typesafe.play:play-test_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-test_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-test_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>play-test_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-test_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>play-test_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-test_2.12:2.8.1"[label=<com.typesafe.play<BR/><B>play-test_2.12</B><BR/>2.8.1> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-gfm-issues:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gfm-issues</B><BR/>0.36.8> style=""]
+    "org.scalatest:scalatest-compatible:3.2.3"[label=<org.scalatest<BR/><B>scalatest-compatible</B><BR/>3.2.3> style=""]
+    "com.typesafe.play:play-ws-standalone-json_2.12:2.1.3"[label=<com.typesafe.play<BR/><B>play-ws-standalone-json_2.12</B><BR/>2.1.3> style=""]
+    "org.scalactic:scalactic_2.12:3.2.3"[label=<org.scalactic<BR/><B>scalactic_2.12</B><BR/>3.2.3> style=""]
+    "com.vladsch.flexmark:flexmark-ext-ins:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-ins</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gfm-strikethrough</B><BR/>0.36.8> style=""]
+    "org.brotli:dec:0.1.2"[label=<org.brotli<BR/><B>dec</B><BR/>0.1.2> style=""]
+    "org.brotli:dec:0.1.2"[label=<org.brotli<BR/><B>dec</B><BR/>0.1.2> style=""]
+    "com.vladsch.flexmark:flexmark-all:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-all</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-all:0.35.10"[label=<com.vladsch.flexmark<BR/><B>flexmark-all</B><BR/>0.35.10> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:shaded-asynchttpclient:2.1.3"[label=<com.typesafe.play<BR/><B>shaded-asynchttpclient</B><BR/>2.1.3> style=""]
+    "xalan:xalan:2.7.2"[label=<xalan<BR/><B>xalan</B><BR/>2.7.2> style=""]
+    "xalan:xalan:2.7.2"[label=<xalan<BR/><B>xalan</B><BR/>2.7.2> style=""]
+    "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-youtrack-converter</B><BR/>0.36.8> style=""]
+    "com.fasterxml.jackson.core:jackson-annotations:2.11.4"[label=<com.fasterxml.jackson.core<BR/><B>jackson-annotations</B><BR/>2.11.4> style=""]
+    "com.fasterxml.jackson.core:jackson-annotations:2.10.0"[label=<com.fasterxml.jackson.core<BR/><B>jackson-annotations</B><BR/>2.10.0> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-annotations:2.10.1"[label=<com.fasterxml.jackson.core<BR/><B>jackson-annotations</B><BR/>2.10.1> style="stroke-dasharray: 5,5"]
+    "commons-net:commons-net:3.6"[label=<commons-net<BR/><B>commons-net</B><BR/>3.6> style=""]
+    "commons-net:commons-net:3.6"[label=<commons-net<BR/><B>commons-net</B><BR/>3.6> style=""]
+    "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-escaped-character</B><BR/>0.36.8> style=""]
+    "net.sourceforge.htmlunit:htmlunit-core-js:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>htmlunit-core-js</B><BR/>2.39.0> style=""]
+    "net.sourceforge.htmlunit:htmlunit-core-js:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>htmlunit-core-js</B><BR/>2.39.0> style=""]
+    "org.seleniumhq.selenium:selenium-java:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-java</B><BR/>3.141.59> style=""]
+    "io.dropwizard.metrics:metrics-jvm:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-jvm</B><BR/>4.0.5> style=""]
+    "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"[label=<com.google.guava<BR/><B>listenablefuture</B><BR/>9999.0-empty-to-avoid-conflict-with-guava> style=""]
+    "uk.gov.hmrc:play-allowlist-filter_2.12:1.0.0-play-28"[label=<uk.gov.hmrc<BR/><B>play-allowlist-filter_2.12</B><BR/>1.0.0-play-28> style=""]
+    "xerces:xercesImpl:2.12.0"[label=<xerces<BR/><B>xercesImpl</B><BR/>2.12.0> style=""]
+    "xerces:xercesImpl:2.12.0"[label=<xerces<BR/><B>xercesImpl</B><BR/>2.12.0> style=""]
+    "com.vladsch.flexmark:flexmark:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark</B><BR/>0.36.8> style=""]
+    "com.google.guava:guava:28.2-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>28.2-jre> style=""]
+    "com.google.guava:guava:27.0.1-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>27.0.1-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:27.1-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>27.1-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre"[label=<com.google.guava<BR/><B>guava</B><BR/>25.0-jre> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.11.4"[label=<com.fasterxml.jackson.dataformat<BR/><B>jackson-dataformat-cbor</B><BR/>2.11.4> style=""]
+    "com.typesafe.akka:akka-actor_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-actor_2.12</B><BR/>2.6.14> style=""]
+    "org.webjars.npm:govuk-frontend:4.0.0"[label=<org.webjars.npm<BR/><B>govuk-frontend</B><BR/>4.0.0> style=""]
+    "org.ow2.asm:asm:7.0"[label=<org.ow2.asm<BR/><B>asm</B><BR/>7.0> style=""]
+    "com.github.jknack:handlebars-helpers:4.1.2"[label=<com.github.jknack<BR/><B>handlebars-helpers</B><BR/>4.1.2> style=""]
+    "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-enumerated-reference</B><BR/>0.36.8> style=""]
+    "io.dropwizard.metrics:metrics-logback:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-logback</B><BR/>4.0.5> style=""]
+    "com.fasterxml.jackson.core:jackson-core:2.11.4"[label=<com.fasterxml.jackson.core<BR/><B>jackson-core</B><BR/>2.11.4> style=""]
+    "com.fasterxml.jackson.core:jackson-core:2.10.0"[label=<com.fasterxml.jackson.core<BR/><B>jackson-core</B><BR/>2.10.0> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.10.1"[label=<com.fasterxml.jackson.core<BR/><B>jackson-core</B><BR/>2.10.1> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.10.3"[label=<com.fasterxml.jackson.core<BR/><B>jackson-core</B><BR/>2.10.3> style="stroke-dasharray: 5,5"]
+    "javax.servlet:javax.servlet-api:3.1.0"[label=<javax.servlet<BR/><B>javax.servlet-api</B><BR/>3.1.0> style=""]
+    "com.vladsch.flexmark:flexmark-ext-macros:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-macros</B><BR/>0.36.8> style=""]
+    "com.typesafe.play:play-streams_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-streams_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-streams_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-streams_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.typesafe:ssl-config-core_2.12:0.4.2"[label=<com.typesafe<BR/><B>ssl-config-core_2.12</B><BR/>0.4.2> style=""]
+    "com.typesafe:ssl-config-core_2.12:0.4.1"[label=<com.typesafe<BR/><B>ssl-config-core_2.12</B><BR/>0.4.1> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-typographic</B><BR/>0.36.8> style=""]
+    "org.scalatest:scalatest-mustmatchers_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-mustmatchers_2.12</B><BR/>3.2.3> style=""]
+    "com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:0.0.1-RC13"[label=<com.openhtmltopdf<BR/><B>openhtmltopdf-jsoup-dom-converter</B><BR/>0.0.1-RC13> style=""]
+    "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-alpn-conscrypt-server</B><BR/>9.4.20.v20190813> style=""]
+    "org.apache.commons:commons-lang3:3.11"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.11> style=""]
+    "org.apache.commons:commons-lang3:3.11"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.11> style=""]
+    "org.apache.commons:commons-lang3:3.8.1"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.8.1> style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.7"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.7> style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.10"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.10> style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.7"[label=<org.apache.commons<BR/><B>commons-lang3</B><BR/>3.7> style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-api:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-api</B><BR/>3.141.59> style=""]
+    "org.seleniumhq.selenium:selenium-api:3.8.1"[label=<org.seleniumhq.selenium<BR/><B>selenium-api</B><BR/>3.8.1> style="stroke-dasharray: 5,5"]
+    "net.javacrumbs.json-unit:json-unit-core:2.12.0"[label=<net.javacrumbs.json-unit<BR/><B>json-unit-core</B><BR/>2.12.0> style=""]
+    "org.slf4j:jcl-over-slf4j:1.7.30"[label=<org.slf4j<BR/><B>jcl-over-slf4j</B><BR/>1.7.30> style=""]
+    "commons-codec:commons-codec:1.15"[label=<commons-codec<BR/><B>commons-codec</B><BR/>1.15> style=""]
+    "commons-codec:commons-codec:1.15"[label=<commons-codec<BR/><B>commons-codec</B><BR/>1.15> style=""]
+    "commons-codec:commons-codec:1.11"[label=<commons-codec<BR/><B>commons-codec</B><BR/>1.11> style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0"[label=<uk.gov.hmrc<BR/><B>bootstrap-common-play-28_2.12</B><BR/>5.20.0> style=""]
+    "com.typesafe.play:play-ws-standalone_2.12:2.1.3"[label=<com.typesafe.play<BR/><B>play-ws-standalone_2.12</B><BR/>2.1.3> style=""]
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.4"[label=<com.fasterxml.jackson.module<BR/><B>jackson-module-parameter-names</B><BR/>2.11.4> style=""]
+    "com.typesafe.play:twirl-api_2.12:1.5.1"[label=<com.typesafe.play<BR/><B>twirl-api_2.12</B><BR/>1.5.1> style=""]
+    "com.typesafe.play:twirl-api_2.12:1.4.2"[label=<com.typesafe.play<BR/><B>twirl-api_2.12</B><BR/>1.4.2> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.5.0"[label=<com.typesafe.play<BR/><B>twirl-api_2.12</B><BR/>1.5.0> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.5.0"[label=<com.typesafe.play<BR/><B>twirl-api_2.12</B><BR/>1.5.0> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-json_2.12:2.8.1"[label=<com.typesafe.play<BR/><B>play-json_2.12</B><BR/>2.8.1> style=""]
+    "com.openhtmltopdf:openhtmltopdf-rtl-support:0.0.1-RC13"[label=<com.openhtmltopdf<BR/><B>openhtmltopdf-rtl-support</B><BR/>0.0.1-RC13> style=""]
+    "org.apache.commons:commons-text:1.8"[label=<org.apache.commons<BR/><B>commons-text</B><BR/>1.8> style=""]
+    "org.apache.commons:commons-text:1.8"[label=<org.apache.commons<BR/><B>commons-text</B><BR/>1.8> style=""]
+    "org.eclipse.jetty:jetty-webapp:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-webapp</B><BR/>9.4.20.v20190813> style=""]
+    "jakarta.xml.bind:jakarta.xml.bind-api:2.3.3"[label=<jakarta.xml.bind<BR/><B>jakarta.xml.bind-api</B><BR/>2.3.3> style=""]
+    "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gfm-tasklist</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-formatter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-formatter</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty:jetty-alpn-conscrypt-client:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-alpn-conscrypt-client</B><BR/>9.4.20.v20190813> style=""]
+    "com.vladsch.flexmark:flexmark-ext-definition:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-definition</B><BR/>0.36.8> style=""]
+    "com.fasterxml.jackson.core:jackson-databind:2.11.4"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.11.4> style=""]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.0"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.10.0> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.1"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.10.1> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.9.5"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.9.5> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.9.6"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.9.6> style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.3"[label=<com.fasterxml.jackson.core<BR/><B>jackson-databind</B><BR/>2.10.3> style="stroke-dasharray: 5,5"]
+    "junit:junit:4.13.2"[label=<junit<BR/><B>junit</B><BR/>4.13.2> style=""]
+    "junit:junit:4.11"[label=<junit<BR/><B>junit</B><BR/>4.11> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest-core_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-core_2.12</B><BR/>3.2.3> style=""]
+    "com.squareup.okhttp3:okhttp:3.11.0"[label=<com.squareup.okhttp3<BR/><B>okhttp</B><BR/>3.11.0> style=""]
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-chrome-driver</B><BR/>3.141.59> style=""]
+    "org.apache.httpcomponents:httpcore:4.4.13"[label=<org.apache.httpcomponents<BR/><B>httpcore</B><BR/>4.4.13> style=""]
+    "org.apache.httpcomponents:httpcore:4.4.13"[label=<org.apache.httpcomponents<BR/><B>httpcore</B><BR/>4.4.13> style=""]
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2"[label=<com.kenshoo<BR/><B>metrics-play_2.12</B><BR/>2.7.3_0.8.2> style=""]
+    "org.bouncycastle:bcprov-jdk15on:1.68"[label=<org.bouncycastle<BR/><B>bcprov-jdk15on</B><BR/>1.68> style=""]
+    "commons-logging:commons-logging:1.2"[label=<commons-logging<BR/><B>commons-logging</B><BR/>1.2> style=""]
+    "commons-logging:commons-logging:1.2"[label=<commons-logging<BR/><B>commons-logging</B><BR/>1.2> style=""]
+    "commons-logging:commons-logging:1.2"[label=<commons-logging<BR/><B>commons-logging</B><BR/>1.2> style=""]
+    "com.thoughtworks.paranamer:paranamer:2.8"[label=<com.thoughtworks.paranamer<BR/><B>paranamer</B><BR/>2.8> style=""]
+    "io.dropwizard.metrics:metrics-json:4.0.5"[label=<io.dropwizard.metrics<BR/><B>metrics-json</B><BR/>4.0.5> style=""]
+    "org.eclipse.jetty:jetty-client:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-client</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-client:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-client</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty.http2:http2-hpack:9.4.20.v20190813"[label=<org.eclipse.jetty.http2<BR/><B>http2-hpack</B><BR/>9.4.20.v20190813> style=""]
+    "org.eclipse.jetty:jetty-alpn-client:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-alpn-client</B><BR/>9.4.20.v20190813> style=""]
+    "com.vladsch.flexmark:flexmark-ext-toc:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-toc</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-anchorlink</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-tables:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-tables</B><BR/>0.36.8> style=""]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4"[label=<com.fasterxml.jackson.datatype<BR/><B>jackson-datatype-jdk8</B><BR/>2.11.4> style=""]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1"[label=<com.fasterxml.jackson.datatype<BR/><B>jackson-datatype-jdk8</B><BR/>2.10.1> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest-propspec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-propspec_2.12</B><BR/>3.2.3> style=""]
+    "com.typesafe.play:play-exceptions:2.8.8"[label=<com.typesafe.play<BR/><B>play-exceptions</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-akka-http-server_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-akka-http-server_2.12</B><BR/>2.8.7> style=""]
+    "com.typesafe.play:play-akka-http-server_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>play-akka-http-server_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-footnotes</B><BR/>0.36.8> style=""]
+    "org.nibor.autolink:autolink:0.6.0"[label=<org.nibor.autolink<BR/><B>autolink</B><BR/>0.6.0> style=""]
+    "org.fluentlenium:fluentlenium-core:3.7.1"[label=<org.fluentlenium<BR/><B>fluentlenium-core</B><BR/>3.7.1> style=""]
+    "uk.gov.hmrc:http-verbs-test-play-28_2.12:13.12.0"[label=<uk.gov.hmrc<BR/><B>http-verbs-test-play-28_2.12</B><BR/>13.12.0> style=""]
+    "org.scalatest:scalatest-matchers-core_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-matchers-core_2.12</B><BR/>3.2.3> style=""]
+    "org.xmlunit:xmlunit-legacy:2.6.2"[label=<org.xmlunit<BR/><B>xmlunit-legacy</B><BR/>2.6.2> style=""]
+    "javax.inject:javax.inject:1"[label=<javax.inject<BR/><B>javax.inject</B><BR/>1> style=""]
+    "com.vladsch.flexmark:flexmark-ext-jekyll-tag:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-jekyll-tag</B><BR/>0.36.8> style=""]
+    "org.hamcrest:hamcrest-core:2.1"[label=<org.hamcrest<BR/><B>hamcrest-core</B><BR/>2.1> style=""]
+    "org.hamcrest:hamcrest-core:1.3"[label=<org.hamcrest<BR/><B>hamcrest-core</B><BR/>1.3> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-ws_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-ws_2.12</B><BR/>2.8.8> style=""]
+    "org.scalatest:scalatest-wordspec_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-wordspec_2.12</B><BR/>3.2.3> style=""]
+    "org.typelevel:macro-compat_2.12:1.1.1"[label=<org.typelevel<BR/><B>macro-compat_2.12</B><BR/>1.1.1> style=""]
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0"[label=<uk.gov.hmrc<BR/><B>logback-json-logger_2.12</B><BR/>5.1.0> style=""]
+    "org.scalatest:scalatest-shouldmatchers_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-shouldmatchers_2.12</B><BR/>3.2.3> style=""]
+    "com.github.jknack:handlebars:4.1.2"[label=<com.github.jknack<BR/><B>handlebars</B><BR/>4.1.2> style=""]
+    "io.jsonwebtoken:jjwt:0.9.1"[label=<io.jsonwebtoken<BR/><B>jjwt</B><BR/>0.9.1> style=""]
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-serialization-jackson_2.12</B><BR/>2.6.14> style=""]
+    "com.google.guava:failureaccess:1.0.1"[label=<com.google.guava<BR/><B>failureaccess</B><BR/>1.0.1> style=""]
+    "org.hamcrest:hamcrest:2.1"[label=<org.hamcrest<BR/><B>hamcrest</B><BR/>2.1> style=""]
+    "net.sourceforge.htmlunit:htmlunit:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>htmlunit</B><BR/>2.39.0> style=""]
+    "net.sourceforge.htmlunit:htmlunit:2.39.0"[label=<net.sourceforge.htmlunit<BR/><B>htmlunit</B><BR/>2.39.0> style=""]
+    "com.typesafe.play:play-guice_2.12:2.8.8"[label=<com.typesafe.play<BR/><B>play-guice_2.12</B><BR/>2.8.8> style=""]
+    "com.typesafe.play:play-guice_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-guice_2.12</B><BR/>2.8.7> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-admonition:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-admonition</B><BR/>0.36.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-youtube-embedded:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-youtube-embedded</B><BR/>0.36.8> style=""]
+    "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13"[label=<com.openhtmltopdf<BR/><B>openhtmltopdf-pdfbox</B><BR/>0.0.1-RC13> style=""]
+    "com.typesafe.play:build-link:2.8.8"[label=<com.typesafe.play<BR/><B>build-link</B><BR/>2.8.8> style=""]
+    "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-abbreviation</B><BR/>0.36.8> style=""]
+    "net.minidev:json-smart:2.3"[label=<net.minidev<BR/><B>json-smart</B><BR/>2.3> style=""]
+    "xalan:serializer:2.7.2"[label=<xalan<BR/><B>serializer</B><BR/>2.7.2> style=""]
+    "xalan:serializer:2.7.2"[label=<xalan<BR/><B>serializer</B><BR/>2.7.2> style=""]
+    "com.typesafe.akka:akka-actor-typed_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-actor-typed_2.12</B><BR/>2.6.14> style=""]
+    "org.xmlunit:xmlunit-placeholders:2.6.2"[label=<org.xmlunit<BR/><B>xmlunit-placeholders</B><BR/>2.6.2> style=""]
+    "com.codeborne:phantomjsdriver:1.4.4"[label=<com.codeborne<BR/><B>phantomjsdriver</B><BR/>1.4.4> style=""]
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28"[label=<uk.gov.hmrc<BR/><B>play-frontend-hmrc_2.12</B><BR/>3.0.0-play-28> style=""]
+    "org.opentest4j:opentest4j:1.1.1"[label=<org.opentest4j<BR/><B>opentest4j</B><BR/>1.1.1> style=""]
+    "org.xmlunit:xmlunit-core:2.6.2"[label=<org.xmlunit<BR/><B>xmlunit-core</B><BR/>2.6.2> style=""]
+    "net.minidev:accessors-smart:1.2"[label=<net.minidev<BR/><B>accessors-smart</B><BR/>1.2> style=""]
+    "com.vladsch.flexmark:flexmark-ext-aside:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-aside</B><BR/>0.36.8> style=""]
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3"[label=<com.typesafe.play<BR/><B>play-ahc-ws-standalone_2.12</B><BR/>2.1.3> style=""]
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0"[label=<uk.gov.hmrc<BR/><B>http-verbs-play-28_2.12</B><BR/>13.12.0> style=""]
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.7.0"[label=<uk.gov.hmrc<BR/><B>http-verbs-play-28_2.12</B><BR/>13.7.0> style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.3.0"[label=<uk.gov.hmrc<BR/><B>http-verbs-play-28_2.12</B><BR/>13.3.0> style="stroke-dasharray: 5,5"]
+    "com.rabbitmq:amqp-client:5.10.0"[label=<com.rabbitmq<BR/><B>amqp-client</B><BR/>5.10.0> style=""]
+    "org.eclipse.jetty:jetty-alpn-server:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-alpn-server</B><BR/>9.4.20.v20190813> style=""]
+    "net.sourceforge.htmlunit:htmlunit-cssparser:1.5.0"[label=<net.sourceforge.htmlunit<BR/><B>htmlunit-cssparser</B><BR/>1.5.0> style=""]
+    "com.typesafe.akka:akka-stream_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-stream_2.12</B><BR/>2.6.14> style=""]
+    "com.typesafe.akka:akka-stream_2.12:2.6.1"[label=<com.typesafe.akka<BR/><B>akka-stream_2.12</B><BR/>2.6.1> style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:auth-client_2.12:5.7.0-play-28"[label=<uk.gov.hmrc<BR/><B>auth-client_2.12</B><BR/>5.7.0-play-28> style=""]
+    "org.seleniumhq.selenium:selenium-support:3.141.59"[label=<org.seleniumhq.selenium<BR/><B>selenium-support</B><BR/>3.141.59> style=""]
+    "jakarta.transaction:jakarta.transaction-api:1.3.3"[label=<jakarta.transaction<BR/><B>jakarta.transaction-api</B><BR/>1.3.3> style=""]
+    "org.eclipse.jetty:jetty-util:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-util</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-util:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-util</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-util:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-util</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-util:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-util</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest-diagrams_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-diagrams_2.12</B><BR/>3.2.3> style=""]
+    "ch.qos.logback:logback-core:1.2.3"[label=<ch.qos.logback<BR/><B>logback-core</B><BR/>1.2.3> style=""]
+    "javax.cache:cache-api:1.1.1"[label=<javax.cache<BR/><B>cache-api</B><BR/>1.1.1> style=""]
+    "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4"[label=<com.fasterxml.jackson.module<BR/><B>jackson-module-scala_2.12</B><BR/>2.11.4> style=""]
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-pdf-converter</B><BR/>0.36.8> style=""]
+    "org.eclipse.jetty:jetty-http:9.4.27.v20200227"[label=<org.eclipse.jetty<BR/><B>jetty-http</B><BR/>9.4.27.v20200227> style=""]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-http</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-http</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813"[label=<org.eclipse.jetty<BR/><B>jetty-http</B><BR/>9.4.20.v20190813> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.30"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.30> style=""]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.12"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.12> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.29"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.29> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.29"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.29> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.25> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest_2.12</B><BR/>3.2.3> style=""]
+    "org.scalatest:scalatest_2.12:3.1.1"[label=<org.scalatest<BR/><B>scalatest_2.12</B><BR/>3.1.1> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.1.1"[label=<org.scalatest<BR/><B>scalatest_2.12</B><BR/>3.1.1> style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.1.1"[label=<org.scalatest<BR/><B>scalatest_2.12</B><BR/>3.1.1> style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-ext-gfm-users:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gfm-users</B><BR/>0.36.8> style=""]
+    "com.squareup.okio:okio:1.14.0"[label=<com.squareup.okio<BR/><B>okio</B><BR/>1.14.0> style=""]
+    "com.openhtmltopdf:openhtmltopdf-core:0.0.1-RC13"[label=<com.openhtmltopdf<BR/><B>openhtmltopdf-core</B><BR/>0.0.1-RC13> style=""]
+    "com.typesafe.play:play-logback_2.12:2.8.7"[label=<com.typesafe.play<BR/><B>play-logback_2.12</B><BR/>2.8.7> style=""]
+    "com.typesafe.play:play-logback_2.12:2.7.5"[label=<com.typesafe.play<BR/><B>play-logback_2.12</B><BR/>2.7.5> style="stroke-dasharray: 5,5"]
+    "com.softwaremill.sttp.model:core_2.12:1.2.2"[label=<com.softwaremill.sttp.model<BR/><B>core_2.12</B><BR/>1.2.2> style=""]
+    "com.typesafe.akka:akka-protobuf-v3_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-protobuf-v3_2.12</B><BR/>2.6.14> style=""]
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0"[label=<uk.gov.hmrc<BR/><B>bootstrap-frontend-play-28_2.12</B><BR/>5.20.0> style=""]
+    "org.atteo.classindex:classindex:3.4"[label=<org.atteo.classindex<BR/><B>classindex</B><BR/>3.4> style=""]
+    "com.typesafe.akka:akka-slf4j_2.12:2.6.14"[label=<com.typesafe.akka<BR/><B>akka-slf4j_2.12</B><BR/>2.6.14> style=""]
+    "uk.gov.hmrc:crypto_2.12:6.1.0"[label=<uk.gov.hmrc<BR/><B>crypto_2.12</B><BR/>6.1.0> style=""]
+    "com.vladsch.flexmark:flexmark-ext-gfm-tables:0.36.8"[label=<com.vladsch.flexmark<BR/><B>flexmark-ext-gfm-tables</B><BR/>0.36.8> style=""]
+    "com.ibm.icu:icu4j:69.1"[label=<com.ibm.icu<BR/><B>icu4j</B><BR/>69.1> style=""]
+    "com.ibm.icu:icu4j:59.1"[label=<com.ibm.icu<BR/><B>icu4j</B><BR/>59.1> style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-functional_2.12:2.8.1"[label=<com.typesafe.play<BR/><B>play-functional_2.12</B><BR/>2.8.1> style=""]
+    "org.scalatest:scalatest-funsuite_2.12:3.2.3"[label=<org.scalatest<BR/><B>scalatest-funsuite_2.12</B><BR/>3.2.3> style=""]
+    "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4" -> "com.fasterxml.jackson.module:jackson-module-paranamer:2.11.4"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "commons-io:commons-io:2.8.0"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "commons-io:commons-io:2.8.0"
+    "commons-fileupload:commons-fileupload:1.4" -> "commons-io:commons-io:2.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-io:commons-io:2.6"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "commons-io:commons-io:2.6"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "com.typesafe:config:1.4.1"
+    "uk.gov.hmrc:crypto_2.12:6.1.0" -> "com.typesafe:config:1.4.1"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "com.typesafe:config:1.4.1"
+    "com.iheart:ficus_2.12:1.4.7" -> "com.typesafe:config:1.3.4"
+    "com.typesafe:ssl-config-core_2.12:0.4.2" -> "com.typesafe:config:1.4.0"
+    "com.typesafe.akka:akka-actor_2.12:2.6.14" -> "com.typesafe:config:1.4.0"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-opera-driver:3.141.59"
+    "com.novocode:junit-interface:0.11" -> "org.scala-sbt:test-interface:1.0"
+    "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.20.v20190813" -> "org.conscrypt:conscrypt-openjdk-uber:2.1.0"
+    "org.eclipse.jetty:jetty-alpn-conscrypt-client:9.4.20.v20190813" -> "org.conscrypt:conscrypt-openjdk-uber:2.1.0"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.apache.httpcomponents:httpmime:4.5.12"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.apache.httpcomponents:httpmime:4.5.12"
+    "org.eclipse.jetty.http2:http2-server:9.4.20.v20190813" -> "org.eclipse.jetty.http2:http2-common:9.4.20.v20190813"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1"
+    "org.eclipse.jetty.http2:http2-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-server:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-security:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-server:9.4.20.v20190813"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-server:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-alpn-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-server:9.4.20.v20190813"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-refspec_2.12:3.2.3"
+    "com.typesafe.play:play-guice_2.12:2.8.8" -> "com.google.inject:guice:4.2.3"
+    "com.google.inject.extensions:guice-assistedinject:4.2.3" -> "com.google.inject:guice:4.2.3"
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2" -> "org.joda:joda-convert:2.2.0"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "com.typesafe.play:shaded-oauth:2.1.3"
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8" -> "com.typesafe.play:shaded-oauth:2.1.3"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "uk.gov.hmrc:url-builder_2.12:3.5.0-play-28"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59"
+    "com.codeborne:phantomjsdriver:1.4.4" -> "org.seleniumhq.selenium:selenium-remote-driver:3.8.1"
+    "com.codeborne:phantomjsdriver:1.4.4" -> "org.seleniumhq.selenium:selenium-remote-driver:3.8.1"
+    "com.typesafe.play:play-ws-standalone-xml_2.12:2.1.3" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0"
+    "org.scalatest:scalatest-core_2.12:3.2.3" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0"
+    "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0" -> "org.scala-lang.modules:scala-xml_2.12:1.0.6"
+    "org.scalatestplus:selenium-3-141_2.12:3.1.1.0" -> "org.seleniumhq.selenium:htmlunit-driver:2.39.0"
+    "org.scalatestplus:selenium-3-141_2.12:3.1.1.0" -> "org.seleniumhq.selenium:htmlunit-driver:2.39.0"
+    "com.typesafe.play:play-test_2.12:2.8.8" -> "org.seleniumhq.selenium:htmlunit-driver:2.36.0"
+    "com.typesafe.play:play-test_2.12:2.8.8" -> "org.seleniumhq.selenium:htmlunit-driver:2.36.0"
+    "com.typesafe.play:play-guice_2.12:2.8.8" -> "com.google.inject.extensions:guice-assistedinject:4.2.3"
+    "uk.gov.hmrc:auth-client_2.12:5.7.0-play-28" -> "com.iheart:ficus_2.12:1.4.7"
+    "io.dropwizard.metrics:metrics-graphite:4.1.17" -> "io.dropwizard.metrics:metrics-core:4.1.17"
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2" -> "io.dropwizard.metrics:metrics-core:4.0.5"
+    "io.dropwizard.metrics:metrics-json:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.0.5"
+    "io.dropwizard.metrics:metrics-jvm:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.0.5"
+    "io.dropwizard.metrics:metrics-logback:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.0.5"
+    "jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" -> "jakarta.activation:jakarta.activation-api:1.2.2"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-jira-converter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-aside:0.36.8" -> "com.vladsch.flexmark:flexmark-jira-converter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8" -> "com.vladsch.flexmark:flexmark-jira-converter:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-xwiki-macros:0.36.8"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "joda-time:joda-time:2.10.5"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "net.sf.jopt-simple:jopt-simple:5.0.3"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "net.bytebuddy:byte-buddy:1.8.15"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-media-tags:0.36.8"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-funspec_2.12:3.2.3"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-edge-driver:3.141.59"
+    "org.apache.httpcomponents:httpmime:4.5.12" -> "org.apache.httpcomponents:httpclient:4.5.12"
+    "org.apache.httpcomponents:httpmime:4.5.12" -> "org.apache.httpcomponents:httpclient:4.5.12"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.apache.httpcomponents:httpclient:4.5.6"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.apache.httpcomponents:httpclient:4.5.6"
+    "org.eclipse.jetty:jetty-servlet:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-security:9.4.20.v20190813"
+    "com.vladsch.flexmark:flexmark:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tables:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-html-parser:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-definition:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-admonition:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-macros:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-toc:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-ins:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-issues:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-users:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-xwiki-macros:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-formatter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-tag:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-aside:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-tables:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8" -> "com.vladsch.flexmark:flexmark-util:0.36.8"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0"
+    "xerces:xercesImpl:2.12.0" -> "xml-apis:xml-apis:1.4.01"
+    "xerces:xercesImpl:2.12.0" -> "xml-apis:xml-apis:1.4.01"
+    "com.typesafe.play:play-ws_2.12:2.8.8" -> "com.typesafe.play:play-ws-standalone-xml_2.12:2.1.3"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-ie-driver:3.141.59"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-macros:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "com.typesafe.play:filters-helpers_2.12:2.8.8"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "com.typesafe.play:filters-helpers_2.12:2.8.8"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:filters-helpers_2.12:2.8.8"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:filters-helpers_2.12:2.8.7"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:filters-helpers_2.12:2.8.7"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-featurespec_2.12:3.2.3"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "com.typesafe.play:play-ahc-ws_2.12:2.8.8"
+    "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0" -> "com.typesafe.play:play-ahc-ws_2.12:2.8.1"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-http:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-http:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-alpn-client:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.20.v20190813"
+    "org.eclipse.jetty.http2:http2-hpack:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.20.v20190813"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "commons-fileupload:commons-fileupload:1.4"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "org.apache.commons:commons-exec:1.3"
+    "org.eclipse.jetty:jetty-webapp:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-servlet:9.4.20.v20190813"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-servlet:9.4.20.v20190813"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:bootstrap-health-play-28_2.12:5.20.0"
+    "com.typesafe.play:play_2.12:2.8.8" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"
+    "com.typesafe.play:cachecontrol_2.12:2.0.0" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"
+    "com.typesafe:ssl-config-core_2.12:0.4.2" -> "org.scala-lang.modules:scala-parser-combinators_2.12:1.1.2"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-freespec_2.12:3.2.3"
+    "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8"
+    "com.google.guava:guava:28.2-jre" -> "com.google.j2objc:j2objc-annotations:1.3"
+    "com.vladsch.flexmark:flexmark-html-parser:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8"
+    "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-continuation:9.4.20.v20190813"
+    "com.google.guava:guava:28.2-jre" -> "com.google.errorprone:error_prone_annotations:2.3.4"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-html-parser:0.36.8"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "org.reactivestreams:reactive-streams:1.0.3"
+    "com.typesafe.play:play-streams_2.12:2.8.8" -> "org.reactivestreams:reactive-streams:1.0.3"
+    "com.typesafe.akka:akka-stream_2.12:2.6.14" -> "org.reactivestreams:reactive-streams:1.0.3"
+    "uk.gov.hmrc:http-verbs-test-play-28_2.12:13.12.0" -> "com.github.tomakehurst:wiremock-jre8:2.26.3"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.9.1"
+    "com.typesafe.play:play-streams_2.12:2.8.8" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.9.1"
+    "com.typesafe.play:play_2.12:2.8.8" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.9.1"
+    "com.typesafe.akka:akka-actor_2.12:2.6.14" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.8.0"
+    "com.google.inject:guice:4.2.3" -> "aopalliance:aopalliance:1.0"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-safari-driver:3.141.59"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:play-server_2.12:2.8.8"
+    "com.typesafe.play:play-akka-http-server_2.12:2.8.7" -> "com.typesafe.play:play-server_2.12:2.8.7"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:play-server_2.12:2.8.7"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:play-server_2.12:2.8.7"
+    "uk.gov.hmrc:crypto_2.12:6.1.0" -> "uk.gov.hmrc:secure_2.12:8.1.0"
+    "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13" -> "org.apache.pdfbox:xmpbox:2.0.8"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-xml:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-xml:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-webapp:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-xml:9.4.20.v20190813"
+    "com.typesafe.play:play_2.12:2.8.8" -> "org.slf4j:jul-to-slf4j:1.7.30"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "net.sourceforge.htmlunit:neko-htmlunit:2.39.0"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "net.sourceforge.htmlunit:neko-htmlunit:2.39.0"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "org.jsoup:jsoup:1.13.1"
+    "com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:0.0.1-RC13" -> "org.jsoup:jsoup:1.8.3"
+    "com.vladsch.flexmark:flexmark-html-parser:0.36.8" -> "org.jsoup:jsoup:1.10.2"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "org.jsoup:jsoup:1.10.2"
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0" -> "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "uk.gov.hmrc:http-core_2.12:2.5.0"
+    "org.apache.pdfbox:pdfbox:2.0.8" -> "org.apache.pdfbox:fontbox:2.0.8"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "uk.gov.hmrc.webjars:hmrc-frontend:4.3.0"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "ch.qos.logback:logback-classic:1.2.3"
+    "io.dropwizard.metrics:metrics-logback:4.0.5" -> "ch.qos.logback:logback-classic:1.2.3"
+    "com.typesafe.play:play-ws_2.12:2.8.8" -> "com.typesafe.play:play_2.12:2.8.8"
+    "uk.gov.hmrc:bootstrap-health-play-28_2.12:5.20.0" -> "com.typesafe.play:play_2.12:2.8.8"
+    "com.typesafe.play:play-guice_2.12:2.8.8" -> "com.typesafe.play:play_2.12:2.8.8"
+    "com.typesafe.play:play-logback_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.7"
+    "uk.gov.hmrc:play-allowlist-filter_2.12:1.0.0-play-28" -> "com.typesafe.play:play_2.12:2.8.7"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:play_2.12:2.8.7"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:play_2.12:2.8.7"
+    "uk.gov.hmrc:url-builder_2.12:3.5.0-play-28" -> "com.typesafe.play:play_2.12:2.8.7"
+    "com.typesafe.akka:akka-http-core_2.12:10.1.13" -> "com.typesafe.akka:akka-parsing_2.12:10.1.13"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8"
+    "de.rototor.pdfbox:graphics2d:0.12" -> "org.apache.pdfbox:pdfbox:2.0.8"
+    "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13" -> "org.apache.pdfbox:pdfbox:2.0.8"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-flatspec_2.12:3.2.3"
+    "org.scalatest:scalatest-featurespec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-mustmatchers_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-refspec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-shouldmatchers_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-funsuite_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-propspec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-flatspec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-wordspec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-freespec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-core_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-funspec_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-diagrams_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalactic:scalactic_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "org.scalatest:scalatest-matchers-core_2.12:3.2.3" -> "org.scala-lang:scala-reflect:2.12.13"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "io.dropwizard.metrics:metrics-graphite:4.1.17"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "io.dropwizard.metrics:metrics-graphite:4.1.17"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.jayway.jsonpath:json-path:2.4.0"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "uk.gov.hmrc:play-language_2.12:5.1.0-play-28"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "uk.gov.hmrc:play-language_2.12:5.0.0-play-28"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "com.typesafe.play:cachecontrol_2.12:2.0.0"
+    "com.google.guava:guava:28.2-jre" -> "org.checkerframework:checker-qual:2.10.0"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "org.lz4:lz4-java:1.7.1"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "uk.gov.hmrc:http-verbs_2.12:13.12.0"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.flipkart.zjsonpatch:zjsonpatch:0.4.4"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty.http2:http2-server:9.4.20.v20190813"
+    "com.google.guava:guava:28.2-jre" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13" -> "de.rototor.pdfbox:graphics2d:0.12"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813"
+    "com.vladsch.flexmark:flexmark:0.36.8" -> "log4j:log4j:1.2.17"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty.websocket:websocket-api:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty.websocket:websocket-api:9.4.27.v20200227"
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0" -> "com.typesafe.play:play-test_2.12:2.8.8"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:play-test_2.12:2.8.8"
+    "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0" -> "com.typesafe.play:play-test_2.12:2.8.1"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-issues:0.36.8"
+    "org.scalatest:scalatest-core_2.12:3.2.3" -> "org.scalatest:scalatest-compatible:3.2.3"
+    "com.typesafe.play:play-ws_2.12:2.8.8" -> "com.typesafe.play:play-ws-standalone-json_2.12:2.1.3"
+    "org.scalatest:scalatest-core_2.12:3.2.3" -> "org.scalactic:scalactic_2.12:3.2.3"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-ins:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-ins:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-ins:0.36.8"
+    "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.brotli:dec:0.1.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.brotli:dec:0.1.2"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.vladsch.flexmark:flexmark-all:0.36.8"
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0" -> "com.vladsch.flexmark:flexmark-all:0.35.10"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "com.typesafe.play:shaded-asynchttpclient:2.1.3"
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8" -> "com.typesafe.play:shaded-asynchttpclient:2.1.3"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "xalan:xalan:2.7.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "xalan:xalan:2.7.2"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8"
+    "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4"
+    "com.fasterxml.jackson.core:jackson-databind:2.11.4" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4"
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.fasterxml.jackson.core:jackson-annotations:2.10.1"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-net:commons-net:3.6"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-net:commons-net:3.6"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "net.sourceforge.htmlunit:htmlunit-core-js:2.39.0"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "net.sourceforge.htmlunit:htmlunit-core-js:2.39.0"
+    "org.scalatestplus:selenium-3-141_2.12:3.1.1.0" -> "org.seleniumhq.selenium:selenium-java:3.141.59"
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2" -> "io.dropwizard.metrics:metrics-jvm:4.0.5"
+    "com.google.guava:guava:28.2-jre" -> "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:play-allowlist-filter_2.12:1.0.0-play-28"
+    "net.sourceforge.htmlunit:neko-htmlunit:2.39.0" -> "xerces:xercesImpl:2.12.0"
+    "net.sourceforge.htmlunit:neko-htmlunit:2.39.0" -> "xerces:xercesImpl:2.12.0"
+    "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tables:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-html-parser:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-definition:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-admonition:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-macros:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-toc:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-ins:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-media-tags:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-issues:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-users:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-xwiki-macros:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-formatter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-tag:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-aside:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-tables:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-youtube-embedded:0.36.8" -> "com.vladsch.flexmark:flexmark:0.36.8"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.google.guava:guava:28.2-jre"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.google.guava:guava:27.0.1-jre"
+    "com.google.inject:guice:4.2.3" -> "com.google.guava:guava:27.1-jre"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "com.google.guava:guava:25.0-jre"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.11.4"
+    "com.typesafe.akka:akka-slf4j_2.12:2.6.14" -> "com.typesafe.akka:akka-actor_2.12:2.6.14"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.typesafe.akka:akka-actor_2.12:2.6.14"
+    "com.typesafe.akka:akka-actor-typed_2.12:2.6.14" -> "com.typesafe.akka:akka-actor_2.12:2.6.14"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.akka:akka-actor_2.12:2.6.14"
+    "com.typesafe.akka:akka-stream_2.12:2.6.14" -> "com.typesafe.akka:akka-actor_2.12:2.6.14"
+    "uk.gov.hmrc.webjars:hmrc-frontend:4.3.0" -> "org.webjars.npm:govuk-frontend:4.0.0"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.ow2.asm:asm:7.0"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.github.jknack:handlebars-helpers:4.1.2"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8"
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2" -> "io.dropwizard.metrics:metrics-logback:4.0.5"
+    "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.fasterxml.jackson.core:jackson-databind:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.4" -> "com.fasterxml.jackson.core:jackson-core:2.11.4"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.fasterxml.jackson.core:jackson-core:2.10.0"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.fasterxml.jackson.core:jackson-core:2.10.1"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "com.fasterxml.jackson.core:jackson-core:2.10.3"
+    "org.eclipse.jetty:jetty-server:9.4.20.v20190813" -> "javax.servlet:javax.servlet-api:3.1.0"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-macros:0.36.8"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.play:play-streams_2.12:2.8.8"
+    "com.typesafe.play:play-akka-http-server_2.12:2.8.7" -> "com.typesafe.play:play-streams_2.12:2.8.7"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe:ssl-config-core_2.12:0.4.2"
+    "com.typesafe.akka:akka-stream_2.12:2.6.14" -> "com.typesafe:ssl-config-core_2.12:0.4.2"
+    "com.typesafe.play:play-ws-standalone_2.12:2.1.3" -> "com.typesafe:ssl-config-core_2.12:0.4.1"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-mustmatchers_2.12:3.2.3"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:0.0.1-RC13"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.20.v20190813"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "org.apache.commons:commons-lang3:3.11"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "org.apache.commons:commons-lang3:3.11"
+    "com.github.jknack:handlebars-helpers:4.1.2" -> "org.apache.commons:commons-lang3:3.8.1"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.apache.commons:commons-lang3:3.7"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.apache.commons:commons-lang3:3.10"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.apache.commons:commons-lang3:3.7"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "org.seleniumhq.selenium:selenium-api:3.141.59"
+    "com.codeborne:phantomjsdriver:1.4.4" -> "org.seleniumhq.selenium:selenium-api:3.8.1"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "net.javacrumbs.json-unit:json-unit-core:2.12.0"
+    "com.typesafe.play:play_2.12:2.8.8" -> "org.slf4j:jcl-over-slf4j:1.7.30"
+    "uk.gov.hmrc:secure_2.12:8.1.0" -> "commons-codec:commons-codec:1.15"
+    "uk.gov.hmrc:secure_2.12:8.1.0" -> "commons-codec:commons-codec:1.15"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "commons-codec:commons-codec:1.11"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0"
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0" -> "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0"
+    "com.typesafe.play:play-ws_2.12:2.8.8" -> "com.typesafe.play:play-ws-standalone_2.12:2.1.3"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "com.typesafe.play:play-ws-standalone_2.12:2.1.3"
+    "com.typesafe.play:play-ws-standalone-xml_2.12:2.1.3" -> "com.typesafe.play:play-ws-standalone_2.12:2.1.3"
+    "com.typesafe.play:play-ws-standalone-json_2.12:2.1.3" -> "com.typesafe.play:play-ws-standalone_2.12:2.1.3"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.play:twirl-api_2.12:1.5.1"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:twirl-api_2.12:1.5.1"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:twirl-api_2.12:1.5.0"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:twirl-api_2.12:1.5.0"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "com.typesafe.play:play-json_2.12:2.8.1"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.play:play-json_2.12:2.8.1"
+    "com.typesafe.play:play-ws-standalone-json_2.12:2.1.3" -> "com.typesafe.play:play-json_2.12:2.8.1"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.openhtmltopdf:openhtmltopdf-rtl-support:0.0.1-RC13"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.apache.commons:commons-text:1.8"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "org.apache.commons:commons-text:1.8"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-webapp:9.4.20.v20190813"
+    "com.typesafe.play:play_2.12:2.8.8" -> "jakarta.xml.bind:jakarta.xml.bind-api:2.3.3"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-enumerated-reference:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tasklist:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-typographic:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-tables:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-front-matter:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-superscript:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-definition:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gitlab:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-escaped-character:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-admonition:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-macros:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-toc:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-ins:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-issues:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-gfm-users:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-xwiki-macros:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-jekyll-tag:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-aside:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-wikilink:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-attributes:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-tables:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-emoji:0.36.8" -> "com.vladsch.flexmark:flexmark-formatter:0.36.8"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-alpn-conscrypt-client:9.4.20.v20190813"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-definition:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-definition:0.36.8"
+    "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.fasterxml.jackson.module:jackson-module-paranamer:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.4" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.fasterxml.jackson.core:jackson-databind:2.10.1"
+    "io.dropwizard.metrics:metrics-json:4.0.5" -> "com.fasterxml.jackson.core:jackson-databind:2.9.5"
+    "io.jsonwebtoken:jjwt:0.9.1" -> "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "com.fasterxml.jackson.core:jackson-databind:2.10.3"
+    "com.novocode:junit-interface:0.11" -> "junit:junit:4.11"
+    "org.scalatest:scalatest-featurespec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-refspec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-funsuite_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-propspec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-flatspec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-wordspec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-freespec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-funspec_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-diagrams_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.scalatest:scalatest-matchers-core_2.12:3.2.3" -> "org.scalatest:scalatest-core_2.12:3.2.3"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "com.squareup.okhttp3:okhttp:3.11.0"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "org.apache.httpcomponents:httpcore:4.4.13"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "org.apache.httpcomponents:httpcore:4.4.13"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2"
+    "uk.gov.hmrc:secure_2.12:8.1.0" -> "org.bouncycastle:bcprov-jdk15on:1.68"
+    "org.apache.pdfbox:pdfbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:fontbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "commons-logging:commons-logging:1.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:xmpbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:pdfbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:fontbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "commons-logging:commons-logging:1.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:xmpbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:pdfbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:fontbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "org.apache.httpcomponents:httpclient:4.5.12" -> "commons-logging:commons-logging:1.2"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "commons-logging:commons-logging:1.2"
+    "org.apache.pdfbox:xmpbox:2.0.8" -> "commons-logging:commons-logging:1.2"
+    "com.fasterxml.jackson.module:jackson-module-paranamer:2.11.4" -> "com.thoughtworks.paranamer:paranamer:2.8"
+    "com.kenshoo:metrics-play_2.12:2.7.3_0.8.2" -> "io.dropwizard.metrics:metrics-json:4.0.5"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-client:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-client:9.4.27.v20200227"
+    "org.eclipse.jetty.http2:http2-common:9.4.20.v20190813" -> "org.eclipse.jetty.http2:http2-hpack:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-alpn-conscrypt-client:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-alpn-client:9.4.20.v20190813"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-toc:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-toc:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-anchorlink:0.36.8"
+    "com.vladsch.flexmark:flexmark-youtrack-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-tables:0.36.8"
+    "com.vladsch.flexmark:flexmark-jira-converter:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-tables:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-tables:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-tables:0.36.8"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-propspec_2.12:3.2.3"
+    "com.typesafe.play:build-link:2.8.8" -> "com.typesafe.play:play-exceptions:2.8.8"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:play-akka-http-server_2.12:2.8.7"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:play-akka-http-server_2.12:2.8.7"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:play-akka-http-server_2.12:2.8.7"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-footnotes:0.36.8"
+    "com.vladsch.flexmark:flexmark-ext-autolink:0.36.8" -> "org.nibor.autolink:autolink:0.6.0"
+    "uk.gov.hmrc:bootstrap-test-play-28_2.12:5.20.0" -> "uk.gov.hmrc:http-verbs-test-play-28_2.12:13.12.0"
+    "org.scalatest:scalatest-mustmatchers_2.12:3.2.3" -> "org.scalatest:scalatest-matchers-core_2.12:3.2.3"
+    "org.scalatest:scalatest-shouldmatchers_2.12:3.2.3" -> "org.scalatest:scalatest-matchers-core_2.12:3.2.3"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-matchers-core_2.12:3.2.3"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.xmlunit:xmlunit-legacy:2.6.2"
+    "uk.gov.hmrc:crypto_2.12:6.1.0" -> "javax.inject:javax.inject:1"
+    "com.typesafe.play:play_2.12:2.8.8" -> "javax.inject:javax.inject:1"
+    "com.google.inject:guice:4.2.3" -> "javax.inject:javax.inject:1"
+    "com.typesafe.play:play-ws-standalone_2.12:2.1.3" -> "javax.inject:javax.inject:1"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-jekyll-tag:0.36.8"
+    "net.javacrumbs.json-unit:json-unit-core:2.12.0" -> "org.hamcrest:hamcrest-core:2.1"
+    "junit:junit:4.13.2" -> "org.hamcrest:hamcrest-core:1.3"
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8" -> "com.typesafe.play:play-ws_2.12:2.8.8"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-wordspec_2.12:3.2.3"
+    "com.iheart:ficus_2.12:1.4.7" -> "org.typelevel:macro-compat_2.12:1.1.1"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "uk.gov.hmrc:logback-json-logger_2.12:5.1.0"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:logback-json-logger_2.12:5.1.0"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-shouldmatchers_2.12:3.2.3"
+    "com.github.jknack:handlebars-helpers:4.1.2" -> "com.github.jknack:handlebars:4.1.2"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "com.github.jknack:handlebars:4.1.2"
+    "com.typesafe.play:play_2.12:2.8.8" -> "io.jsonwebtoken:jjwt:0.9.1"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14"
+    "com.google.guava:guava:28.2-jre" -> "com.google.guava:failureaccess:1.0.1"
+    "org.hamcrest:hamcrest-core:2.1" -> "org.hamcrest:hamcrest:2.1"
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0" -> "net.sourceforge.htmlunit:htmlunit:2.39.0"
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0" -> "net.sourceforge.htmlunit:htmlunit:2.39.0"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "com.typesafe.play:play-guice_2.12:2.8.8"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "com.typesafe.play:play-guice_2.12:2.8.8"
+    "uk.gov.hmrc:url-builder_2.12:3.5.0-play-28" -> "com.typesafe.play:play-guice_2.12:2.8.7"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-admonition:0.36.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-youtube-embedded:0.36.8"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.play:build-link:2.8.8"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-abbreviation:0.36.8"
+    "com.jayway.jsonpath:json-path:2.4.0" -> "net.minidev:json-smart:2.3"
+    "xalan:xalan:2.7.2" -> "xalan:serializer:2.7.2"
+    "xalan:xalan:2.7.2" -> "xalan:serializer:2.7.2"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.akka:akka-actor-typed_2.12:2.6.14"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.xmlunit:xmlunit-placeholders:2.6.2"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28"
+    "net.javacrumbs.json-unit:json-unit-core:2.12.0" -> "org.opentest4j:opentest4j:1.1.1"
+    "org.xmlunit:xmlunit-legacy:2.6.2" -> "org.xmlunit:xmlunit-core:2.6.2"
+    "org.xmlunit:xmlunit-placeholders:2.6.2" -> "org.xmlunit:xmlunit-core:2.6.2"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.xmlunit:xmlunit-core:2.6.2"
+    "net.minidev:json-smart:2.3" -> "net.minidev:accessors-smart:1.2"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-aside:0.36.8"
+    "com.vladsch.flexmark:flexmark-profile-pegdown:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-aside:0.36.8"
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8" -> "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3"
+    "uk.gov.hmrc:http-verbs-test-play-28_2.12:13.12.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0"
+    "uk.gov.hmrc:auth-client_2.12:5.7.0-play-28" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.7.0"
+    "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.3.0"
+    "io.dropwizard.metrics:metrics-graphite:4.1.17" -> "com.rabbitmq:amqp-client:5.10.0"
+    "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-alpn-server:9.4.20.v20190813"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.eclipse.jetty:jetty-alpn-server:9.4.20.v20190813"
+    "net.sourceforge.htmlunit:htmlunit:2.39.0" -> "net.sourceforge.htmlunit:htmlunit-cssparser:1.5.0"
+    "com.typesafe.play:play-streams_2.12:2.8.8" -> "com.typesafe.akka:akka-stream_2.12:2.6.14"
+    "com.typesafe.play:play-ws-standalone_2.12:2.1.3" -> "com.typesafe.akka:akka-stream_2.12:2.6.1"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "uk.gov.hmrc:auth-client_2.12:5.7.0-play-28"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:auth-client_2.12:5.7.0-play-28"
+    "org.seleniumhq.selenium:htmlunit-driver:2.39.0" -> "org.seleniumhq.selenium:selenium-support:3.141.59"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "org.seleniumhq.selenium:selenium-support:3.141.59"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.seleniumhq.selenium:selenium-support:3.141.59"
+    "com.typesafe.play:play_2.12:2.8.8" -> "jakarta.transaction:jakarta.transaction-api:1.3.3"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-http:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-xml:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-io:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty.websocket:websocket-common:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-http:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-xml:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-io:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-util:9.4.20.v20190813"
+    "org.eclipse.jetty.http2:http2-hpack:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-util:9.4.20.v20190813"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-diagrams_2.12:3.2.3"
+    "ch.qos.logback:logback-classic:1.2.3" -> "ch.qos.logback:logback-core:1.2.3"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "ch.qos.logback:logback-core:1.2.3"
+    "uk.gov.hmrc:logback-json-logger_2.12:5.1.0" -> "ch.qos.logback:logback-core:1.2.3"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "ch.qos.logback:logback-core:1.2.3"
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.8" -> "javax.cache:cache-api:1.1.1"
+    "com.typesafe.akka:akka-serialization-jackson_2.12:2.6.14" -> "com.fasterxml.jackson.module:jackson-module-scala_2.12:2.11.4"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8"
+    "org.eclipse.jetty:jetty-client:9.4.27.v20200227" -> "org.eclipse.jetty:jetty-http:9.4.27.v20200227"
+    "org.eclipse.jetty:jetty-server:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.20.v20190813"
+    "org.eclipse.jetty:jetty-servlets:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.20.v20190813"
+    "org.eclipse.jetty.http2:http2-hpack:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.20.v20190813"
+    "com.typesafe.akka:akka-slf4j_2.12:2.6.14" -> "org.slf4j:slf4j-api:1.7.30"
+    "io.dropwizard.metrics:metrics-core:4.1.17" -> "org.slf4j:slf4j-api:1.7.30"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "org.slf4j:slf4j-api:1.7.30"
+    "uk.gov.hmrc:play-auditing-play-28_2.12:7.10.0" -> "org.slf4j:slf4j-api:1.7.30"
+    "com.typesafe.akka:akka-actor-typed_2.12:2.6.14" -> "org.slf4j:slf4j-api:1.7.30"
+    "com.typesafe.play:play_2.12:2.8.8" -> "org.slf4j:slf4j-api:1.7.30"
+    "org.slf4j:jul-to-slf4j:1.7.30" -> "org.slf4j:slf4j-api:1.7.30"
+    "io.dropwizard.metrics:metrics-graphite:4.1.17" -> "org.slf4j:slf4j-api:1.7.30"
+    "org.slf4j:jcl-over-slf4j:1.7.30" -> "org.slf4j:slf4j-api:1.7.30"
+    "ch.qos.logback:logback-classic:1.2.3" -> "org.slf4j:slf4j-api:1.7.25"
+    "com.github.jknack:handlebars:4.1.2" -> "org.slf4j:slf4j-api:1.7.25"
+    "com.github.tomakehurst:wiremock-jre8:2.26.3" -> "org.slf4j:slf4j-api:1.7.12"
+    "com.jayway.jsonpath:json-path:2.4.0" -> "org.slf4j:slf4j-api:1.7.25"
+    "com.typesafe.play:cachecontrol_2.12:2.0.0" -> "org.slf4j:slf4j-api:1.7.29"
+    "com.typesafe.play:play-ahc-ws-standalone_2.12:2.1.3" -> "org.slf4j:slf4j-api:1.7.29"
+    "io.dropwizard.metrics:metrics-json:4.0.5" -> "org.slf4j:slf4j-api:1.7.25"
+    "io.dropwizard.metrics:metrics-jvm:4.0.5" -> "org.slf4j:slf4j-api:1.7.25"
+    "io.dropwizard.metrics:metrics-logback:4.0.5" -> "org.slf4j:slf4j-api:1.7.25"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "org.scalatest:scalatest_2.12:3.2.3"
+    "org.scalatestplus:selenium-3-141_2.12:3.1.1.0" -> "org.scalatest:scalatest_2.12:3.1.1"
+    "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0" -> "org.scalatest:scalatest_2.12:3.1.1"
+    "uk.gov.hmrc:http-verbs-test-play-28_2.12:13.12.0" -> "org.scalatest:scalatest_2.12:3.1.1"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-users:0.36.8"
+    "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "com.squareup.okhttp3:okhttp:3.11.0" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-support:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-safari-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-edge-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-opera-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-java:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "org.seleniumhq.selenium:selenium-ie-driver:3.141.59" -> "com.squareup.okio:okio:1.14.0"
+    "com.openhtmltopdf:openhtmltopdf-rtl-support:0.0.1-RC13" -> "com.openhtmltopdf:openhtmltopdf-core:0.0.1-RC13"
+    "com.vladsch.flexmark:flexmark-pdf-converter:0.36.8" -> "com.openhtmltopdf:openhtmltopdf-core:0.0.1-RC13"
+    "com.openhtmltopdf:openhtmltopdf-pdfbox:0.0.1-RC13" -> "com.openhtmltopdf:openhtmltopdf-core:0.0.1-RC13"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.typesafe.play:play-logback_2.12:2.8.7"
+    "uk.gov.hmrc:play-frontend-hmrc_2.12:3.0.0-play-28" -> "com.typesafe.play:play-logback_2.12:2.8.7"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "com.typesafe.play:play-logback_2.12:2.8.7"
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" -> "com.softwaremill.sttp.model:core_2.12:1.2.2"
+    "com.typesafe.akka:akka-stream_2.12:2.6.14" -> "com.typesafe.akka:akka-protobuf-v3_2.12:2.6.14"
+    "uk.gov.hmrc:build-and-deploy-canary-service_2.12:0.19421.0" -> "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0"
+    "org.fluentlenium:fluentlenium-core:3.7.1" -> "org.atteo.classindex:classindex:3.4"
+    "com.typesafe.akka:akka-actor-typed_2.12:2.6.14" -> "com.typesafe.akka:akka-slf4j_2.12:2.6.14"
+    "com.typesafe.play:play_2.12:2.8.8" -> "com.typesafe.akka:akka-slf4j_2.12:2.6.14"
+    "uk.gov.hmrc:bootstrap-common-play-28_2.12:5.20.0" -> "uk.gov.hmrc:crypto_2.12:6.1.0"
+    "uk.gov.hmrc:bootstrap-frontend-play-28_2.12:5.20.0" -> "uk.gov.hmrc:crypto_2.12:6.1.0"
+    "com.vladsch.flexmark:flexmark-all:0.36.8" -> "com.vladsch.flexmark:flexmark-ext-gfm-tables:0.36.8"
+    "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" -> "com.ibm.icu:icu4j:69.1"
+    "com.openhtmltopdf:openhtmltopdf-rtl-support:0.0.1-RC13" -> "com.ibm.icu:icu4j:59.1"
+    "com.typesafe.play:play-json_2.12:2.8.1" -> "com.typesafe.play:play-functional_2.12:2.8.1"
+    "org.scalatest:scalatest_2.12:3.2.3" -> "org.scalatest:scalatest-funsuite_2.12:3.2.3"
+    "commons-io:commons-io:2.2" -> "commons-io:commons-io:2.8.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "commons-io:commons-io:2.6" -> "commons-io:commons-io:2.8.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "commons-io:commons-io:2.6" -> "commons-io:commons-io:2.8.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe:config:1.3.4" -> "com.typesafe:config:1.4.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe:config:1.4.0" -> "com.typesafe:config:1.4.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe:config:1.4.0" -> "com.typesafe:config:1.4.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1" -> "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.8.1" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-remote-driver:3.8.1" -> "org.seleniumhq.selenium:selenium-remote-driver:3.141.59" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-xml_2.12:1.0.6" -> "org.scala-lang.modules:scala-xml_2.12:1.2.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:htmlunit-driver:2.36.0" -> "org.seleniumhq.selenium:htmlunit-driver:2.39.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:htmlunit-driver:2.36.0" -> "org.seleniumhq.selenium:htmlunit-driver:2.39.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.1.17" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.1.17" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.1.17" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.dropwizard.metrics:metrics-core:4.0.5" -> "io.dropwizard.metrics:metrics-core:4.1.17" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.httpcomponents:httpclient:4.5.6" -> "org.apache.httpcomponents:httpclient:4.5.12" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.httpcomponents:httpclient:4.5.6" -> "org.apache.httpcomponents:httpclient:4.5.12" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:filters-helpers_2.12:2.7.5" -> "com.typesafe.play:filters-helpers_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:filters-helpers_2.12:2.8.7" -> "com.typesafe.play:filters-helpers_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:filters-helpers_2.12:2.8.7" -> "com.typesafe.play:filters-helpers_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-ahc-ws_2.12:2.8.1" -> "com.typesafe.play:play-ahc-ws_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-io:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-io:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-java8-compat_2.12:0.8.0" -> "org.scala-lang.modules:scala-java8-compat_2.12:0.9.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.7.5" -> "com.typesafe.play:play-server_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7" -> "com.typesafe.play:play-server_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7" -> "com.typesafe.play:play-server_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-server_2.12:2.8.7" -> "com.typesafe.play:play-server_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-xml:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-xml:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.jsoup:jsoup:1.8.3" -> "org.jsoup:jsoup:1.13.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.jsoup:jsoup:1.10.2" -> "org.jsoup:jsoup:1.13.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.jsoup:jsoup:1.10.2" -> "org.jsoup:jsoup:1.13.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scalatestplus.play:scalatestplus-play_2.12:4.0.3" -> "org.scalatestplus.play:scalatestplus-play_2.12:5.1.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play_2.12:2.8.7" -> "com.typesafe.play:play_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:play-language_2.12:5.0.0-play-28" -> "uk.gov.hmrc:play-language_2.12:5.1.0-play-28" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-test_2.12:2.7.5" -> "com.typesafe.play:play-test_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-test_2.12:2.7.5" -> "com.typesafe.play:play-test_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-test_2.12:2.8.1" -> "com.typesafe.play:play-test_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.vladsch.flexmark:flexmark-all:0.35.10" -> "com.vladsch.flexmark:flexmark-all:0.36.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-annotations:2.10.0" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-annotations:2.10.1" -> "com.fasterxml.jackson.core:jackson-annotations:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:27.0.1-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:27.1-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:25.0-jre" -> "com.google.guava:guava:28.2-jre" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.10.0" -> "com.fasterxml.jackson.core:jackson-core:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.10.1" -> "com.fasterxml.jackson.core:jackson-core:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-core:2.10.3" -> "com.fasterxml.jackson.core:jackson-core:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-streams_2.12:2.8.7" -> "com.typesafe.play:play-streams_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe:ssl-config-core_2.12:0.4.1" -> "com.typesafe:ssl-config-core_2.12:0.4.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.8.1" -> "org.apache.commons:commons-lang3:3.11" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.7" -> "org.apache.commons:commons-lang3:3.11" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.10" -> "org.apache.commons:commons-lang3:3.11" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.apache.commons:commons-lang3:3.7" -> "org.apache.commons:commons-lang3:3.11" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.seleniumhq.selenium:selenium-api:3.8.1" -> "org.seleniumhq.selenium:selenium-api:3.141.59" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "commons-codec:commons-codec:1.11" -> "commons-codec:commons-codec:1.15" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.4.2" -> "com.typesafe.play:twirl-api_2.12:1.5.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.5.0" -> "com.typesafe.play:twirl-api_2.12:1.5.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:twirl-api_2.12:1.5.0" -> "com.typesafe.play:twirl-api_2.12:1.5.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.0" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.1" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.9.5" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.9.6" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.core:jackson-databind:2.10.3" -> "com.fasterxml.jackson.core:jackson-databind:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "junit:junit:4.11" -> "junit:junit:4.13.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1" -> "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-akka-http-server_2.12:2.7.5" -> "com.typesafe.play:play-akka-http-server_2.12:2.8.7" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.hamcrest:hamcrest-core:1.3" -> "org.hamcrest:hamcrest-core:2.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-guice_2.12:2.8.7" -> "com.typesafe.play:play-guice_2.12:2.8.8" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.7.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "uk.gov.hmrc:http-verbs-play-28_2.12:13.3.0" -> "uk.gov.hmrc:http-verbs-play-28_2.12:13.12.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.akka:akka-stream_2.12:2.6.1" -> "com.typesafe.akka:akka-stream_2.12:2.6.14" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-util:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-util:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-util:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.eclipse.jetty:jetty-http:9.4.20.v20190813" -> "org.eclipse.jetty:jetty-http:9.4.27.v20200227" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.12" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.29" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.29" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.slf4j:slf4j-api:1.7.25" -> "org.slf4j:slf4j-api:1.7.30" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.1.1" -> "org.scalatest:scalatest_2.12:3.2.3" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.1.1" -> "org.scalatest:scalatest_2.12:3.2.3" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scalatest:scalatest_2.12:3.1.1" -> "org.scalatest:scalatest_2.12:3.2.3" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.typesafe.play:play-logback_2.12:2.7.5" -> "com.typesafe.play:play-logback_2.12:2.8.7" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.ibm.icu:icu4j:59.1" -> "com.ibm.icu:icu4j:69.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+}
