@@ -33,9 +33,12 @@ object BobbyValidator {
   ): Seq[Message] = {
     import uk.gov.hmrc.bobby.Util._
     val graph        = DependencyGraphParser.parse(content)
-    val dependencies = graph.dependencies.filterNot { n1 =>
-                        internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
-                      }
+    val dependencies = graph.dependencies
+                         // we don't want to validate the root project or dependencies on other internal modules - will lead to SNAPSHOT violations
+                         .filterNot(_ == graph.root)
+                         .filterNot { n1 =>
+                           internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
+                         }
 
     dependencies.map { dependency =>
       val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, projectName)

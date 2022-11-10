@@ -18,7 +18,7 @@ package uk.gov.hmrc.bobby.conf
 
 import java.io.File
 
-import sbt.ConsoleLogger
+import sbt.util.Logger
 
 import scala.io.Source
 
@@ -27,14 +27,12 @@ trait ConfigFile {
   def fileName: String
 }
 
-case class ConfigFileImpl(fileName: String) extends ConfigFile {
-  val logger = ConsoleLogger()
-
+case class ConfigFileImpl(fileName: String, logger: Logger) extends ConfigFile {
   if (!new File(fileName).exists()) {
     logger.warn(s"Supplied configuration file '$fileName' does not exist.")
   }
 
-  private def loadKvMap: Map[String, String] = {
+  private def loadKvMap: Map[String, String] =
     try {
       val source = Source.fromFile(fileName)
       val lines = source.getLines().toList
@@ -45,10 +43,9 @@ case class ConfigFileImpl(fileName: String) extends ConfigFile {
         logger.debug(s"[bobby] Unable to find $fileName. ${e.getClass.getName}: ${e.getMessage}")
         Map.empty
     }
-  }
 
   val kvMap: Map[String, String] = loadKvMap
 
-  def get(path: String): Option[String] = kvMap.get(path)
-
+  def get(path: String): Option[String] =
+    kvMap.get(path)
 }

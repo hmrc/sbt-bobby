@@ -52,15 +52,16 @@ object SbtBobbyPlugin extends AutoPlugin {
       val dir         = target.value
       val projectName = name.value
 
-      // Retrieve config settings
-      val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
+      val logger      = sLog.value
 
-      val outputFileName = s"bobby-report" //s"bobby-report-${thisProject.value.id}-${config.name}"
+      // Retrieve config settings
+      val bobbyConfigFile: ConfigFile =
+        ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf", logger)
 
       val config = new BobbyConfiguration(
           bobbyRulesURL           = bobbyRulesURL.value,
           outputDirectoryOverride = outputDirectoryOverride.value,
-          outputFileName          = outputFileName,
+          outputFileName          = s"bobby-report-$projectName",
           bobbyConfigFile         = Some(bobbyConfigFile),
           strictMode              = bobbyStrictMode.value,
           viewType                = bobbyViewType.value,
@@ -78,7 +79,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         .map(p => extractedRootProject.get(p / projectID))
         .distinct
 
-      Bobby.printHeader(ConsoleLogger())
+      Bobby.printHeader(logger)
 
       object DependencyDotExtractor {
         val DependencyDotRegex = "dependencies-(\\w+).dot".r
@@ -89,6 +90,8 @@ object SbtBobbyPlugin extends AutoPlugin {
           }
       }
 
+      // TODO this now analyses all scopes in one pass
+      // but what about all multi-modules?
       val dependencyDotFiles =
         // get meta-build files too for plugin scope violations
         (dir.listFiles() ++ new java.io.File("project/target").listFiles()).collect {
@@ -138,8 +141,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true),
     validateDot         := validateDotTask().value
   ) ++
-    //Add a useful alias to run bobby validate for compile, test and plugins together (similar to old releases of bobby)
-    //addCommandAlias("validateAll", ";Compile / validate; Test / validate; IntegrationTest / validate; reload plugins; validate; reload return")
-    // TODO the dependencyDot on build server may have already been extracted.
-    addCommandAlias("validateAll", ";Compile / dependencyDot; Test / dependencyDot; IntegrationTest / dependencyDot; reload plugins; dependencyDot; reload return; validateDot")
+  // TODO does this even need to be implemented as a plugin? e.g. just an executable jar which analyses the dot graphs
+  // (might work better for multi-module builds)
+    addCommandAlias("validateAll", "Compile / dependencyDot; Test / dependencyDot; IntegrationTest / dependencyDot; reload plugins; dependencyDot; reload return; validateDot")
 }

@@ -61,7 +61,6 @@ case class BobbyConfiguration(
   viewType               : ViewType           = Compact,
   consoleColours         : Boolean            = true
 ) {
-
   import BobbyConfiguration._
 
   val timeout = 3000
@@ -71,7 +70,9 @@ case class BobbyConfiguration(
     bobbyConfigFile.flatMap(_.get(key))
 
   val outputDirectory: String =
-    (outputDirectoryOverride orElse configValue("output-directory")).getOrElse(defaultOutputDirectory)
+    outputDirectoryOverride
+      .orElse(configValue("output-directory"))
+      .getOrElse(defaultOutputDirectory)
 
   val jsonOutputFile: String =
     s"${outputDirectory}/${outputFileName}.json"

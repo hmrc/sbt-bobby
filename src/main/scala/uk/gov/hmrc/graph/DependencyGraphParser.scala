@@ -36,9 +36,8 @@ object DependencyGraphParser {
     if (graph.nodes.isEmpty) {
       val nodesFromRoot = graph.arrows.map(_.to) ++ graph.arrows.map(_.from)
       graph.copy(nodes = nodesFromRoot)
-    } else {
+    } else
       graph
-    }
   }
 
   private val eviction = """\s*"(.+)" -> "(.+)" \[(.+)\]\s*""".r
@@ -106,6 +105,10 @@ object DependencyGraphParser {
       }
       go(node, Seq.empty, Set.empty)
     }
+
+    lazy val root: Node =
+      // the last node of any path. Better implementation?
+      pathToRoot(nodes.head).last
   }
 
   object DependencyGraph {
