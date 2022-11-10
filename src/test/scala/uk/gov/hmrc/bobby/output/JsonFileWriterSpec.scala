@@ -33,11 +33,15 @@ class JsonFileWriterSpec extends AnyWordSpec with Matchers {
     "format a list of maps describing the errors and warnings" in {
       val rule =
         BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
-      val messages = List(makeMessage(BobbyResult.Violation(rule)), makeMessage(BobbyResult.Warning(rule)))
 
-      val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
+      val messages =
+        List(makeMessage(BobbyResult.Violation(rule)), makeMessage(BobbyResult.Warning(rule)))
 
-      val jsValue: JsValue = Json.parse(jsonString)
+      val jsonString: String =
+        jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
+
+      val jsValue: JsValue =
+        Json.parse(jsonString)
 
       val rows: List[JsValue] = (jsValue \ "results").as[List[JsValue]]
       rows.size                          shouldBe 2
@@ -58,8 +62,12 @@ class JsonFileWriterSpec extends AnyWordSpec with Matchers {
     "use the correct names for the results" in {
       val rule =
         BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "bad library", LocalDate.parse("2020-01-31"), Set.empty)
-      val messages = List(makeMessage(BobbyResult.Violation(rule)), makeMessage(BobbyResult.Warning(rule)), makeMessage(BobbyResult.Ok))
-      val jsonString: String = jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
+
+      val messages =
+        List(makeMessage(BobbyResult.Violation(rule)), makeMessage(BobbyResult.Warning(rule)), makeMessage(BobbyResult.Ok))
+
+      val jsonString: String =
+        jsonFileWriter.renderText(BobbyValidationResult(messages), Flat)
 
       (Json.parse(jsonString) \\ "result").map(_.as[String]).toSet shouldBe Set("BobbyViolation", "BobbyWarning", "BobbyOk")
     }

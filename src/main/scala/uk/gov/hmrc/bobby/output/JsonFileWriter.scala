@@ -29,11 +29,11 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
           "level"   -> m.level.name,
           "message" -> jsonMessage(m),
           "data"    -> Json.obj(
-            "organisation"      -> m.checked.moduleID.organization,
-            "name"              -> m.checked.moduleID.name,
-            "revision"          -> m.checked.moduleID.revision,
-            "result"            -> m.checked.result.name,
-            "deprecationFrom"   -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
+            "organisation"      -> m.moduleID.organization,
+            "name"              -> m.moduleID.name,
+            "revision"          -> m.moduleID.revision,
+            "result"            -> m.result.name,
+            "deprecationFrom"   -> JsString(m.effectiveDate.map(_.toString).getOrElse("-")),
             "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-"))
           )
         )
@@ -44,7 +44,7 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
   }
 
   def jsonMessage(m: Message): String =
-    m.checked.result match {
+    m.result match {
       case BobbyResult.Ok           => "No issue"
       case BobbyResult.Exemption(_) => "Exemption applies; may need attention"
       case BobbyResult.Warning(_)   => "Needs attention soon to avoid future violations"

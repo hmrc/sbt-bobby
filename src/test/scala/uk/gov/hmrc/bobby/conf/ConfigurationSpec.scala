@@ -79,8 +79,8 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
   it should "allow loading values from config file keys" in {
     val c = new ConfigFile {
       override def get(path: String): Option[String] =
-        if(path == "output-directory") Some("test")
-        else if(path == "bobby-rules-url") Some("file://test")
+        if (path == "output-directory") Some("test")
+        else if (path == "bobby-rules-url") Some("file://test")
         else None
 
       override def fileName: String = ""

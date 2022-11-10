@@ -20,35 +20,38 @@ import java.time.LocalDate
 
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
-import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 
 object Message {
 
-  implicit object MessageOrdering extends Ordering[Message] {
-    def compare(a: Message, b: Message): Int =
-      a.level.compare(b.level)
-  }
-
+  implicit val ordering: Ordering[Message] =
+    Ordering.by(_.level)
 }
 
 case class Message(
-  checked        : BobbyChecked,
+  // TODO restore BobbyChecked? Since the BobbyChecked is the same, but different dependencyChain per scope
+  moduleID       : ModuleID,
+  result         : BobbyResult,
+  scope          : String,
   dependencyChain: Seq[ModuleID]
 ) {
 
   val level: MessageLevels.Level =
-    checked.result match {
-      case BobbyResult.Ok            => INFO
-      case BobbyResult.Exemption(_)  => WARN
-      case BobbyResult.Warning(_)    => WARN
-      case BobbyResult.Violation(_)  => ERROR
+    result match {
+      case BobbyResult.Ok            => MessageLevels.INFO
+      case BobbyResult.Exemption(_)  => MessageLevels.WARN
+      case BobbyResult.Warning(_)    => MessageLevels.WARN
+      case BobbyResult.Violation(_)  => MessageLevels.ERROR
     }
 
-  val deprecationReason: Option[String]    = checked.result.rule.map(_.reason)
-  val deprecationFrom  : Option[LocalDate] = checked.result.rule.map(_.effectiveDate) // TODO why need the alias?
-  val effectiveDate    : Option[LocalDate] = checked.result.rule.map(_.effectiveDate)
-  val moduleName       : String            = checked.moduleID.moduleName
+  val deprecationReason: Option[String] =
+    result.rule.map(_.reason)
+
+  val effectiveDate: Option[LocalDate] =
+    result.rule.map(_.effectiveDate)
 
   val isLocal: Boolean =
     dependencyChain.isEmpty
+
+  def pulledInBy: Option[String] =
+    dependencyChain.lastOption.map(_.moduleName)
 }

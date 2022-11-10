@@ -17,29 +17,28 @@
 package uk.gov.hmrc.bobby.output
 
 import uk.gov.hmrc.bobby.domain.{Message, MessageLevels}
+import uk.gov.hmrc.bobby.Util._
 
 trait TextWriter extends BobbyWriter {
 
-  def buildModel(messages: List[Message], viewType: ViewType): List[Seq[fansi.Str]] = viewType match {
-    case Nested => {
-      val transitiveMessages = messages.filterNot(_.isLocal).groupBy(m => m.dependencyChain.lastOption)
-        .collect {
-          case (Some(k), v) => k -> v
+  def buildModel(messages: List[Message], viewType: ViewType): List[Seq[fansi.Str]] =
+    viewType match {
+      case Nested =>
+        val transitiveMessages = messages.filterNot(_.isLocal).groupBy(m => m.dependencyChain.lastOption)
+          .collect {
+            case (Some(k), v) => k -> v
+          }
+
+        val groupedMessages = messages
+          .filter(_.isLocal).flatMap { m =>
+          List(m) ++ transitiveMessages.getOrElse(m.moduleID, List.empty)
         }
+        groupedMessages.map(viewType.renderMessage)
 
-      val groupedMessages = messages
-        .filter(_.isLocal).flatMap { m =>
-        List(m) ++ transitiveMessages.getOrElse(m.checked.moduleID, List.empty)
-      }
-      groupedMessages.map(viewType.renderMessage)
+      case _ =>
+        messages
+          .sortBy(_.moduleID.moduleName)
+          .sortWith((a, b) => MessageLevels.compare(a.level, b.level))
+          .map(viewType.renderMessage)
     }
-    case _ => {
-      messages
-        .sortBy(_.moduleName)
-        .sortWith((a, b) => MessageLevels.compare(a.level, b.level))
-        .map(viewType.renderMessage)
-    }
-  }
-
 }
-

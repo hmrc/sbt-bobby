@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
-import uk.gov.hmrc.bobby.output.{Compact, ViewType}
+import uk.gov.hmrc.bobby.output.{ConsoleWriter, Compact, JsonFileWriter, TextFileWriter, ViewType}
 import uk.gov.hmrc.bobby.domain._
 
 object SbtBobbyPlugin extends AutoPlugin {
@@ -65,6 +65,7 @@ object SbtBobbyPlugin extends AutoPlugin {
           consoleColours          = bobbyConsoleColours.value
         )
 
+      // TODO split loading bobby rules out from config?
       val bobbyRules = config.loadBobbyRules()
 
       // Determine nodes to exclude which are this project or dependent projects from this build
@@ -75,8 +76,6 @@ object SbtBobbyPlugin extends AutoPlugin {
         .allProjectRefs
         .map(p => extractedRootProject.get(p / projectID))
         .distinct
-
-      Bobby.printHeader(logger)
 
       object DependencyDotExtractor {
         val DependencyDotRegex = "dependencies-(\\w+).dot".r
@@ -99,21 +98,30 @@ object SbtBobbyPlugin extends AutoPlugin {
         dependencyDotFiles.flatMap { case (file, scope) =>
           logger.info(message(projectName, s"Found $scope ($file)"))
           val content  = IO.read(file)
-          val messages = BobbyValidator.validate(content, bobbyRules, internalModuleNodes, projectName)
+          val messages = BobbyValidator.validate(content, scope, bobbyRules, internalModuleNodes, projectName)
 
-          // TODO we can combine all the messages together and display as one (e.g. add scopes column)
-          uk.gov.hmrc.bobby.output.Output.writeValidationResult(
-            BobbyValidationResult(messages.toList),
-            config.jsonOutputFile,
-            config.textOutputFile,
-            config.viewType,
-            config.consoleColours
-          )
+          val config2 = config.copy(outputFileName = s"bobby-report-$projectName-$scope")
+
+          new JsonFileWriter(config2.jsonOutputFile).write(BobbyValidationResult(messages), config.viewType)
+          new TextFileWriter(config2.textOutputFile).write(BobbyValidationResult(messages), config.viewType)
 
           messages
         }
 
-      val result = BobbyValidationResult(messages.toList)
+      // pulledInBy will be different per scope
+      /*println {
+        messages.toList
+          .flatMap { case (s, ms) => ms.map(m => (s, m)) }
+          .groupBy(_._2.moduleID)
+          .map { case (moduleID, ms) =>
+            s"${moduleID} :\n  ${ms.toList.map(m => m._1 + ": " + m._2.pulledInBy).mkString("\n  ")}"
+          }.mkString("\n")
+        }*/
+
+      val result = BobbyValidationResult(messages)
+
+      Bobby.printHeader(logger)
+      new ConsoleWriter(config.consoleColours).write(result, config.viewType)
 
       if (result.hasViolations)
         throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")

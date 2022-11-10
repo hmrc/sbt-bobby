@@ -31,70 +31,77 @@ object DefaultRendering {
   implicit class ExtendedMessage(m: Message) {
     val levelStr: Str = messageColour(m)(m.level.name)
     val dependencyStr: Str = {
-      val dep = s"${m.checked.moduleID.moduleName}"
+      val dep = s"${m.moduleID.moduleName}"
       if (m.isLocal) Color.Blue(dep) else Str(dep)
     }
-    val viaStr: Str = Str(m.dependencyChain.lastOption.map(_.moduleName).getOrElse(""))
-    val yourVersionStr: Str = Str(m.checked.moduleID.revision)
-    val outlawedRangeStr: Str = Str(m.checked.result.rule.map(_.range.toString()).getOrElse("-"))
+    val viaStr          : Str = Str(m.pulledInBy.getOrElse(""))
+    val yourVersionStr  : Str = Str(m.moduleID.revision)
+    val outlawedRangeStr: Str = Str(m.result.rule.map(_.range.toString()).getOrElse("-"))
     val effectiveDateStr: Str = Str(m.effectiveDate.map(_.toString).getOrElse("-"))
-    val reasonStr: Str = Str(m.deprecationReason.map(_.toString).getOrElse("-"))
+    val reasonStr       : Str = Str(m.deprecationReason.map(_.toString).getOrElse("-"))
   }
 }
 
 import DefaultRendering._
 case object Flat extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From", "Reason")
+  override def headerNames: Seq[String] =
+    Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From", "Reason")
 
-  override def renderMessage(m: Message): Seq[Str] = Seq(
-    m.levelStr,
-    m.dependencyStr,
-    m.viaStr,
-    m.yourVersionStr,
-    m.outlawedRangeStr,
-    m.effectiveDateStr,
-    m.reasonStr
-  )
+  override def renderMessage(m: Message): Seq[Str] =
+    Seq(
+      m.levelStr,
+      m.dependencyStr,
+      m.viaStr,
+      m.yourVersionStr,
+      m.outlawedRangeStr,
+      m.effectiveDateStr,
+      m.reasonStr
+    )
 }
 
 case object Nested extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Effective From")
+  override def headerNames: Seq[String] =
+    Seq("Level", "Dependency", "Your Version", "Outlawed Range", "Effective From")
 
-  override def renderMessage(m: Message): Seq[Str] = Seq(
-    messageColour(m)(m.levelStr),
-    if(m.isLocal) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
-    m.yourVersionStr,
-    m.outlawedRangeStr,
-    m.effectiveDateStr
-  )
+  override def renderMessage(m: Message): Seq[Str] =
+    Seq(
+      messageColour(m)(m.levelStr),
+      if (m.isLocal) m.dependencyStr else Str(s" => ${m.dependencyStr}"),
+      m.yourVersionStr,
+      m.outlawedRangeStr,
+      m.effectiveDateStr
+    )
 }
 
 case object Compact extends ViewType {
-  override def headerNames: Seq[String] = Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From")
+  override def headerNames: Seq[String] =
+    Seq("Level", "Dependency", "Via", "Your Version", "Outlawed Range", "Effective From")
 
-  override def renderMessage(m: Message): Seq[Str] = Seq(
-    m.levelStr,
-    m.dependencyStr,
-    m.viaStr,
-    m.yourVersionStr,
-    m.outlawedRangeStr,
-    m.effectiveDateStr
-  )
+  override def renderMessage(m: Message): Seq[Str] =
+    Seq(
+      m.levelStr,
+      m.dependencyStr,
+      m.viaStr,
+      m.yourVersionStr,
+      m.outlawedRangeStr,
+      m.effectiveDateStr
+    )
 }
 
 object ViewType {
 
-  def apply(s: String): ViewType = s match {
-    case "Flat"     => Flat
-    case "Nested"   => Nested
-    case "Compact"  => Compact
-    case _          => Compact
-  }
+  def apply(s: String): ViewType =
+    s match {
+      case "Flat"    => Flat
+      case "Nested"  => Nested
+      case "Compact" => Compact
+      case _         => Compact
+    }
 
-  def messageColour(message: Message): EscapeAttr = message.level match {
-    case ERROR => Color.Red
-    case WARN => Color.Yellow
-    case INFO => Color.Green
-  }
-
+  def messageColour(message: Message): EscapeAttr =
+    message.level match {
+      case ERROR => Color.Red
+      case WARN  => Color.Yellow
+      case INFO  => Color.Green
+    }
 }

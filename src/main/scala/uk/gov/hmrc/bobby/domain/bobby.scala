@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import sbt.librarymanagement.ModuleID
-
 sealed trait BobbyResult {
   import BobbyResult._
 
@@ -74,5 +72,3 @@ object BobbyResult {
     val tag: String = "BobbyOk"
   }
 }
-
-case class BobbyChecked(moduleID: ModuleID, result: BobbyResult)

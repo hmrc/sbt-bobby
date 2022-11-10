@@ -18,7 +18,7 @@ package uk.gov.hmrc.bobby
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import uk.gov.hmrc.bobby.domain.MessageBuilder._
+import uk.gov.hmrc.bobby.domain.MessageBuilder.makeMessage
 import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 import uk.gov.hmrc.bobby.domain._
 
@@ -36,7 +36,7 @@ class BobbySpec extends AnyWordSpec with Matchers {
         makeMessage(BobbyResult.Violation(rule))
       )
 
-      messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
+      messages.sorted.map(_.level) shouldBe Seq(ERROR, WARN, INFO)
     }
   }
 }

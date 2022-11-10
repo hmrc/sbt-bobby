@@ -25,6 +25,7 @@ object BobbyValidator {
 
   def validate(
     content            : String,
+    scope              : String,
     bobbyRules         : List[BobbyRule],
     internalModuleNodes: Seq[ModuleID],
     projectName        : String
@@ -42,10 +43,9 @@ object BobbyValidator {
       val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, projectName)
 
       Message(
-        checked         = BobbyChecked(
-                            moduleID = dependency.toModuleID,
-                            result   = result
-                          ),
+        moduleID        = dependency.toModuleID,
+        result          = result,
+        scope           = scope,
         dependencyChain = graph.pathToRoot(dependency).map(_.toModuleID).dropRight(1) // last one is the project itself
       )
     }
@@ -96,9 +96,8 @@ sealed trait BobbyValidationResult {
 }
 
 object BobbyValidationResult {
-
-  def apply(messages: List[Message]): BobbyValidationResult =
-    Impl(messages.sortBy(_.moduleName))
+  def apply(messages: Seq[Message]): BobbyValidationResult =
+    Impl(messages.toList.sortBy(_.moduleID.toString))
 
   private final case class Impl(allMessages: List[Message]) extends BobbyValidationResult {
 
@@ -128,6 +127,6 @@ object BobbyValidationResult {
 
     private lazy val byResultName =
       allMessages
-        .groupBy(_.checked.result.name)
+        .groupBy(_.result.name)
   }
 }

@@ -28,7 +28,7 @@ object Util {
       Dependency(id.organization, id.name)
 
     def moduleName =
-      s"${id.organization}.${id.name}"
+      s"${id.organization}:${id.name}"
   }
 
   implicit class ExtendedNode(node: DependencyGraphParser.Node) {
