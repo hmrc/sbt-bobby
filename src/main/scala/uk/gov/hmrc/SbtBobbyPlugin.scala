@@ -24,11 +24,10 @@ import uk.gov.hmrc.bobby.domain._
 import uk.gov.hmrc.bobby.Bobby
 
 object SbtBobbyPlugin extends AutoPlugin {
-
-  override def trigger = allRequirements
-
   import BobbyEnvKeys._
   import BobbyKeys._
+
+  override def trigger = allRequirements
 
   // Environment variable keys for customising bobby
   object BobbyEnvKeys {
@@ -38,21 +37,20 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
   object BobbyKeys {
-    lazy val validate                = taskKey[Unit]("Run Bobby to validate dependencies")
     lazy val bobbyRulesURL           = settingKey[Option[URL]]("Override the URL used to get the list of bobby rules")
     lazy val outputDirectoryOverride = settingKey[Option[String]]("Override the directory used to write the report files")
     lazy val bobbyStrictMode         = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
     lazy val bobbyViewType           = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
     lazy val bobbyConsoleColours     = settingKey[Boolean]("If true (default), colours are rendered in the console output")
-    lazy val validateDot = // or replace validate?
-      taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
+
+    // TODO replace `validate`? Will we still want to validate just a specific scope?
+    lazy val validateDot             = taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
   }
 
   private def validateDotTask() =
     Def.task {
-      val dir = target.value
+      val dir         = target.value
       val projectName = name.value
-
 
       // Retrieve config settings
       val bobbyConfigFile: ConfigFile = ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf")
@@ -82,16 +80,24 @@ object SbtBobbyPlugin extends AutoPlugin {
 
       Bobby.printHeader(ConsoleLogger())
 
-      val dependencyDotFiles =
-        dir.listFiles().filter(file =>
-          file.getName.startsWith("dependencies") && file.getName.endsWith(".dot"))  // TODO regex
-            //what about plugin scope?
-            //"project/target/dependencies-compile.dot"
+      object DependencyDotExtractor {
+        val DependencyDotRegex = "dependencies-(\\w+).dot".r
+        def unapply(file: File): Option[(File, String)] =
+          file.getName match {
+            case DependencyDotRegex(scope) => Some((file, scope))
+            case _                         => None
+          }
+      }
 
+      val dependencyDotFiles =
+        // get meta-build files too for plugin scope violations
+        (dir.listFiles() ++ new java.io.File("project/target").listFiles()).collect {
+          case DependencyDotExtractor(file, scope) => (file, if (file.getPath.contains("project/target")) "plugin" else scope)
+        }
 
       val messages =
-        dependencyDotFiles.flatMap { file =>
-          println(s"Found $file")
+        dependencyDotFiles.flatMap { case (file, scope) =>
+          println(s"Found $scope ($file)")
           val content  = IO.read(file)
           val messages = BobbyValidator.validate(content, bobbyRules, internalModuleNodes, projectName)
 
