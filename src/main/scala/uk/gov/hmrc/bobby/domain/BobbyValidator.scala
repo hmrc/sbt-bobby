@@ -18,12 +18,10 @@ package uk.gov.hmrc.bobby.domain
 
 import java.time.LocalDate
 
-import sbt.{ConsoleLogger, ModuleID}
+import sbt.ModuleID
 import uk.gov.hmrc.graph.DependencyGraphParser
 
 object BobbyValidator {
-
-  val logger = ConsoleLogger()
 
   def validate(
     content            : String,

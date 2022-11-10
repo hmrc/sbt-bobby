@@ -6,5 +6,5 @@ sys.props.get("plugin.version") match {
                          |Specify this property using the scriptedLaunchOpts -D.""".stripMargin)
 }
 
-import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
+import uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
 bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL)

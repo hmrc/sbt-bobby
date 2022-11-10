@@ -1,5 +1,5 @@
 import play.api.libs.json.Json
-import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys._
+import uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys._
 import sbt.IO._
 
 lazy val root = (project in file("."))
@@ -17,4 +17,3 @@ lazy val root = (project in file("."))
     ),
     bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
   )
-

@@ -1,4 +1,4 @@
-import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys._
+import uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys._
 lazy val root = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(

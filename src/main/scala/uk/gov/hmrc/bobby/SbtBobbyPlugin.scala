@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc // TODO move to bobby package
+package uk.gov.hmrc.bobby
 
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.Bobby
 
 object SbtBobbyPlugin extends AutoPlugin {
   import BobbyEnvKeys._
@@ -37,14 +36,12 @@ object SbtBobbyPlugin extends AutoPlugin {
   }
 
   object BobbyKeys {
+    lazy val validateDot             = taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
     lazy val bobbyRulesURL           = settingKey[Option[URL]]("Override the URL used to get the list of bobby rules")
     lazy val outputDirectoryOverride = settingKey[Option[String]]("Override the directory used to write the report files")
     lazy val bobbyStrictMode         = settingKey[Boolean]("If true, bobby will fail on warnings as well as violations")
     lazy val bobbyViewType           = settingKey[ViewType]("View type for display: Flat/Nested/Compact")
     lazy val bobbyConsoleColours     = settingKey[Boolean]("If true (default), colours are rendered in the console output")
-
-    // TODO replace `validate`? Will we still want to validate just a specific scope?
-    lazy val validateDot             = taskKey[Unit](s"Run Bobby to analyse the dependency dot graphs")
   }
 
   private def validateDotTask() =
@@ -100,7 +97,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
       val messages =
         dependencyDotFiles.flatMap { case (file, scope) =>
-          println(s"Found $scope ($file)")
+          logger.info(message(projectName, s"Found $scope ($file)"))
           val content  = IO.read(file)
           val messages = BobbyValidator.validate(content, bobbyRules, internalModuleNodes, projectName)
 
@@ -126,7 +123,7 @@ object SbtBobbyPlugin extends AutoPlugin {
     }
 
     private val currentVersion =
-      getClass.getPackage.getImplementationVersion // This requires that the class is in a package unique to that build (not currently true!)
+      getClass.getPackage.getImplementationVersion // This requires that the class is in a package unique to that build
 
     private def message(projectName: String, msg: String): String =
       s"SbtBobby [$currentVersion] ($projectName) - $msg"

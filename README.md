@@ -297,7 +297,7 @@ To change the strict mode you can:
     ```
  * Change it manually just for your console session, e.g.
     ```
-    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyStrictMode := true
+    set uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys.bobbyStrictMode := true
     ```
 
 ### Bobby Rule file location
@@ -344,7 +344,7 @@ By default, the console output will show with ANSI colours. To turn this off you
     ```
  * Change it manually just for your console session, e.g.
     ```
-    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyConsoleColours := false
+    set uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys.bobbyConsoleColours := false
     ```
 
 ### Changing the view type
@@ -364,7 +364,7 @@ To change the view type you can:
     ```
  * Change it manually just for your console session, e.g.
     ```
-    set uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyViewType := uk.gov.hmrc.bobby.output.Nested
+    set uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys.bobbyViewType := uk.gov.hmrc.bobby.output.Nested
     ```
 ## How do I change the Bobby rules enforced by Jenkins?
 
