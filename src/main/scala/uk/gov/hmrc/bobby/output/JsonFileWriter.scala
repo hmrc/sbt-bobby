@@ -17,7 +17,7 @@
 package uk.gov.hmrc.bobby.output
 
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.bobby.domain.{BobbyExemption, BobbyOk, BobbyValidationResult, BobbyViolation, BobbyWarning, Message}
+import uk.gov.hmrc.bobby.domain.{BobbyResult, BobbyValidationResult, Message}
 
 class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
 
@@ -26,14 +26,14 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
     val json: JsValue = Json.obj(
       "results" -> bobbyValidationResult.allMessages.map { m =>
         Json.obj(
-          "level" -> m.level.name,
+          "level"   -> m.level.name,
           "message" -> jsonMessage(m),
-          "data" -> Json.obj(
-            "organisation" -> m.checked.moduleID.organization,
-            "name" -> m.checked.moduleID.name,
-            "revision" -> m.checked.moduleID.revision,
-            "result" -> m.checked.result.name,
-            "deprecationFrom" -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
+          "data"    -> Json.obj(
+            "organisation"      -> m.checked.moduleID.organization,
+            "name"              -> m.checked.moduleID.name,
+            "revision"          -> m.checked.moduleID.revision,
+            "result"            -> m.checked.result.name,
+            "deprecationFrom"   -> JsString(m.deprecationFrom.map(_.toString).getOrElse("-")),
             "deprecationReason" -> JsString(m.deprecationReason.getOrElse("-"))
           )
         )
@@ -43,11 +43,11 @@ class JsonFileWriter(val filepath: String) extends BobbyWriter with FileWriter {
     Json.prettyPrint(json)
   }
 
-  def jsonMessage(m: Message): String = m.checked.result match {
-    case BobbyOk => "No issue"
-    case BobbyExemption(_) => "Exemption applies; may need attention"
-    case BobbyWarning(_) => "Needs attention soon to avoid future violations"
-    case BobbyViolation(_) => "Needs urgent attention - preventing build"
-  }
-
+  def jsonMessage(m: Message): String =
+    m.checked.result match {
+      case BobbyResult.Ok           => "No issue"
+      case BobbyResult.Exemption(_) => "Exemption applies; may need attention"
+      case BobbyResult.Warning(_)   => "Needs attention soon to avoid future violations"
+      case BobbyResult.Violation(_) => "Needs urgent attention - preventing build"
+    }
 }

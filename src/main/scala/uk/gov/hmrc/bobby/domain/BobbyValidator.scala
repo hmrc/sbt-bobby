@@ -65,15 +65,15 @@ object BobbyValidator {
       matchingRules
         .map { rule =>
           if (rule.exemptProjects.contains(projectName))
-            BobbyExemption(rule): BobbyResult
+            BobbyResult.Exemption(rule): BobbyResult
           else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
-            BobbyViolation(rule)
+            BobbyResult.Violation(rule)
           else
-            BobbyWarning(rule)
+            BobbyResult.Warning(rule)
         }
         .sorted
         .headOption
-        .getOrElse(BobbyOk)
+        .getOrElse(BobbyResult.Ok)
   }
 }
 
@@ -97,15 +97,15 @@ object BobbyValidationResult {
 
     override lazy val violations: List[Message] =
       byResultName
-        .getOrElse(BobbyViolation.tag, List.empty)
+        .getOrElse(BobbyResult.Violation.tag, List.empty)
 
     override lazy val warnings: List[Message] =
       byResultName
-        .getOrElse(BobbyWarning.tag, List.empty)
+        .getOrElse(BobbyResult.Warning.tag, List.empty)
 
     override lazy val exemptions: List[Message] =
       byResultName
-        .getOrElse(BobbyExemption.tag, List.empty)
+        .getOrElse(BobbyResult.Exemption.tag, List.empty)
 
     override lazy val hasViolations: Boolean =
       violations.nonEmpty

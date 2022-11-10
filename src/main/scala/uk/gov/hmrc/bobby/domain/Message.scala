@@ -38,10 +38,10 @@ case class Message(
 
   val level: MessageLevels.Level =
     checked.result match {
-      case BobbyOk            => INFO
-      case BobbyExemption(_)  => WARN
-      case BobbyWarning(_)    => WARN
-      case BobbyViolation(_)  => ERROR
+      case BobbyResult.Ok            => INFO
+      case BobbyResult.Exemption(_)  => WARN
+      case BobbyResult.Warning(_)    => WARN
+      case BobbyResult.Violation(_)  => ERROR
     }
 
   val deprecationReason: Option[String]    = checked.result.rule.map(_.reason)
