@@ -20,8 +20,7 @@ import scala.annotation.tailrec
 
 // TODO lifted from service-dependencies (also used by pr-commenter etc.)
 // should we create a library?
-class DependencyGraphParser {
-  import DependencyGraphParser._
+object DependencyGraphParser {
 
   def parse(input: String): DependencyGraph = {
     val graph = lexer(input.split("\n").toIndexedSeq)
@@ -53,9 +52,7 @@ class DependencyGraphParser {
       case eviction(a, b, r) => Some(Eviction(Node(a), Node(b), r))
       case _                 => None
     }
-}
 
-object DependencyGraphParser {
   private val group           = """([^:]+)"""
   private val artefact        = """([^:]+?)"""          // make + lazy so it does not capture the optional scala version
   private val optScalaVersion = """(?:_(\d+\.\d+))?"""  // non-capturing group to get _ and optional scala version

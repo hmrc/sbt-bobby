@@ -19,29 +19,35 @@ package uk.gov.hmrc.bobby.domain
 import java.time.LocalDate
 
 import sbt.{ConsoleLogger, ModuleID}
+import uk.gov.hmrc.graph.DependencyGraphParser
 
 object BobbyValidator {
 
   val logger = ConsoleLogger()
 
   def validate(
-    dependencyMap: Map[ModuleID, Seq[ModuleID]],
-    dependencies : Seq[ModuleID],
-    bobbyRules   : List[BobbyRule],
-    projectName  : String
-  ): BobbyValidationResult = {
-    val checkedDependencies =
-      dependencies.map(dep => BobbyChecked(dep, calc(bobbyRules, dep, projectName)))
+    content            : String,
+    bobbyRules         : List[BobbyRule],
+    internalModuleNodes: Seq[ModuleID],
+    projectName        : String
+  ): Seq[Message] = {
+    import uk.gov.hmrc.bobby.Util._
+    val graph        = DependencyGraphParser.parse(content)
+    val dependencies = graph.dependencies.filterNot { n1 =>
+                        internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
+                      }
 
-    val messages =
-      checkedDependencies
-        .map(bc => Message(
-                    checked         = bc,
-                    dependencyChain = dependencyMap.getOrElse(bc.moduleID, Seq.empty)
-            ))
-        .toList
+    dependencies.map { dependency =>
+      val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, projectName)
 
-    BobbyValidationResult(messages)
+      Message(
+        checked         = BobbyChecked(
+                            moduleID = dependency.toModuleID,
+                            result   = result
+                          ),
+        dependencyChain = graph.pathToRoot(dependency).map(_.toModuleID).dropRight(1) // last one is the project itself
+      )
+    }
   }
 
   def calc(

@@ -20,9 +20,9 @@ import sbt.ModuleID
 
 object MessageBuilder {
 
-  def makeMessage(result: BobbyResult) = {
-    val checked = BobbyChecked(ModuleID("org", "name", "0.0.0"), result)
-    new Message(checked, Seq.empty)
-  }
-
+  def makeMessage(result: BobbyResult) =
+    new Message(
+      checked         = BobbyChecked(ModuleID("org", "name", "0.0.0"), result),
+      dependencyChain = Seq.empty
+    )
 }

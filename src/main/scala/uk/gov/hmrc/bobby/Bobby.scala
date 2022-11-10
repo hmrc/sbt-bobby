@@ -16,17 +16,14 @@
 
 package uk.gov.hmrc.bobby
 
-import sbt._
-import uk.gov.hmrc.bobby.conf.BobbyConfiguration
-import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.bobby.output.Output
+import sbt.util.Logger
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
 object Bobby {
 
-  private val logger         = ConsoleLogger()
-  private val currentVersion = getClass.getPackage.getImplementationVersion
+  private val currentVersion =
+    getClass.getPackage.getImplementationVersion
 
   private val bobbyLogo =
     """
@@ -41,26 +38,10 @@ object Bobby {
       |     \__/;      '-.
       |""".stripMargin
 
-  def validateDependencies(
-    projectName  : String,
-    dependencyMap: Map[ModuleID, Seq[ModuleID]],
-    dependencies : Seq[ModuleID],
-    config       : BobbyConfiguration
-  ): Unit = {
+  def printHeader(logger: Logger): Unit = {
 
     logger.info(bobbyLogo)
 
     logger.info(s"[bobby] Bobby version $currentVersion")
-
-    val result =
-      BobbyValidator.validate(dependencyMap, dependencies, config.loadBobbyRules(), projectName)
-
-    Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
-
-    if (result.hasViolations)
-      throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
-
-    if (config.strictMode && result.hasWarnings)
-      throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
 }

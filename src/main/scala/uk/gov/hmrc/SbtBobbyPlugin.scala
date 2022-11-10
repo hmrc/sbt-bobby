@@ -21,8 +21,7 @@ import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
 import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 import uk.gov.hmrc.bobby.domain._
-import uk.gov.hmrc.graph.DependencyGraphParser
-import uk.gov.hmrc.bobby.Util._
+import uk.gov.hmrc.bobby.Bobby
 
 object SbtBobbyPlugin extends AutoPlugin {
 
@@ -51,7 +50,6 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   private def validateDotTask() =
     Def.task {
-      val dependencyGraphParser = new DependencyGraphParser
       val dir = target.value
       val projectName = name.value
 
@@ -82,46 +80,40 @@ object SbtBobbyPlugin extends AutoPlugin {
         .map(p => extractedRootProject.get(p / projectID))
         .distinct
 
-      dir.listFiles().map { file =>
-        if (file.getName.startsWith("dependencies") && file.getName.endsWith(".dot")) { // TODO regex
+      Bobby.printHeader(ConsoleLogger())
 
-          //what about plugin scope?
-          //"project/target/dependencies-compile.dot"
+      val dependencyDotFiles =
+        dir.listFiles().filter(file =>
+          file.getName.startsWith("dependencies") && file.getName.endsWith(".dot"))  // TODO regex
+            //what about plugin scope?
+            //"project/target/dependencies-compile.dot"
+
+
+      val messages =
+        dependencyDotFiles.flatMap { file =>
           println(s"Found $file")
-          val content      = IO.read(file)
-          val graph        = dependencyGraphParser.parse(content)
-          val dependencies = graph.dependencies.filterNot { n1 =>
-                               internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
-                             }
+          val content  = IO.read(file)
+          val messages = BobbyValidator.validate(content, bobbyRules, internalModuleNodes, projectName)
 
-          val messages =
-            dependencies.map { dependency =>
-              val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, projectName)
+          // TODO we can combine all the messages together and display as one (e.g. add scopes column)
+          uk.gov.hmrc.bobby.output.Output.writeValidationResult(
+            BobbyValidationResult(messages.toList),
+            config.jsonOutputFile,
+            config.textOutputFile,
+            config.viewType,
+            config.consoleColours
+          )
 
-              Message(
-                checked         = BobbyChecked(
-                                    moduleID = dependency.toModuleID,
-                                    result   = result
-                                  ),
-                dependencyChain = graph.pathToRoot(dependency).map(_.toModuleID).dropRight(1) // last one is the project itself
-              )
-            }
-
-          // TODO we can combine all the messages together and display as one
-          // Include Scope in Message?
-          val result = BobbyValidationResult(messages.toList)
-
-          println(s"Result from $file:")
-          uk.gov.hmrc.bobby.output.Output.writeValidationResult(result, config.jsonOutputFile, config.textOutputFile, config.viewType, config.consoleColours)
-
-
-          if (result.hasViolations)
-            throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
-
-          if (config.strictMode && result.hasWarnings)
-            throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
+          messages
         }
-      }
+
+      val result = BobbyValidationResult(messages.toList)
+
+      if (result.hasViolations)
+        throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
+
+      if (config.strictMode && result.hasWarnings)
+        throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
     }
 
     private val currentVersion =
