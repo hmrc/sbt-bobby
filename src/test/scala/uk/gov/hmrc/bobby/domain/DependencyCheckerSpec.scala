@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import sbt.librarymanagement.ModuleID
+import sbt.ModuleID
 
 class DependencyCheckerSpec extends AnyWordSpec with Matchers {
   import uk.gov.hmrc.bobby.Util._

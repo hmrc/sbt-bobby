@@ -32,7 +32,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read [1.0.0] as fixed version '1.0.0'" in {
-
       val r = VersionRange("[1.0.0]")
 
       r.lowerBound          shouldBe Some(Version("1.0.0"))
@@ -42,7 +41,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read [1.2.0,1.3.0] as 1.2.0 <= x <= 1.3.0" in {
-
       val r = VersionRange("[1.2.0,1.3.0]")
 
       r.lowerBound          shouldBe Some(Version("1.2.0"))
@@ -52,7 +50,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read [1.0.0,2.0.0) as 1.0.0 <= x < 2.0.0" in {
-
       val r = VersionRange("[1.0.0,2.0.0)")
 
       r.lowerBound          shouldBe Some(Version("1.0.0"))
@@ -62,7 +59,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read [8.0.0,8.4.1] as 8.0.0 <= x <= 8.4.1" in {
-
       val r = VersionRange("[8.0.0,8.4.1]")
 
       r.lowerBound          shouldBe Some(Version("8.0.0"))
@@ -72,7 +68,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read ranges with spaces" in {
-
       val r = VersionRange("[8.0.0, 8.4.1]")
 
       r.lowerBound          shouldBe Some(Version("8.0.0"))
@@ -82,7 +77,6 @@ class VersionRangeSpec extends AnyWordSpec with Matchers {
     }
 
     "read [1.5.0,) as x >= 1.5.0" in {
-
       val r = VersionRange("[1.5.0,)")
 
       r.lowerBound          shouldBe Some(Version("1.5.0"))

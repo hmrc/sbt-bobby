@@ -16,7 +16,11 @@
 
 package uk.gov.hmrc.bobby
 
+import sbt.ModuleID
 import sbt.util.Logger
+import uk.gov.hmrc.bobby.conf.BobbyConfiguration
+import uk.gov.hmrc.bobby.domain.{BobbyValidator, BobbyValidationResult}
+import uk.gov.hmrc.bobby.output.{ConsoleWriter, JsonFileWriter, TextFileWriter}
 
 class BobbyValidationFailedException(message: String) extends RuntimeException(message)
 
@@ -38,10 +42,48 @@ object Bobby {
       |     \__/;      '-.
       |""".stripMargin
 
-  def printHeader(logger: Logger): Unit = {
-
+  def validateDependencies(
+    projectName        : String,
+    dependencyDotFiles : Seq[DotFile],
+    internalModuleNodes: Seq[ModuleID],
+    config             : BobbyConfiguration,
+    logger             : Logger
+  ): Unit = {
     logger.info(bobbyLogo)
 
     logger.info(s"[bobby] Bobby version $currentVersion")
+
+    val bobbyRules = config.loadBobbyRules()
+
+    val messages =
+      dependencyDotFiles.flatMap { dotFile =>
+        val messages = BobbyValidator.validate(dotFile.content, dotFile.scope, bobbyRules, internalModuleNodes, projectName)
+
+        val outputFileName = s"bobby-report-$projectName-${dotFile.scope}"
+
+        new JsonFileWriter(s"${config.outputDirectory}/${outputFileName}.json")
+          .write(BobbyValidationResult(messages), config.viewType)
+
+        new TextFileWriter(s"${config.outputDirectory}/${outputFileName}.txt")
+          .write(BobbyValidationResult(messages), config.viewType)
+
+        messages
+      }
+
+    val result = BobbyValidationResult(messages)
+
+    new ConsoleWriter(config.consoleColours).write(result, config.viewType)
+
+    if (result.hasViolations)
+      throw new BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
+
+    if (config.strictMode && result.hasWarnings)
+      throw new BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
   }
+
+  case class DotFile(
+    name   : String,
+    content: String,
+    scope  : String
+  )
 }

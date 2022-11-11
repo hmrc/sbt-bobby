@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.graph
+package uk.gov.hmrc.bobby.graph
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -99,12 +99,13 @@ class DependencyGraphParserSpec
 
 
     // BDOG-1884 if this test is hanging, its because pathToRoot's cycle detection has broken
-    // TODO confirm the behaviour in this scenario - we'd rather fail bobby than let violations through?
     "not get stuck in an infinite loop when parsing a cyclical graph" in {
       val source = scala.io.Source.fromResource("graphs/loop.dot") // baz -> bar , bar -> baz
       val graph = DependencyGraphParser.parse(source.mkString)
-      val bar = graph.nodes.filter(_.artefact == "baz").head
-      graph.pathToRoot(bar).head shouldBe Node("org:baz:3.0.0")
+      val baz = graph.nodes.filter(_.artefact == "baz").head
+      graph.pathToRoot(baz).head shouldBe Node("org:baz:3.0.0")
+      val bar = graph.nodes.filter(_.artefact == "bar").head
+      graph.pathToRoot(bar).head shouldBe Node("org:bar:2.0.0")
     }
   }
 

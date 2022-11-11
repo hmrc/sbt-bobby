@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.graph
+package uk.gov.hmrc.bobby.graph
 
 import scala.annotation.tailrec
 
@@ -70,11 +70,10 @@ object DependencyGraphParser {
     def group        = g
     def artefact     = a
     def version      = v
-    // TODO review this (changed from service-dependencies)
-    def artefactWithoutScalaVersion =
-      artefact.split("_2\\.\\d{2}").head
-
     def scalaVersion = Option(sv)
+
+    def toModuleID =
+      sbt.ModuleID(organization = group, name = artefact, revision = version)
   }
 
   case class Arrow(from: Node, to: Node) extends Token
@@ -107,8 +106,10 @@ object DependencyGraphParser {
     }
 
     lazy val root: Node =
-      // the last node of any path. Better implementation?
+      // the last node of any path.
       pathToRoot(nodes.head).last
+      // alternatively, the only dependency not pointed to - there should only be one
+      // dependencies.diff(arrowsMap.keys.toSeq).head
   }
 
   object DependencyGraph {

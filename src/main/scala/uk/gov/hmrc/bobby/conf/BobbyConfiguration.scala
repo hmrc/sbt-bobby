@@ -74,12 +74,6 @@ case class BobbyConfiguration(
       .orElse(configValue("output-directory"))
       .getOrElse(defaultOutputDirectory)
 
-  val jsonOutputFile: String =
-    s"${outputDirectory}/${outputFileName}.json"
-
-  val textOutputFile: String =
-    s"${outputDirectory}/${outputFileName}.txt"
-
   val resolvedRuleUrl: Option[URL] =
     bobbyRulesURL.map { url =>
       logger.info(s"[bobby] Bobby rule location was set explicitly in build")

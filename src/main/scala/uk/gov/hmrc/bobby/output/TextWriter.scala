@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.bobby.output
 
-import uk.gov.hmrc.bobby.domain.{Message, MessageLevels}
+import uk.gov.hmrc.bobby.domain.Message
 import uk.gov.hmrc.bobby.Util._
 
 trait TextWriter extends BobbyWriter {
@@ -38,7 +38,7 @@ trait TextWriter extends BobbyWriter {
       case _ =>
         messages
           .sortBy(_.moduleID.moduleName)
-          .sortWith((a, b) => MessageLevels.compare(a.level, b.level))
+          .sortBy(_.level)
           .map(viewType.renderMessage)
     }
 }

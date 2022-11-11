@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby.output
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import sbt.librarymanagement.ModuleID
+import sbt.ModuleID
 import uk.gov.hmrc.bobby.domain.{BobbyResult, BobbyValidationResult, Message}
 
 class ConsoleWriterSpec extends AnyWordSpec with Matchers with ScalaCheckDrivenPropertyChecks {

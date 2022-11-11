@@ -115,10 +115,17 @@ This means:
 >wish to also run it locally
 
 Just add the plugin to `./sbt/<version>/plugins/plugins.sbt`:
-```
+
+```scala
 resolvers += Resolver.url("HMRC-open-artefacts-ivy2", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
+addDependencyTreePlugin
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
+```
+
+If you are using sbt < 1.4, you will need to replace `addDependencyTreePlugin` with
+```scala
+  addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
 ```
 
 Then, create your rules configuration as above. This file can live anywhere, you just need to tell Bobby where to find it.
@@ -395,4 +402,3 @@ It also takes some inspiration from [sbt-blockade](https://github.com/Verizon/sb
 ## License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
-

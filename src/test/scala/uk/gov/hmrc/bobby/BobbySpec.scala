@@ -19,10 +19,11 @@ package uk.gov.hmrc.bobby
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.bobby.domain.MessageBuilder.makeMessage
-import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
+import uk.gov.hmrc.bobby.domain.MessageLevel
 import uk.gov.hmrc.bobby.domain._
 
 import java.time.LocalDate
+import scala.util.Random
 
 class BobbySpec extends AnyWordSpec with Matchers {
   "Messages" should {
@@ -36,7 +37,7 @@ class BobbySpec extends AnyWordSpec with Matchers {
         makeMessage(BobbyResult.Violation(rule))
       )
 
-      messages.sorted.map(_.level) shouldBe Seq(ERROR, WARN, INFO)
+      Random.shuffle(messages).sorted.map(_.level) shouldBe Seq(MessageLevel.ERROR, MessageLevel.WARN, MessageLevel.INFO)
     }
   }
 }

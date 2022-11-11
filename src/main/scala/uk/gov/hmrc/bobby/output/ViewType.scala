@@ -19,7 +19,7 @@ package uk.gov.hmrc.bobby.output
 import fansi.{Color, EscapeAttr, Str}
 import uk.gov.hmrc.bobby.domain.Message
 import uk.gov.hmrc.bobby.Util._
-import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
+import uk.gov.hmrc.bobby.domain.MessageLevel
 import ViewType.messageColour
 
 sealed trait ViewType {
@@ -100,8 +100,8 @@ object ViewType {
 
   def messageColour(message: Message): EscapeAttr =
     message.level match {
-      case ERROR => Color.Red
-      case WARN  => Color.Yellow
-      case INFO  => Color.Green
+      case MessageLevel.ERROR => Color.Red
+      case MessageLevel.WARN  => Color.Yellow
+      case MessageLevel.INFO  => Color.Green
     }
 }

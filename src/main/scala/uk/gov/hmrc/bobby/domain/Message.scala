@@ -28,19 +28,18 @@ object Message {
 }
 
 case class Message(
-  // TODO restore BobbyChecked? Since the BobbyChecked is the same, but different dependencyChain per scope
   moduleID       : ModuleID,
   result         : BobbyResult,
   scope          : String,
   dependencyChain: Seq[ModuleID]
 ) {
 
-  val level: MessageLevels.Level =
+  val level: MessageLevel =
     result match {
-      case BobbyResult.Ok            => MessageLevels.INFO
-      case BobbyResult.Exemption(_)  => MessageLevels.WARN
-      case BobbyResult.Warning(_)    => MessageLevels.WARN
-      case BobbyResult.Violation(_)  => MessageLevels.ERROR
+      case BobbyResult.Ok            => MessageLevel.INFO
+      case BobbyResult.Exemption(_)  => MessageLevel.WARN
+      case BobbyResult.Warning(_)    => MessageLevel.WARN
+      case BobbyResult.Violation(_)  => MessageLevel.ERROR
     }
 
   val deprecationReason: Option[String] =
@@ -54,4 +53,17 @@ case class Message(
 
   def pulledInBy: Option[String] =
     dependencyChain.lastOption.map(_.moduleName)
+}
+
+sealed abstract class MessageLevel(val order: Int, val name: String) extends Ordered[MessageLevel] {
+  def compare(that: MessageLevel): Int =
+    this.order - that.order
+
+  override def toString = name
+}
+
+object MessageLevel {
+  case object ERROR extends MessageLevel(0, "ERROR")
+  case object WARN extends  MessageLevel(1, "WARN")
+  case object INFO extends  MessageLevel(2, "INFO")
 }

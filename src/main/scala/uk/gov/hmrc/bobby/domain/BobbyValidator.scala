@@ -19,19 +19,18 @@ package uk.gov.hmrc.bobby.domain
 import java.time.LocalDate
 
 import sbt.ModuleID
-import uk.gov.hmrc.graph.DependencyGraphParser
+import uk.gov.hmrc.bobby.graph.DependencyGraphParser
 
 object BobbyValidator {
 
   def validate(
-    content            : String,
+    graphString        : String,
     scope              : String,
-    bobbyRules         : List[BobbyRule],
+    bobbyRules         : Seq[BobbyRule],
     internalModuleNodes: Seq[ModuleID],
     projectName        : String
   ): Seq[Message] = {
-    import uk.gov.hmrc.bobby.Util._
-    val graph        = DependencyGraphParser.parse(content)
+    val graph        = DependencyGraphParser.parse(graphString)
     val dependencies = graph.dependencies
                          // we don't want to validate the root project or dependencies on other internal modules - will lead to SNAPSHOT violations
                          .filterNot(_ == graph.root)
@@ -46,13 +45,18 @@ object BobbyValidator {
         moduleID        = dependency.toModuleID,
         result          = result,
         scope           = scope,
-        dependencyChain = graph.pathToRoot(dependency).map(_.toModuleID).dropRight(1) // last one is the project itself
+        dependencyChain = graph
+                            .pathToRoot(dependency)
+                            .dropRight(1) // last one is the project itself
+                            .dropWhile(_ == dependency) // and remove the dependency itself (if it's on the right, it will be the only entry - leaving an empty path)
+                            .map(_.toModuleID)
+
       )
     }
   }
 
   def calc(
-    bobbyRules : List[BobbyRule],
+    bobbyRules : Seq[BobbyRule],
     dep        : ModuleID,
     projectName: String,
     now        : LocalDate = LocalDate.now()
@@ -96,8 +100,10 @@ sealed trait BobbyValidationResult {
 }
 
 object BobbyValidationResult {
+  import uk.gov.hmrc.bobby.Util._
+
   def apply(messages: Seq[Message]): BobbyValidationResult =
-    Impl(messages.toList.sortBy(_.moduleID.toString))
+    Impl(messages.toList.sortBy(_.moduleID.moduleName))
 
   private final case class Impl(allMessages: List[Message]) extends BobbyValidationResult {
 

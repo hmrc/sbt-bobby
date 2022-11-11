@@ -8,8 +8,6 @@ lazy val root = (project in file("."))
     isPublicArtefact := true,
     scalaVersion     := "2.12.17",
     crossSbtVersions := Vector("1.6.2"),
-    // TODO we can replace the following with `addDependencyTreePlugin` in global plugins.sbt once everyone is on sbt 1.4+...
-    //addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",
       "com.typesafe.play"     %% "play-json"                  % "2.9.2",

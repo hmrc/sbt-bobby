@@ -17,9 +17,9 @@
 package uk.gov.hmrc.bobby.output
 
 import fansi.{Color, Str}
+import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
 import uk.gov.hmrc.bobby.domain.BobbyValidationResult
-import sbt.librarymanagement.ModuleID
 
 class ConsoleWriter(colours: Boolean) extends TextWriter {
 

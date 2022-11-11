@@ -19,14 +19,13 @@ package uk.gov.hmrc.bobby
 import sbt.Keys._
 import sbt._
 import uk.gov.hmrc.bobby.conf.{BobbyConfiguration, ConfigFile, ConfigFileImpl}
-import uk.gov.hmrc.bobby.output.{ConsoleWriter, Compact, JsonFileWriter, TextFileWriter, ViewType}
-import uk.gov.hmrc.bobby.domain._
+import uk.gov.hmrc.bobby.output.{Compact, ViewType}
 
 object SbtBobbyPlugin extends AutoPlugin {
   import BobbyEnvKeys._
   import BobbyKeys._
 
-  override def trigger = allRequirements
+  override def trigger: PluginTrigger = allRequirements
 
   // Environment variable keys for customising bobby
   object BobbyEnvKeys {
@@ -46,9 +45,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
   private def validateDotTask() =
     Def.task {
-      val dir         = target.value
       val projectName = name.value
-
       val logger      = sLog.value
 
       // Retrieve config settings
@@ -65,17 +62,14 @@ object SbtBobbyPlugin extends AutoPlugin {
           consoleColours          = bobbyConsoleColours.value
         )
 
-      // TODO split loading bobby rules out from config?
-      val bobbyRules = config.loadBobbyRules()
-
       // Determine nodes to exclude which are this project or dependent projects from this build
       // Required so multi-project builds with modules that depend on each other don't cause a violation of a SNAPSHOT dependency
       val extractedRootProject = Project.extract(state.value)
       val internalModuleNodes =
         buildStructure.value
-        .allProjectRefs
-        .map(p => extractedRootProject.get(p / projectID))
-        .distinct
+         .allProjectRefs
+         .map(p => extractedRootProject.get(p / projectID))
+         .distinct
 
       object DependencyDotExtractor {
         val DependencyDotRegex = "dependencies-(\\w+).dot".r
@@ -86,56 +80,25 @@ object SbtBobbyPlugin extends AutoPlugin {
           }
       }
 
-      // TODO this now analyses all scopes in one pass
-      // but what about all multi-modules?
       val dependencyDotFiles =
-        // get meta-build files too for plugin scope violations
-        (dir.listFiles() ++ new java.io.File("project/target").listFiles()).collect {
-          case DependencyDotExtractor(file, scope) => (file, if (file.getPath.contains("project/target")) "plugin" else scope)
+        // get meta-build files too for build scope violations
+        (target.value.listFiles() ++ new java.io.File("project/target").listFiles()).collect {
+          case DependencyDotExtractor(file, scope) =>
+            Bobby.DotFile(
+              name    = file.getName,
+              content = IO.read(file),
+              scope   = if (file.getPath.contains("project/target")) s"build-$scope" else scope
+            )
         }
 
-      val messages =
-        dependencyDotFiles.flatMap { case (file, scope) =>
-          logger.info(message(projectName, s"Found $scope ($file)"))
-          val content  = IO.read(file)
-          val messages = BobbyValidator.validate(content, scope, bobbyRules, internalModuleNodes, projectName)
-
-          val config2 = config.copy(outputFileName = s"bobby-report-$projectName-$scope")
-
-          new JsonFileWriter(config2.jsonOutputFile).write(BobbyValidationResult(messages), config.viewType)
-          new TextFileWriter(config2.textOutputFile).write(BobbyValidationResult(messages), config.viewType)
-
-          messages
-        }
-
-      // pulledInBy will be different per scope
-      /*println {
-        messages.toList
-          .flatMap { case (s, ms) => ms.map(m => (s, m)) }
-          .groupBy(_._2.moduleID)
-          .map { case (moduleID, ms) =>
-            s"${moduleID} :\n  ${ms.toList.map(m => m._1 + ": " + m._2.pulledInBy).mkString("\n  ")}"
-          }.mkString("\n")
-        }*/
-
-      val result = BobbyValidationResult(messages)
-
-      Bobby.printHeader(logger)
-      new ConsoleWriter(config.consoleColours).write(result, config.viewType)
-
-      if (result.hasViolations)
-        throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby violations. See previous output to resolve")
-
-      if (config.strictMode && result.hasWarnings)
-        throw new uk.gov.hmrc.bobby.BobbyValidationFailedException("Build failed due to bobby warnings (strict mode is on). See previous output to resolve")
+      Bobby.validateDependencies(
+        projectName,
+        dependencyDotFiles,
+        internalModuleNodes,
+        config,
+        logger
+      )
     }
-
-    private val currentVersion =
-      getClass.getPackage.getImplementationVersion // This requires that the class is in a package unique to that build
-
-    private def message(projectName: String, msg: String): String =
-      s"SbtBobby [$currentVersion] ($projectName) - $msg"
-
 
   override lazy val projectSettings = Seq(
     bobbyRulesURL                   := None,
@@ -146,7 +109,5 @@ object SbtBobbyPlugin extends AutoPlugin {
     bobbyConsoleColours := sys.env.get(envKeyBobbyConsoleColours).map(_.toBoolean).getOrElse(true),
     validateDot         := validateDotTask().value
   ) ++
-  // TODO does this even need to be implemented as a plugin? e.g. just an executable jar which analyses the dot graphs
-  // (might work better for multi-module builds)
     addCommandAlias("validateAll", "Compile / dependencyDot; Test / dependencyDot; IntegrationTest / dependencyDot; reload plugins; dependencyDot; reload return; validateDot")
 }
