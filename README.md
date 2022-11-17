@@ -125,7 +125,7 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "[INSERT-VERSION]")
 
 If you are using sbt < 1.4, you will need to replace `addDependencyTreePlugin` with
 ```scala
-  addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
+  addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
 ```
 
 Then, create your rules configuration as above. This file can live anywhere, you just need to tell Bobby where to find it.

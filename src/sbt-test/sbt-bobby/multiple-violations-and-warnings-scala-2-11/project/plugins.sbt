@@ -2,6 +2,8 @@ resolvers += Resolver.url("HMRC-open-artefacts-ivy2", url("https://open.artefact
 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.8.1"
 
+addDependencyTreePlugin
+
 sys.props.get("plugin.version") match {
   case Some(x) => addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % x)
   case _ => sys.error("""|The system property 'plugin.version' is not defined.
