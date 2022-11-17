@@ -4,7 +4,7 @@ lazy val root = (project in file("."))
   .settings(
     name             := "sbt-bobby",
     sbtPlugin        := true,
-    majorVersion     := 4,
+    majorVersion     := 5,
     isPublicArtefact := true,
     scalaVersion     := "2.12.17",
     crossSbtVersions := Vector("1.6.2"),

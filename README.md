@@ -1,4 +1,7 @@
-[![Join the chat at https://gitter.im/hmrc/sbt-bobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hmrc/sbt-bobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+# sbt-bobby
+
+![](https://img.shields.io/github/v/release/hmrc/sbt-bobby)
 
 ## Overview
 
@@ -39,7 +42,7 @@ BobbyViolation from the specified date, so should be looked at with high priorit
 
 Bobby Rules are defined in a single `json` file, and look like this:
 
-```
+```json
 {
   "libraries": [
     {
@@ -82,11 +85,9 @@ Rules can be placed on both libraries and plugins, and will be enforced on all l
 >Note that as of version 3.2.0 the two lists are merged together by the plugin and used as one. They are only divided into two to preserve
 >backwards compatiblity with previous releases of `sbt-bobby`
 
-> In order to apply Bobby to the meta scope to validate plugin output, see the section below on 'Running in different configurations'
-
 ## Rule Schema
 Each rule takes the same form:
-```
+```json
 {
   "organisation": "com.typesafe.play",
   "name": "sbt-plugin",
@@ -108,7 +109,7 @@ Where:
 Bobby should *not* be added to an individual projects build. Instead, it should be added as a global plugin
 
 This means:
-* All projects can benefit from Bobby
+* All projects can benefit from Bobby, including the meta build (plugins)
 * Bobby can be updated centrally
 
 >At HMRC bobby is added on the Jenkins build-servers and runs automatically for you. You do not need to do anything, unless you
@@ -139,28 +140,10 @@ bobby-rules-url = file:///~/.sbt/deprecated-dependencies.json
 
 That's it!
 
-Now you can run bobby with `sbt validate`.
+Now you can run bobby with `sbt validateAll`.
 
 If your build is making use of any outlawed dependencies, an exception will be thrown.
 Otherwise, all is good and you can carry on with your day.
-
-> See the 'Configuration Options' section below for more configuration options
-
-### Running in different configurations
-
-Bobby respects the configuration scoping mechanisms built into sbt, which means you can run:
-
-`sbt validate` to validate _compile_ dependencies
-`sbt 'Test / validate'` to validate _test_ dependencies
-`sbt 'IntegrationTest / validate'` to validate _it_ dependencies
-`sbt "reload plugins; validate; reload return"` to validate _plugin_ dependencies
-
-There is also a helper command alias which runs all three of these in one:
-
-`sbt validateAll`
-
->Prior to major version 3, Bobby tried to pull out both local and plugin dependencies in one task. This has been
->changed to better integrate with the sbt [scoping](https://www.scala-sbt.org/1.x/docs/Scopes.html) ecosystem
 
 ### Sbt 1.x
 
@@ -217,15 +200,11 @@ a different violation each time.
 
 ## Understanding the Bobby output
 
-Bobby will write out a summary table to the console, as well as generating two report artifacts for every project/configuration scope:
+Bobby will write out a summary table to the console, as well as generating two report artifacts for every project/scope:
 
  * `target/bobby-report-<project>-<configuration>.json`
  * `target/bobby-report-<project>-<configuration>.json`
 
-For example, if you are running `test:validate` from a project called `root`, the files generated will be:
-
- * `target/bobby-report-root-test.json`
- * `target/bobby-report-root-test.json`
 
 These reports tell you of any rule violations that are preventing your job from building, as well as
 highlighting any dependencies with warnings that will become violations in the future.
@@ -297,7 +276,7 @@ You can configure Bobby to be more fussy and fail a build on warnings as well as
 
 To change the strict mode you can:
 
- * Start SBT with an environment variable, `BOBBY_STRICT_MODE=true sbt validate`
+ * Start SBT with an environment variable, `BOBBY_STRICT_MODE=true sbt validateAll`
  * Specify it in your build settings
     ```
     bobbyStrictMode := true
@@ -344,7 +323,7 @@ output-directory = target/my-dir
 
 By default, the console output will show with ANSI colours. To turn this off you can:
 
- * Start SBT with an environment variable, `BOBBY_CONSOLE_COLOURS=false sbt validate`
+ * Start SBT with an environment variable, `BOBBY_CONSOLE_COLOURS=false sbt validateAll`
  * Specify it in your build settings
     ```
     bobbyConsoleColours := false
@@ -364,7 +343,7 @@ Bobby can display the output table in a few different variations. Currently thes
 
 To change the view type you can:
 
- * Start SBT with an environment variable, `BOBBY_VIEW_TYPE=Nested sbt validate`
+ * Start SBT with an environment variable, `BOBBY_VIEW_TYPE=Nested sbt validateAll`
  * Specify it in your build settings
     ```
     bobbyViewType := Nested
@@ -385,19 +364,33 @@ An example commit is as follows. Note that we should always try to stick to one 
 
 * The `test-project` folder contains a simple example project which may be useful as a playground:
 
-```
+```bash
 cd test-project
-sbt validate
+sbt validateAll
 ```
 
 * Bobby uses [scripted](https://www.scala-sbt.org/1.x/docs/Testing-sbt-plugins.html) tests which are executed with ```sbt scripted```
 
-## Notice
+## Changes
 
-From major version 2, `sbt-bobby` makes use of the [sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph) plugin to compute
+### Version 5.0.0
+
+`sbt-bobby` will now scan all [scopes](https://www.scala-sbt.org/1.x/docs/Scopes.html) in one go, reporting them all together, rather than stopping on the first scope with errors.
+
+It also reworks it's dependency on the archived `sbt-dependency-graph` so it will work with sbt 1.3 or 1.4+ by configuring an appropriate plugin to generate dependency dot graphs with `dependencyDot`
+
+### Version 3.0.0
+
+`sbt-bobby` has been updated to integrate with sbt [scopes](https://www.scala-sbt.org/1.x/docs/Scopes.html). Enabling scanning of `Test` and `Integration` scopes.
+
+### Version 2.0.0
+
+`sbt-bobby` now makes use of the [sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph) plugin to compute
 the transitive module graph. In previous versions only the locally declared dependencies were considered.
 
-It also takes some inspiration from [sbt-blockade](https://github.com/Verizon/sbt-blockade)
+## Notice
+
+`sbt-bobby` takes some inspiration from [sbt-blockade](https://github.com/Verizon/sbt-blockade)
 
 ## License
 
