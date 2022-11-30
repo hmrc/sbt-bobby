@@ -16,25 +16,25 @@
 
 package uk.gov.hmrc.bobby.domain
 
-import sbt.librarymanagement.ModuleID
-
 sealed trait BobbyResult {
+  import BobbyResult._
+
   def rule: Option[BobbyRule]
 
   final def name: String =
     this match {
-      case BobbyViolation(_) => BobbyViolation.tag
-      case BobbyWarning(_)   => BobbyWarning.tag
-      case BobbyExemption(_) => BobbyExemption.tag
-      case BobbyOk           => BobbyOk.tag
+      case Violation(_) => Violation.tag
+      case Warning(_)   => Warning.tag
+      case Exemption(_) => Exemption.tag
+      case Ok           => Ok.tag
     }
 
   final protected def ordering: Int =
     this match {
-      case BobbyViolation(_) => 0
-      case BobbyWarning(_)   => 1
-      case BobbyExemption(_) => 2
-      case BobbyOk           => 3
+      case Violation(_) => 0
+      case Warning(_)   => 1
+      case Exemption(_) => 2
+      case Ok           => 3
     }
 }
 
@@ -42,35 +42,33 @@ object BobbyResult {
 
   implicit val ordering: Ordering[BobbyResult] =
     Ordering.by(_.ordering)
-}
 
-case class BobbyViolation(r: BobbyRule) extends BobbyResult() {
-  val rule: Option[BobbyRule] = Some(r)
-}
+  case class Violation(r: BobbyRule) extends BobbyResult() {
+    val rule: Option[BobbyRule] = Some(r)
+  }
 
-object BobbyViolation {
-  val tag: String = "BobbyViolation"
-}
+  object Violation {
+    val tag: String = "BobbyViolation"
+  }
 
-case class BobbyWarning(r: BobbyRule) extends BobbyResult {
-  val rule: Option[BobbyRule] = Some(r)
-}
+  case class Warning(r: BobbyRule) extends BobbyResult {
+    val rule: Option[BobbyRule] = Some(r)
+  }
 
-object BobbyWarning {
-  val tag: String = "BobbyWarning"
-}
+  object Warning {
+    val tag: String = "BobbyWarning"
+  }
 
-case class BobbyExemption(r: BobbyRule) extends BobbyResult {
-  val rule: Option[BobbyRule] = Some(r)
-}
+  case class Exemption(r: BobbyRule) extends BobbyResult {
+    val rule: Option[BobbyRule] = Some(r)
+  }
 
-object BobbyExemption {
-  val tag: String = "BobbyExemption"
-}
+  object Exemption {
+    val tag: String = "BobbyExemption"
+  }
 
-case object BobbyOk extends BobbyResult {
-  val rule: Option[BobbyRule] = None
-  val tag: String = "BobbyOk"
+  case object Ok extends BobbyResult {
+    val rule: Option[BobbyRule] = None
+    val tag: String = "BobbyOk"
+  }
 }
-
-case class BobbyChecked(moduleID: ModuleID, result: BobbyResult)

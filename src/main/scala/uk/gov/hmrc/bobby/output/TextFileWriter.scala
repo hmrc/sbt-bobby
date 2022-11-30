@@ -25,5 +25,4 @@ class TextFileWriter(val filepath: String) extends TextWriter with FileWriter {
 
     Tabulator.format(viewType.headerNames.map(_.fansi) +: messageModel)
   }
-
 }

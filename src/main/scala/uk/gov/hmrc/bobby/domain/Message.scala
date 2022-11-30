@@ -20,31 +20,50 @@ import java.time.LocalDate
 
 import sbt.ModuleID
 import uk.gov.hmrc.bobby.Util._
-import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
 
 object Message {
 
-  implicit object MessageOrdering extends Ordering[Message] {
-    def compare(a: Message, b: Message): Int = a.level compare b.level
-  }
-
+  implicit val ordering: Ordering[Message] =
+    Ordering.by(_.level)
 }
 
 case class Message(
-  checked: BobbyChecked,
-  dependencyChain: Seq[ModuleID]) {
+  moduleID       : ModuleID,
+  result         : BobbyResult,
+  scope          : String,
+  dependencyChain: Seq[ModuleID]
+) {
 
-  val level: MessageLevels.Level = checked.result match {
-    case BobbyOk            => INFO
-    case BobbyExemption(_)  => WARN
-    case BobbyWarning(_)    => WARN
-    case BobbyViolation(_)  => ERROR
-  }
+  val level: MessageLevel =
+    result match {
+      case BobbyResult.Ok            => MessageLevel.INFO
+      case BobbyResult.Exemption(_)  => MessageLevel.WARN
+      case BobbyResult.Warning(_)    => MessageLevel.WARN
+      case BobbyResult.Violation(_)  => MessageLevel.ERROR
+    }
 
-  val deprecationReason: Option[String]    = checked.result.rule.map(_.reason)
-  val deprecationFrom: Option[LocalDate]   = checked.result.rule.map(_.effectiveDate)
-  val effectiveDate: Option[LocalDate]     =  checked.result.rule.map(_.effectiveDate)
-  val moduleName: String                   = checked.moduleID.moduleName
+  val deprecationReason: Option[String] =
+    result.rule.map(_.reason)
 
-  val isLocal: Boolean = dependencyChain.isEmpty
+  val effectiveDate: Option[LocalDate] =
+    result.rule.map(_.effectiveDate)
+
+  val isLocal: Boolean =
+    dependencyChain.isEmpty
+
+  def pulledInBy: Option[String] =
+    dependencyChain.lastOption.map(_.moduleName)
+}
+
+sealed abstract class MessageLevel(val order: Int, val name: String) extends Ordered[MessageLevel] {
+  def compare(that: MessageLevel): Int =
+    this.order - that.order
+
+  override def toString = name
+}
+
+object MessageLevel {
+  case object ERROR extends MessageLevel(0, "ERROR")
+  case object WARN extends  MessageLevel(1, "WARN")
+  case object INFO extends  MessageLevel(2, "INFO")
 }

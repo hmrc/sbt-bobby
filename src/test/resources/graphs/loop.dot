@@ -1,0 +1,14 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "org:root:9.9.9"
+    "org:foo:1.0.0"
+    "org:bar:2.0.0"
+    "org:baz:3.0.0"
+    "org:root:9.9.9" -> "org:foo:1.0.0"
+
+    "org:bar:2.0.0" -> "org:baz:3.0.0"
+    "org:baz:3.0.0" -> "org:bar:2.0.0"
+}

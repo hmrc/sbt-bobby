@@ -1,0 +1,14 @@
+digraph "uk.gov.hmrc.jdc:emcs:war:3.226.0" {
+	"uk.gov.hmrc.jdc:emcs:war:3.226.0" -> "uk.gov.hmrc.rehoming:event-auditing:jar:2.0.0:compile" ;
+	"uk.gov.hmrc.jdc:emcs:war:3.226.0" -> "org.springframework.ws:spring-ws-support:jar:2.1.4.RELEASE:compile" ;
+	"uk.gov.hmrc.jdc:emcs:war:3.226.0" -> "uk.gov.hmrc.rehoming:rehoming-common:jar:7.41.0:compile" ;
+	"uk.gov.hmrc.jdc:emcs:war:3.226.0" -> "xerces:xercesImpl:jar:2.12.0:compile" ;
+	"uk.gov.hmrc.rehoming:event-auditing:jar:2.0.0:compile" -> "com.google.guava:guava:jar:18.0:compile" ;
+	"org.springframework.ws:spring-ws-support:jar:2.1.4.RELEASE:compile" -> "org.springframework.ws:spring-xml:jar:2.1.4.RELEASE:compile" ;
+	"org.springframework.ws:spring-ws-support:jar:2.1.4.RELEASE:compile" -> "org.springframework.ws:spring-ws-core:jar:2.1.4.RELEASE:compile" ;
+	"org.springframework.ws:spring-xml:jar:2.1.4.RELEASE:compile" -> "javax.xml.stream:stax-api:jar:1.0-2:compile" ;
+	"org.springframework.ws:spring-ws-core:jar:2.1.4.RELEASE:compile" -> "org.springframework:spring-oxm:jar:3.2.15.RELEASE:compile" ;
+	"org.springframework.ws:spring-ws-core:jar:2.1.4.RELEASE:compile" -> "wsdl4j:wsdl4j:jar:1.6.1:compile" ;
+	"uk.gov.hmrc.rehoming:rehoming-common:jar:7.41.0:compile" -> "org.apache.commons:commons-lang3:jar:3.7:compile" ;
+	"uk.gov.hmrc.rehoming:rehoming-common:jar:7.41.0:compile" -> "com.zaxxer:HikariCP:jar:2.5.1:compile" ;
+ }

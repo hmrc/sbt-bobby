@@ -4,14 +4,10 @@ lazy val root = (project in file("."))
   .settings(
     name             := "sbt-bobby",
     sbtPlugin        := true,
-    majorVersion     := 4,
+    majorVersion     := 5,
     isPublicArtefact := true,
-    scalaVersion     := "2.12.16",
-    crossSbtVersions := Vector("1.3.13"),
-    // Use the code from the sbt-dependency-graph plugin as if it was a standard library dependency
-    // We use the plugin to resolve the complete module graph for the purpose of validating bobby
-    // rule violations across transitive dependencies
-    addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1"),
+    scalaVersion     := "2.12.17",
+    crossSbtVersions := Vector("1.6.2"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.2.6",
       "com.typesafe.play"     %% "play-json"                  % "2.9.2",

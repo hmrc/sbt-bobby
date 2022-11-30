@@ -1,0 +1,16 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "default:project:0.1.0-SNAPSHOT" -> "uk.gov.hmrc:sbt-auto-build:3.0.0"
+    "default:project:0.1.0-SNAPSHOT" -> "uk.gov.hmrc:sbt-distributables:0.0.1"
+
+    "uk.gov.hmrc:sbt-auto-build:3.0.0" -> "uk.gov.hmrc:sbt-settings:0.0.2"
+    "uk.gov.hmrc:sbt-distributables:0.0.1" -> "uk.gov.hmrc:sbt-settings:0.0.1"
+
+    "uk.gov.hmrc:sbt-settings:0.0.1" -> "uk.gov.hmrc:log4j:1.0.0"
+    "uk.gov.hmrc:sbt-settings:0.0.2" -> "uk.gov.hmrc:log4j:1.0.0"
+
+    "uk.gov.hmrc:sbt-settings:0.0.1" -> "uk.gov.hmrc:sbt-settings:0.0.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+}

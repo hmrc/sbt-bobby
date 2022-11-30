@@ -1,5 +1,7 @@
 resolvers += Resolver.url("HMRC-open-artefacts-ivy2", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
+addDependencyTreePlugin
+
 // This dependency being present should cause a warning from bobby
 addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.5.0")
 
@@ -9,5 +11,5 @@ sys.props.get("plugin.version") match {
                          |Specify this property using the scriptedLaunchOpts -D.""".stripMargin)
 }
 
-import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
+import uk.gov.hmrc.bobby.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
 bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL)

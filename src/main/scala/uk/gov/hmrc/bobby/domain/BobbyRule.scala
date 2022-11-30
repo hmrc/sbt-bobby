@@ -23,10 +23,10 @@ import play.api.libs.functional.syntax._
 import java.time.LocalDate
 
 case class BobbyRule(
-  dependency: Dependency,
-  range: VersionRange,
-  reason: String,
-  effectiveDate: LocalDate,
+  dependency    : Dependency,
+  range         : VersionRange,
+  reason        : String,
+  effectiveDate : LocalDate,
   exemptProjects: Set[String]
 )
 

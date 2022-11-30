@@ -16,25 +16,28 @@
 
 package uk.gov.hmrc.bobby
 
-import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import uk.gov.hmrc.bobby.domain.MessageBuilder._
-import uk.gov.hmrc.bobby.domain.MessageLevels.{ERROR, INFO, WARN}
+import org.scalatest.wordspec.AnyWordSpec
+import uk.gov.hmrc.bobby.domain.MessageBuilder.makeMessage
+import uk.gov.hmrc.bobby.domain.MessageLevel
 import uk.gov.hmrc.bobby.domain._
 
 import java.time.LocalDate
+import scala.util.Random
 
-class BobbySpec extends AnyFlatSpec with Matchers {
+class BobbySpec extends AnyWordSpec with Matchers {
+  "Messages" should {
+    "order correctly" in {
+      val rule =
+        BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), Set.empty)
 
-  it should "order messages correctly" in {
-    val rule =
-      BobbyRule(Dependency("uk.gov.hmrc", "auth"), VersionRange("(,3.0.0]"), "testing", LocalDate.now(), Set.empty)
+      val messages = Seq(
+        makeMessage(BobbyResult.Ok),
+        makeMessage(BobbyResult.Warning(rule)),
+        makeMessage(BobbyResult.Violation(rule))
+      )
 
-    val messages = Seq(
-      makeMessage(BobbyOk),
-      makeMessage(BobbyWarning(rule)),
-      makeMessage(BobbyViolation(rule)))
-
-    messages.sorted(Message.MessageOrdering).map(_.level) shouldBe Seq(ERROR, WARN, INFO)
+      Random.shuffle(messages).sorted.map(_.level) shouldBe Seq(MessageLevel.ERROR, MessageLevel.WARN, MessageLevel.INFO)
+    }
   }
 }

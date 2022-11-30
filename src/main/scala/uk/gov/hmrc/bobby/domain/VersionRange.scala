@@ -19,35 +19,35 @@ package uk.gov.hmrc.bobby.domain
 import scala.util.matching.Regex
 
 case class VersionRange(
-  lowerBound: Option[Version],
+  lowerBound         : Option[Version],
   lowerBoundInclusive: Boolean,
-  upperBound: Option[Version],
+  upperBound         : Option[Version],
   upperBoundInclusive: Boolean,
-  qualifierStartsWith: Option[String] = None) {
-
+  qualifierStartsWith: Option[String] = None
+) {
   def includes(version: Version): Boolean =
-    if (qualifierStartsWith.isDefined) {
+    if (qualifierStartsWith.isDefined)
       version.buildOrQualifier match {
         case Some(Right(q)) if q.toUpperCase.startsWith(qualifierStartsWith.get.toUpperCase) => true
         case _                                                                               => false
       }
-    } else {
-
-      val lbRange = lowerBound.fold(true)(lb => version.isAfter(lb) || (lowerBoundInclusive && lb.equals(version)))
+    else {
+      val lbRange = lowerBound.fold(true)(lb => version.isAfter(lb)  || (lowerBoundInclusive && lb.equals(version)))
       val ubRange = upperBound.fold(true)(ub => version.isBefore(ub) || (upperBoundInclusive && ub.equals(version)))
       lbRange && ubRange
     }
 
   override def toString: String =
-    if (qualifierStartsWith.isDefined) {
-      s"[*-${qualifierStartsWith.get}]"
-    } else {
-      val start = if (lowerBoundInclusive) "[" else "("
-      val end   = if (upperBoundInclusive) "]" else ")"
-
-      start + lowerBound.map(_.toString).getOrElse("") + "," + upperBound.map(_.toString).getOrElse("") + end
+    qualifierStartsWith match {
+      case Some(q) => s"[*-$q]"
+      case _       => Seq(
+                        if (lowerBoundInclusive) "[" else "(",
+                        lowerBound.map(_.toString).getOrElse(""),
+                        ",",
+                        upperBound.map(_.toString).getOrElse(""),
+                         if (upperBoundInclusive) "]" else ")"
+                      ).mkString
     }
-
 }
 
 /**
@@ -66,28 +66,19 @@ case class VersionRange(
   * throws IllegalArgumentException when an illegal format is used
   */
 object VersionRange {
-
-  // TODO
-  // (,1.0.0)  x <= 1.0.0
-  // (1.0.0)   x <= 1.0.0
-  // (,1.0.0]  x <= 1.0.0  WHY ARE UNBALANCED BRACKETS ALLOWED?
-  // (1.0.0]   x <= 1.0.0  WHY IS THE COMMA NOT MANDATORY?
-  // [,1.0.0]  x <= 1.0.0  WHY IS THIS NOT ALLOWED?
-
-  val ValidFixedVersion: Regex              = """^\[(\d+\.\d+.\d+)\]""".r
-  val ValidVersionRangeLeftOpen: Regex      = """^\(,?(\d+\.\d+.\d+)[\]\)]""".r
-  val ValidVersionRangeRightOpen: Regex     = """^[\[\(](\d+\.\d+.\d+),[\]\)]""".r
-  val ValidVersionRangeBetween: Regex       = """^[\[\(](\d+\.\d+.\d+),(\d+\.\d+.\d+)[\]\)]""".r
-  val Qualifier: Regex                      = """^\[[-\*]+(.*)\]""".r
+  val ValidFixedVersion         : Regex = """^\[(\d+\.\d+.\d+)\]""".r
+  val ValidVersionRangeLeftOpen : Regex = """^\(,?(\d+\.\d+.\d+)[\]\)]""".r
+  val ValidVersionRangeRightOpen: Regex = """^[\[\(](\d+\.\d+.\d+),[\]\)]""".r
+  val ValidVersionRangeBetween  : Regex = """^[\[\(](\d+\.\d+.\d+),(\d+\.\d+.\d+)[\]\)]""".r
+  val Qualifier                 : Regex = """^\[[-\*]+(.*)\]""".r
 
   def apply(range: String): VersionRange =
     range.replaceAll(" ", "") match {
-      case ValidFixedVersion(v)          => VersionRange(Some(Version(v)), true, Some(Version(v)), true)
-      case ValidVersionRangeLeftOpen(v)  => VersionRange(None, false, Some(Version(v)), range.endsWith("]"))
-      case ValidVersionRangeRightOpen(v) => VersionRange(Some(Version(v)), range.startsWith("["), None, false)
-      case ValidVersionRangeBetween(v1, v2) =>
-        VersionRange(Some(Version(v1)), range.startsWith("["), Some(Version(v2)), range.endsWith("]"))
-      case Qualifier(q) if q.length() > 1 => VersionRange(None, false, None, false, Some(q))
-      case _                              => throw new IllegalArgumentException(s"'$range' is not a valid range expression")
+      case ValidFixedVersion(v)             => VersionRange(Some(Version(v)), true, Some(Version(v)), true)
+      case ValidVersionRangeLeftOpen(v)     => VersionRange(None, false, Some(Version(v)), range.endsWith("]"))
+      case ValidVersionRangeRightOpen(v)    => VersionRange(Some(Version(v)), range.startsWith("["), None, false)
+      case ValidVersionRangeBetween(v1, v2) => VersionRange(Some(Version(v1)), range.startsWith("["), Some(Version(v2)), range.endsWith("]"))
+      case Qualifier(q) if q.length() > 1   => VersionRange(None, false, None, false, Some(q))
+      case _                                => throw new IllegalArgumentException(s"'$range' is not a valid range expression")
     }
 }
