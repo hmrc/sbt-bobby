@@ -153,11 +153,19 @@ object DependencyGraphParser {
       buf.result()
     }
 
-    lazy val root: Node =
-      // the last node of any path.
-      pathToRoot(nodes.head).last
-      // alternatively, the only dependency not pointed to - there should only be one
-      // dependencies.diff(arrowsMap.keys.toSeq).head
+    lazy val root: Node = {
+      // we should be able to return the last node of any path - but we sometimes get strange graphs with orphan dependencies
+      // here we filter them out by returning the most common root
+      val roots = for {
+        node <- nodes.toSeq
+        path <- pathsToRoot(node)
+      } yield
+        path.last
+      val uniqueRoots = roots.groupBy(identity).mapValues(_.size)
+      if (uniqueRoots.size > 1)
+        sbt.ConsoleLogger().warn(s"Multiple roots found: ${uniqueRoots}")
+      uniqueRoots.toSeq.sortBy(_._2).last._1
+    }
   }
 
   object DependencyGraph {
