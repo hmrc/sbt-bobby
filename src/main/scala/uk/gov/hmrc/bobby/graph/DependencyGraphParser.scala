@@ -166,30 +166,31 @@ object DependencyGraphParser {
       // optimise by short circuiting on any node we have already calculated the root for
       val nodeToRoots = mutable.Map.empty[Node, Node]
 
-      @tailrec
-      def rootForNode(node: Node, path: Seq[Node]): Option[Node] =
-        nodeToRoots.get(node) match {
-          case Some(root) => // we already know the root - update for all the path
-                             path.foreach { p =>
-                               nodeToRoots += (p -> root)
-                             }
-                             Some(root)
-          case None       => arrows.find(_.to == node) match {
-                               case None        => // we have found the root - update for all the path
-                                                   path.foreach { p =>
-                                                     nodeToRoots += (p -> node)
-                                                   }
-                                                   Some(node)
-                               case Some(arrow) => if (path.contains(arrow.from))
-                                                     // handle cyclical dependencies
-                                                     None
-                                                   else
-                                                     rootForNode(arrow.from, path :+ arrow.from)
-                            }
+      def rootForNode(node: Node): Unit =
+        tailRecM((node, Seq(node))) {
+          case (node, path) =>
+            nodeToRoots.get(node) match {
+              case Some(root) => // we already know the root - update for all the path
+                                 path.foreach { p =>
+                                   nodeToRoots += (p -> root)
+                                 }
+                                 Seq(Right(Some(root)))
+              case None       => arrows.find(_.to == node) match {
+                                   case None        => // we have found the root - update for all the path
+                                                       path.foreach { p =>
+                                                         nodeToRoots += (p -> node)
+                                                       }
+                                                       Seq(Right(Some(node)))
+                                   case Some(arrow) => if (path.contains(arrow.from))
+                                                         // handle cyclical dependencies
+                                                         Seq(Right(None))
+                                                       else
+                                                         Seq(Left((arrow.from, path :+ arrow.from)))
+                                }
+            }
         }
 
-
-      nodes.foreach(node => rootForNode(node, Seq(node)))
+      nodes.foreach(rootForNode)
 
       val uniqueRoots = nodeToRoots.groupBy(_._2).mapValues(_.size)
       if (uniqueRoots.size > 1)
