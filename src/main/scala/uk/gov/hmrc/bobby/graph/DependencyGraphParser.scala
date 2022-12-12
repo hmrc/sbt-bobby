@@ -17,6 +17,7 @@
 package uk.gov.hmrc.bobby.graph
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 object DependencyGraphParser {
 
@@ -122,9 +123,9 @@ object DependencyGraphParser {
           arrows
             .filter(_.to == n)
             .toSeq match {
-              case Nil => Seq(Right(path :+ n))
+              case Nil                   => Seq(Right(path :+ n))
               case _ if path.contains(n) => Seq(Right(path)) // handle cyclical dependencies
-              case xs  => xs.map(x => Left((x.from, path :+ n)))
+              case xs                    => xs.map(x => Left((x.from, path :+ n)))
             }
       }
 
@@ -156,12 +157,25 @@ object DependencyGraphParser {
     lazy val root: Node = {
       // we should be able to return the last node of any path - but we sometimes get strange graphs with orphan dependencies
       // here we filter them out by returning the most common root
-      val roots = for {
-        node <- nodes.toSeq
-        path <- pathsToRoot(node)
-      } yield
-        path.last
-      val uniqueRoots = roots.groupBy(identity).mapValues(_.size)
+
+      // optimise by short circuiting on any node we have already calculated the root for
+      val seen = mutable.Map.empty[Node, Node]
+
+      def rootForNode(node: Node): Node =
+        seen.get(node) match {
+          case Some(root) => root
+          case None       => arrows.find(_.to == node) match {
+                               case None        => node
+                               case Some(arrow) => val root = rootForNode(arrow.from)
+                                                   seen += (node -> root)
+                                                   root
+                             }
+        }
+
+      val nodeToRoots: Map[Node, Node] =
+        nodes.map(node => node -> rootForNode(node)).toMap
+
+      val uniqueRoots = nodeToRoots.groupBy(_._2).mapValues(_.size)
       if (uniqueRoots.size > 1)
         sbt.ConsoleLogger().warn(s"Multiple roots found: ${uniqueRoots}")
       uniqueRoots.toSeq.sortBy(_._2).last._1
