@@ -159,21 +159,26 @@ object DependencyGraphParser {
       // here we filter them out by returning the most common root
 
       // optimise by short circuiting on any node we have already calculated the root for
-      val seen = mutable.Map.empty[Node, Node]
+      val nodeToRoots = mutable.Map.empty[Node, Node]
 
-      def rootForNode(node: Node): Node =
-        seen.get(node) match {
-          case Some(root) => root
+      def rootForNode(node: Node, seen: Seq[Node]): Option[Node] =
+        if (seen.contains(node)) {
+          None // we have a cycle
+        } else
+        nodeToRoots.get(node) match {
+          case Some(root) => Some(root)
           case None       => arrows.find(_.to == node) match {
-                               case None        => node
-                               case Some(arrow) => val root = rootForNode(arrow.from)
-                                                   seen += (node -> root)
-                                                   root
+                               case None        => nodeToRoots += (node -> node)
+                                                   Some(node)
+                               case Some(arrow) => rootForNode(arrow.from, seen :+ node)
+                                                     .map { root =>
+                                                       nodeToRoots += (node -> root)
+                                                       root
+                                                     }
                              }
         }
 
-      val nodeToRoots: Map[Node, Node] =
-        nodes.map(node => node -> rootForNode(node)).toMap
+      nodes.foreach(node => rootForNode(node, Seq.empty[Node]))
 
       val uniqueRoots = nodeToRoots.groupBy(_._2).mapValues(_.size)
       if (uniqueRoots.size > 1)

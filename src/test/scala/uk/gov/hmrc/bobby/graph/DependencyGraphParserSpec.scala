@@ -141,6 +141,12 @@ class DependencyGraphParserSpec
         val graph = DependencyGraphParser.parse(source.mkString)
         graph.root shouldBe Node("uk.gov.hmrc:my-slug_2.12:2.22.0")
       }
+
+      "not get stuck in an infinite loop when parsing a cyclical graph" in {
+        val source = scala.io.Source.fromResource("graphs/loop.dot") // baz -> bar , bar -> baz
+        val graph = DependencyGraphParser.parse(source.mkString)
+        graph.root shouldBe Node("org:root:9.9.9")
+      }
     }
   }
 
