@@ -17,6 +17,7 @@
 package uk.gov.hmrc.bobby.graph
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 object DependencyGraphParser {
 
@@ -119,13 +120,18 @@ object DependencyGraphParser {
     def pathsToRoot(node: Node): Seq[Seq[Node]] =
       tailRecM((node, Seq.empty[Node])) {
         case (n, path) =>
-          arrows
-            .filter(_.to == n)
-            .toSeq match {
-              case Nil => Seq(Right(path :+ n))
-              case _ if path.contains(n) => Seq(Right(path)) // handle cyclical dependencies
-              case xs  => xs.map(x => Left((x.from, path :+ n)))
-            }
+          if (path.contains(n))
+            Seq(Right(path)) // handle cyclical dependencies
+          else {
+            val next =
+              arrows
+                .collect { case Arrow(from, to) if to == n => from }
+                .toSeq
+            if (next.isEmpty)
+              Seq(Right(path :+ n))
+            else
+              next.map(x => Left((x, path :+ n)))
+          }
       }
 
     // lifted from cats
@@ -153,11 +159,44 @@ object DependencyGraphParser {
       buf.result()
     }
 
-    lazy val root: Node =
-      // the last node of any path.
-      pathToRoot(nodes.head).last
-      // alternatively, the only dependency not pointed to - there should only be one
-      // dependencies.diff(arrowsMap.keys.toSeq).head
+    lazy val root: Node = {
+      // we should be able to return the last node of any path - but we sometimes get strange graphs with orphan dependencies
+      // here we filter them out by returning the most common root
+
+      // optimise by short circuiting on any node we have already calculated the root for
+      val nodeToRoots = mutable.Map.empty[Node, Node]
+
+      def rootForNode(node: Node): Unit =
+        tailRecM((node, Seq(node))) {
+          case (node, path) =>
+            nodeToRoots.get(node) match {
+              case Some(root) => // we already know the root - update for all the path
+                                 path.foreach { p =>
+                                   nodeToRoots += (p -> root)
+                                 }
+                                 Seq(Right(Some(root)))
+              case None       => arrows.find(_.to == node) match {
+                                   case None        => // we have found the root - update for all the path
+                                                       path.foreach { p =>
+                                                         nodeToRoots += (p -> node)
+                                                       }
+                                                       Seq(Right(Some(node)))
+                                   case Some(arrow) => if (path.contains(arrow.from))
+                                                         // handle cyclical dependencies
+                                                         Seq(Right(None))
+                                                       else
+                                                         Seq(Left((arrow.from, path :+ arrow.from)))
+                                }
+            }
+        }
+
+      nodes.foreach(rootForNode)
+
+      val uniqueRoots = nodeToRoots.groupBy(_._2).mapValues(_.size)
+      if (uniqueRoots.size > 1)
+        sbt.ConsoleLogger().warn(s"Multiple roots found: ${uniqueRoots}")
+      uniqueRoots.toSeq.sortBy(_._2).last._1
+    }
   }
 
   object DependencyGraph {

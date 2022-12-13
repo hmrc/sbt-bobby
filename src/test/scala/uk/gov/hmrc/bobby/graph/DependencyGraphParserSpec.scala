@@ -128,6 +128,26 @@ class DependencyGraphParserSpec
         Node("default:project:0.1.0-SNAPSHOT")
       )
     }
+
+    "root" should {
+      "return the root node" in {
+        val source = scala.io.Source.fromResource("graphs/dependencies-compile.dot")
+        val graph = DependencyGraphParser.parse(source.mkString)
+        graph.root shouldBe Node("uk.gov.hmrc:my-slug_2.12:2.22.0")
+      }
+
+      "handle orphan roots" in {
+        val source = scala.io.Source.fromResource("graphs/dependencies-orphan-roots.dot")
+        val graph = DependencyGraphParser.parse(source.mkString)
+        graph.root shouldBe Node("uk.gov.hmrc:my-slug_2.12:2.22.0")
+      }
+
+      "not get stuck in an infinite loop when parsing a cyclical graph" in {
+        val source = scala.io.Source.fromResource("graphs/loop.dot") // baz -> bar , bar -> baz
+        val graph = DependencyGraphParser.parse(source.mkString)
+        graph.root shouldBe Node("org:root:9.9.9")
+      }
+    }
   }
 
   "Node" should {
