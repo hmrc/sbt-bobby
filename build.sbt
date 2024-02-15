@@ -7,13 +7,13 @@ lazy val root = (project in file("."))
     majorVersion     := 5,
     isPublicArtefact := true,
     scalaVersion     := "2.12.17",
-    crossSbtVersions := Vector("1.7.2"),
+    crossSbtVersions := Vector("1.9.7"),
     libraryDependencies ++= Seq(
-      "com.lihaoyi"           %% "fansi"                      % "0.2.6",
-      "com.typesafe.play"     %% "play-json"                  % "2.9.2",
-      "org.scalatest"         %% "scalatest"                  % "3.1.0"         % Test,
-      "com.vladsch.flexmark"  %  "flexmark-all"               % "0.35.10"       % Test,
-      "org.scalacheck"        %% "scalacheck"                 % "1.14.3"        % Test,
+      "com.lihaoyi"           %% "fansi"                      % "0.4.0",
+      "com.typesafe.play"     %% "play-json"                  % "2.9.4",
+      "org.scalatest"         %% "scalatest"                  % "3.2.15"        % Test,
+      "com.vladsch.flexmark"  %  "flexmark-all"               % "0.64.6"        % Test,
+      "org.scalacheck"        %% "scalacheck"                 % "1.17.0"        % Test,
       "org.scalatestplus"     %% "scalatestplus-scalacheck"   % "3.1.0.0-RC2"   % Test
     ),
     scriptedLaunchOpts := {
