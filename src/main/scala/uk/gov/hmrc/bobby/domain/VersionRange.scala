@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,13 @@ case class VersionRange(
   *
   * Supporting the following expressions:
   * Range               | Meaning
-  * (,1.0.0]            | x <= 1.0.0
-  * [1.0.0]             | Hard requirement on 1.0.0
-  * [1.2.0,1.3.0]       | 1.2.0 <= x <= 1.3.0
-  * [1.0.0,2.0.0)       | 1.0.0 <= x < 2.0.0
-  * [1.5.0,)            | x >= 1.5.0
-  * [*-SNAPSHOT]        | Any version with qualifier 'SNAPSHOT'
+  * "(,1.0.0]"          | x <= 1.0.0
+  * "[1.0.0]"           | Hard requirement on 1.0.0
+  * "[1.2.0,1.3.0]"     | 1.2.0 <= x <= 1.3.0
+  * "[1.0.0,2.0.0)"     | 1.0.0 <= x < 2.0.0
+  * "[1.5.0,)"          | x >= 1.5.0
+  * "[*-SNAPSHOT]"      | Any version with qualifier 'SNAPSHOT'
+  * "*"                 | Any version
   *
   * All versions must have all 3 numbers, 1.0 is not supported for example
   *
@@ -73,7 +74,7 @@ object VersionRange {
   val Qualifier                 : Regex = """^\[[-\*]+(.*)\]""".r
 
   def apply(range: String): VersionRange =
-    range.replaceAll(" ", "") match {
+    (if(range.trim == "*") "[0.0.0,)" else range.replaceAll(" ", "")) match {
       case ValidFixedVersion(v)             => VersionRange(Some(Version(v)), true, Some(Version(v)), true)
       case ValidVersionRangeLeftOpen(v)     => VersionRange(None, false, Some(Version(v)), range.endsWith("]"))
       case ValidVersionRangeRightOpen(v)    => VersionRange(Some(Version(v)), range.startsWith("["), None, false)

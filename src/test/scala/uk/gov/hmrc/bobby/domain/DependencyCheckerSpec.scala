@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,11 +153,17 @@ class DependencyCheckerSpec extends AnyWordSpec with Matchers {
       bv.calc(List(rule), ModuleID("org.scalatest", "some-service", "0.1.0-SNAPSHOT"), "project") shouldBe BobbyResult.Ok
     }
 
+    "support '*' wildcard to represent all versions" in {
+      val rule = BobbyRule(Dependency("uk.gov.hmrc", "some-service"), VersionRange("*"), "testing", LocalDate.now().minusDays(1), Set.empty)
+      bv.calc(List(rule), ModuleID("uk.gov.hmrc", "some-service", "0.1.0"), "project") shouldBe BobbyResult.Violation(rule)
+      bv.calc(List(rule), ModuleID("org.scalatest", "some-service", "0.1.0"), "project") shouldBe BobbyResult.Ok
+    }
+
     "exempt projects from rule matches if their names exist in the rule's exemption list" in {
       val rule1 =
         BobbyRule(
           Dependency("uk.gov.hmrc", "*"),
-          VersionRange("(,99.99.99]"),
+          VersionRange("*"),
           "testing",
           LocalDate.now().minusDays(1),
           Set("test-project-1", "test-project-2")
@@ -166,7 +172,7 @@ class DependencyCheckerSpec extends AnyWordSpec with Matchers {
       val rule2 =
         BobbyRule(
           Dependency("com.acme", "*"),
-          VersionRange("(,99.99.99]"),
+          VersionRange("*"),
           "testing",
           LocalDate.now().plusDays(1),
           Set("test-project-1")
