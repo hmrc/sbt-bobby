@@ -6,7 +6,7 @@ lazy val root = (project in file("."))
     sbtPlugin        := true,
     majorVersion     := 5,
     isPublicArtefact := true,
-    scalaVersion     := "2.12.17",
+    scalaVersion     := "2.12.18",
     crossSbtVersions := Vector("1.9.7"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.4.0",

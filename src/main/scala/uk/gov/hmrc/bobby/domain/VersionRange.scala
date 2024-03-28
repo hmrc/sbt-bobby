@@ -74,7 +74,7 @@ object VersionRange {
   val Qualifier                 : Regex = """^\[[-\*]+(.*)\]""".r
 
   def apply(range: String): VersionRange =
-    (if(range.trim == "*") "[0.0.0,)" else range.replaceAll(" ", "")) match {
+    (if (range.trim == "*") "[0.0.0,)" else range.replaceAll(" ", "")) match {
       case ValidFixedVersion(v)             => VersionRange(Some(Version(v)), true, Some(Version(v)), true)
       case ValidVersionRangeLeftOpen(v)     => VersionRange(None, false, Some(Version(v)), range.endsWith("]"))
       case ValidVersionRangeRightOpen(v)    => VersionRange(Some(Version(v)), range.startsWith("["), None, false)
