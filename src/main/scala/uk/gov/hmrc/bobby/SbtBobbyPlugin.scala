@@ -48,6 +48,9 @@ object SbtBobbyPlugin extends AutoPlugin {
       val projectName = name.value
       val logger      = sLog.value
 
+      val pwd = {import scala.sys.process._; "pwd" !!}.trim
+      val rootName = pwd.split("/").last
+
       // Retrieve config settings
       val bobbyConfigFile: ConfigFile =
         ConfigFileImpl(System.getProperty("user.home") + "/.sbt/bobby.conf", logger)
@@ -92,6 +95,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         }
 
       Bobby.validateDependencies(
+        rootName,
         projectName,
         dependencyDotFiles,
         internalModuleNodes,
