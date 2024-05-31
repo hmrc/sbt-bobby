@@ -102,7 +102,7 @@ Where:
 * `range` is used to target minimum and maximum versions of a dependency (both min and max may be optional), and allow "holes" for known incompatible versions. See 'Supported Version Ranges' for more details
 * `reason` is a short descriptive message to explain why the versions matching the range are outlawed
 * `from` is the date the rule will come into effect. The builds will fail after that day, and generate a warning up to it
-* `exemptProjects` is the optional set of sbt project names that are exempt from the rule
+* `exemptProjects` is the optional set of repository names that are exempt from the rule.
 
 ## How to setup and trigger Bobby?
 
@@ -157,7 +157,7 @@ Otherwise, all is good and you can carry on with your day.
 
 ## Supported Version Ranges
 
-The range that is outlawed can be configured using Ivy style syntax.
+The range that is outlawed can be configured using [Maven style syntax](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm#MAVEN402).
 
 | Range          | Applies to                            |
 |----------------|---------------------------------------|
