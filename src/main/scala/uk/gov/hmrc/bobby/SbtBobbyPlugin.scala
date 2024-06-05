@@ -48,8 +48,12 @@ object SbtBobbyPlugin extends AutoPlugin {
       val projectName = name.value
       val logger      = sLog.value
 
-      val pwd = {import scala.sys.process._; "pwd" !!}.trim
-      val rootName = pwd.split("/").last
+      val pwd      = {import scala.sys.process._; "pwd" !!}.trim
+      val repoName = (for {
+                        gitUrl <- sys.env.get("GIT_URL")
+                        m      <- ".*\\/(.*).git".r.findFirstMatchIn(gitUrl)
+                      } yield m.group(1)
+                     ).getOrElse(pwd.split("/").last)
 
       // Retrieve config settings
       val bobbyConfigFile: ConfigFile =
@@ -95,7 +99,7 @@ object SbtBobbyPlugin extends AutoPlugin {
         }
 
       Bobby.validateDependencies(
-        rootName,
+        repoName,
         projectName,
         dependencyDotFiles,
         internalModuleNodes,
