@@ -28,7 +28,7 @@ object BobbyValidator {
     scope              : String,
     bobbyRules         : Seq[BobbyRule],
     internalModuleNodes: Seq[ModuleID],
-    rootName           : String
+    repoName           : String
   ): Seq[Message] = {
     val graph        = DependencyGraphParser.parse(graphString)
     val dependencies = graph.dependencies
@@ -39,7 +39,7 @@ object BobbyValidator {
                          }
 
     dependencies.map { dependency =>
-      val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, rootName)
+      val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, repoName)
 
       Message(
         moduleID        = dependency.toModuleID,
@@ -58,7 +58,7 @@ object BobbyValidator {
   def calc(
     bobbyRules : Seq[BobbyRule],
     dep        : ModuleID,
-    rootName   : String,
+    repoName   : String,
     now        : LocalDate = LocalDate.now()
   ): BobbyResult = {
     val version =
@@ -75,7 +75,7 @@ object BobbyValidator {
 
       matchingRules
         .map { rule =>
-          if (rule.exemptProjects.contains(rootName))
+          if (rule.exemptProjects.contains(repoName))
             BobbyResult.Exemption(rule): BobbyResult
           else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
             BobbyResult.Violation(rule)

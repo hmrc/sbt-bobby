@@ -43,7 +43,7 @@ object Bobby {
       |""".stripMargin
 
   def validateDependencies(
-    rootName           : String,
+    repoName           : String,
     projectName        : String,
     dependencyDotFiles : Seq[DotFile],
     internalModuleNodes: Seq[ModuleID],
@@ -58,7 +58,7 @@ object Bobby {
 
     val messages =
       dependencyDotFiles.flatMap { dotFile =>
-        val messages = BobbyValidator.validate(dotFile.content, dotFile.scope, bobbyRules, internalModuleNodes, rootName)
+        val messages = BobbyValidator.validate(dotFile.content, dotFile.scope, bobbyRules, internalModuleNodes, repoName)
 
         val outputFileName = s"bobby-report-$projectName-${dotFile.scope}"
 
