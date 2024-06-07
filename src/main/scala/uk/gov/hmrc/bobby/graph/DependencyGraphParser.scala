@@ -53,7 +53,7 @@ object DependencyGraphParser {
 
   private val group           = """([^:]+)"""
   private val artefact        = """([^:]+?)"""          // make + lazy so it does not capture the optional scala version
-  private val optScalaVersion = """(?:_(\d+\.\d+))?"""  // non-capturing group to get _ and optional scala version
+  private val optScalaVersion = """(?:_(\d+(?:\.\d+)?))?"""  // non-capturing group to get _ and optional scala version
   private val optType         = """(?::(?:jar|war|test-jar|pom|zip|txt))?""" // non-capturing group to get optional type
   private val optClassifier   = """(?::[^:]+)??"""      // a lazy non-capturing group to get optional classifier, lazy so it doesn't eat the version
   private val version         = """([^:]+)"""

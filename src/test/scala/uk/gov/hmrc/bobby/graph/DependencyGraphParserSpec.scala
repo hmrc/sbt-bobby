@@ -34,6 +34,27 @@ class DependencyGraphParserSpec
         Node("org.typelevel:cats-kernel_2.12:2.2.0"),
         Node("uk.gov.hmrc:my-slug_2.12:2.22.0")
       )
+
+      graph.dependencies.head.group        shouldBe "com.typesafe.play"
+      graph.dependencies.head.artefact     shouldBe "filters-helpers"
+      graph.dependencies.head.version      shouldBe "2.7.5"
+      graph.dependencies.head.scalaVersion shouldBe Some("2.12")
+    }
+
+    "return dependencies for scala 3" in {
+      val source = scala.io.Source.fromResource("graphs/dependencies-compile-scala3.dot")
+      val graph = DependencyGraphParser.parse(source.mkString)
+      graph.dependencies shouldBe List(
+        Node("com.typesafe.play:filters-helpers_3:2.7.5"),
+        Node("org.typelevel:cats-core_3:2.2.0"),
+        Node("org.typelevel:cats-kernel_3:2.2.0"),
+        Node("uk.gov.hmrc:my-slug_3:2.22.0")
+      )
+
+      graph.dependencies.head.group        shouldBe "com.typesafe.play"
+      graph.dependencies.head.artefact     shouldBe "filters-helpers"
+      graph.dependencies.head.version      shouldBe "2.7.5"
+      graph.dependencies.head.scalaVersion shouldBe Some("3")
     }
 
     "return dependencies from maven generated files" in {
