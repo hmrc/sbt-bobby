@@ -6,14 +6,14 @@ lazy val root = (project in file("."))
     sbtPlugin        := true,
     majorVersion     := 5,
     isPublicArtefact := true,
-    scalaVersion     := "2.12.18",
-    crossSbtVersions := Vector("1.9.9"),
+    scalaVersion     := "2.12.20",
+    crossSbtVersions := Vector("1.10.10"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.4.0",
       "com.typesafe.play"     %% "play-json"                  % "2.9.4",
-      "org.scalatest"         %% "scalatest"                  % "3.2.15"        % Test,
-      "com.vladsch.flexmark"  %  "flexmark-all"               % "0.64.6"        % Test,
-      "org.scalacheck"        %% "scalacheck"                 % "1.17.0"        % Test,
+      "org.scalatest"         %% "scalatest"                  % "3.2.19"        % Test,
+      "com.vladsch.flexmark"  %  "flexmark-all"               % "0.64.8"        % Test,
+      "org.scalacheck"        %% "scalacheck"                 % "1.18.1"        % Test,
       "org.scalatestplus"     %% "scalatestplus-scalacheck"   % "3.1.0.0-RC2"   % Test
     ),
     scriptedLaunchOpts := {

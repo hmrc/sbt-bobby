@@ -87,9 +87,18 @@ object SbtBobbyPlugin extends AutoPlugin {
           }
       }
 
+      def listFiles(path: String): Array[File] = {
+        // empty directory throws NPE for sbt > 1.6.2
+        val f = new java.io.File(path)
+        if (f.exists())
+          f.listFiles()
+        else
+          Array.empty
+      }
+
       val dependencyDotFiles =
         // get meta-build files too for build scope violations
-        (target.value.listFiles() ++ new java.io.File("project/target").listFiles()).collect {
+        (target.value.listFiles() ++ listFiles("project/target")).collect {
           case DependencyDotExtractor(file, scope) =>
             Bobby.DotFile(
               name    = file.getName,
