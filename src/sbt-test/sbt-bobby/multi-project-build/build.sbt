@@ -5,7 +5,7 @@ import sbt.IO._
 lazy val global = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.20",
     bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL)
   ).aggregate(common, sub)
 

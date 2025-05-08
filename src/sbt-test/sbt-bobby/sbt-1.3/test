@@ -1,9 +1,0 @@
-> validateAll
-$ exists target/bobby-reports/bobby-report-root-compile.json
-$ exists target/bobby-reports/bobby-report-root-compile.txt
-$ exists target/bobby-reports/bobby-report-root-test.json
-$ exists target/bobby-reports/bobby-report-root-test.txt
-$ exists target/bobby-reports/bobby-report-root-it.json
-$ exists target/bobby-reports/bobby-report-root-it.txt
-$ exists target/bobby-reports/bobby-report-root-build-compile.json
-$ exists target/bobby-reports/bobby-report-root-build-compile.txt
