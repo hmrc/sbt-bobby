@@ -98,7 +98,7 @@ object SbtBobbyPlugin extends AutoPlugin {
 
       val dependencyDotFiles =
         // get meta-build files too for build scope violations
-        (target.value.listFiles() ++ listFiles("project/target")).collect {
+        (target.value.listFiles() ++ listFiles(s"${baseDirectory.value}/project/target")).collect {
           case DependencyDotExtractor(file, scope) =>
             Bobby.DotFile(
               name    = file.getName,

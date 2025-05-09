@@ -8,16 +8,16 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.20",
     resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
     libraryDependencies := Seq(
-      "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.20.0-play-26",
-      "org.reactivemongo" %% "reactivemongo" % "0.17.0"
+      "org.reactivemongo" %% "reactivemongo"  % "0.17.0",
+      "com.typesafe.play" %% "play-iteratees" % "2.6.0" // This version is ok, but when evicted by the above dependency, will fail
     ),
     bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
     TaskKey[Unit]("check") := {
       val json = Json.parse(read(file("target/bobby-reports/bobby-report-root-compile.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet
-      val expected = Set("-", "Mongo Test", "Bad stuff!", "Bad simple!", "Bad Joda!")
+      val expected = Set("-", "Bad Reactivemongo", "Bad Iteratees", "Bad Akka")
 
-      assert(reasons == expected, "Did not find expected violations")
+      assert(reasons == expected, s"Expected violations $expected but was $reasons")
       ()
     }
   )

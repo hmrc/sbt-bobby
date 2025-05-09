@@ -1,6 +1,7 @@
 
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
+  .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     name             := "sbt-bobby",
     sbtPlugin        := true,

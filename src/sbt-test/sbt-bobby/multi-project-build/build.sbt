@@ -20,16 +20,16 @@ lazy val sub = project
   .settings(
     bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
     libraryDependencies := Seq(
-      "uk.gov.hmrc"       %% "simple-reactivemongo" % "7.20.0-play-26",
       "org.reactivemongo" %% "reactivemongo" % "0.17.0"
     ),
     resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
     TaskKey[Unit]("check") := {
+      println(s">>>> In check!")
       val json = Json.parse(read(file("target/bobby-reports/bobby-report-sub-compile.json")))
       val reasons = (json \\ "deprecationReason").map(_.as[String]).toSet
-      val expected = Set("-", "Bad simple!")
+      val expected = Set("-", "Bad reactivemongo")
 
-      assert(reasons == expected, "Did not find expected violations")
+      assert(reasons == expected, s"Expected violations $expected but was $reasons")
       ()
     }
   )

@@ -37,7 +37,6 @@ object BobbyValidator {
                          .filterNot { n1 =>
                            internalModuleNodes.exists(n2 => n1.group == n2.organization && n1.artefact == n2.name)
                          }
-
     dependencies.map { dependency =>
       val result = BobbyValidator.calc(bobbyRules, dependency.toModuleID, repoName)
 

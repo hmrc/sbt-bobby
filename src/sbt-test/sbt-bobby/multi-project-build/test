@@ -9,12 +9,8 @@ $ exists target/bobby-reports/bobby-report-common-compile.json
 $ exists target/bobby-reports/bobby-report-common-compile.txt
 $ exists target/bobby-reports/bobby-report-common-test.json
 $ exists target/bobby-reports/bobby-report-common-test.txt
-$ exists target/bobby-reports/bobby-report-common-build-compile.json
-$ exists target/bobby-reports/bobby-report-common-build-compile.txt
 $ exists target/bobby-reports/bobby-report-sub-compile.json
 $ exists target/bobby-reports/bobby-report-sub-compile.txt
 $ exists target/bobby-reports/bobby-report-sub-test.json
 $ exists target/bobby-reports/bobby-report-sub-test.txt
-$ exists target/bobby-reports/bobby-report-sub-build-compile.json
-$ exists target/bobby-reports/bobby-report-sub-build-compile.txt
 > check

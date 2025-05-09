@@ -1,10 +1,10 @@
 {
   "libraries": [
     {
-      "organisation": "uk.gov.hmrc",
-      "name": "simple-reactivemongo",
-      "range": "[7.20.0]",
-      "reason": "Bad simple!",
+      "organisation": "org.reactivemongo",
+      "name": "reactivemongo",
+      "range": "[0.17.0]",
+      "reason": "Bad reactivemongo",
       "from": "2001-01-01"
     }
   ],
