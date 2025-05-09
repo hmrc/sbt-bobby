@@ -45,7 +45,7 @@ object Generators {
   val artifactNameGen: Gen[String] =
     for {
       name         <- nonEmptyString
-      scalaVersion <- oneOf("_2.10", "_2.11", "_2.12", "")
+      scalaVersion <- oneOf("_2.12", "_2.13", "_3", "")
     } yield s"$name$scalaVersion"
 
   val depedendencyGen: Gen[Dependency] =

@@ -1,3 +1,5 @@
+# first verify that the dependencies exist, otherwise they are just silently removed from the graph
+> update
 -> validateAll
 $ exists target/bobby-reports/bobby-report-root-compile.json
 $ exists target/bobby-reports/bobby-report-root-compile.txt

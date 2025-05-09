@@ -5,7 +5,7 @@ import sbt.IO._
 lazy val root = (project in file("."))
   .enablePlugins(SbtBobbyPlugin)
   .settings(
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.13.16",
     resolvers += MavenRepository("HMRC-open-artefacts-maven2", "https://open.artefacts.tax.service.gov.uk/maven2"),
     bobbyRulesURL := Some(file("bobby-rules.json").toURI.toURL),
 

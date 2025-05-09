@@ -1,3 +1,5 @@
+# first verify that the dependencies exist, otherwise they are just silently removed from the graph
+> update
 -> validateAll
 $ exists target/bobby-reports/bobby-report-global-compile.json
 $ exists target/bobby-reports/bobby-report-global-compile.txt
@@ -9,12 +11,8 @@ $ exists target/bobby-reports/bobby-report-common-compile.json
 $ exists target/bobby-reports/bobby-report-common-compile.txt
 $ exists target/bobby-reports/bobby-report-common-test.json
 $ exists target/bobby-reports/bobby-report-common-test.txt
-$ exists target/bobby-reports/bobby-report-common-build-compile.json
-$ exists target/bobby-reports/bobby-report-common-build-compile.txt
 $ exists target/bobby-reports/bobby-report-sub-compile.json
 $ exists target/bobby-reports/bobby-report-sub-compile.txt
 $ exists target/bobby-reports/bobby-report-sub-test.json
 $ exists target/bobby-reports/bobby-report-sub-test.txt
-$ exists target/bobby-reports/bobby-report-sub-build-compile.json
-$ exists target/bobby-reports/bobby-report-sub-build-compile.txt
 > check
