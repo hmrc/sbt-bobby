@@ -3,7 +3,7 @@
     {
       "organisation": "org.reactivemongo",
       "name": "reactivemongo",
-      "range": "[0.17.0]",
+      "range": "[1.0.10]",
       "reason": "Bad reactivemongo",
       "from": "2001-01-01"
     }
