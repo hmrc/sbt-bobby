@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
     crossSbtVersions := Vector("1.10.10"),
     libraryDependencies ++= Seq(
       "com.lihaoyi"           %% "fansi"                      % "0.4.0",
-      "com.typesafe.play"     %% "play-json"                  % "2.9.4",
+      "org.playframework"     %% "play-json"                  % "3.0.5",
       "org.scalatest"         %% "scalatest"                  % "3.2.19"        % Test,
       "com.vladsch.flexmark"  %  "flexmark-all"               % "0.64.8"        % Test,
       "org.scalacheck"        %% "scalacheck"                 % "1.18.1"        % Test,

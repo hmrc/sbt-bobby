@@ -375,6 +375,10 @@ sbt validateAll
 
 ## Changes
 
+### Version 5.7.0
+
+Removes support for Play 2.9
+
 ### Version 5.0.0
 
 `sbt-bobby` will now scan all [scopes](https://www.scala-sbt.org/1.x/docs/Scopes.html) in one go, reporting them all together, rather than stopping on the first scope with errors.
