@@ -8,7 +8,7 @@ val sbtBobby = RootProject(location)
 val root = project.in(file(".")).dependsOn(sbtBobby)
 
 addDependencyTreePlugin
-addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.6.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.24.0")
 
 // Added just to trigger a test bobby rule
 addSbtPlugin("uk.gov.hmrc" % "sbt-settings" % "4.1.0")
