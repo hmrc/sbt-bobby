@@ -21,6 +21,7 @@ import java.time.LocalDate
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import uk.gov.hmrc.bobby.domain.Exemption
 import uk.gov.hmrc.bobby.domain.VersionRange
 
 class ConfigurationSpec extends AnyFlatSpec with Matchers {
@@ -52,7 +53,10 @@ class ConfigurationSpec extends AnyFlatSpec with Matchers {
     deps.head.range                   shouldBe VersionRange("(,7.4.1)")
     deps.head.reason                  shouldBe "7.4.1 has important security fixes"
     deps.head.effectiveDate           shouldBe LocalDate.of(2015, 1, 1)
-    deps.head.exemptProjects          shouldBe Set("some-project-1", "some-project-2")
+    deps.head.exemptProjects          shouldBe Set(
+      Exemption("some-project-1", None),
+      Exemption("some-project-2", None)
+    )
 
     deps.last.dependency.organisation shouldBe "uk.gov.hmrc"
     deps.last.dependency.name         shouldBe "some-plugin"
