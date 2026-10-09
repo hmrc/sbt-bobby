@@ -22,12 +22,36 @@ import play.api.libs.functional.syntax._
 
 import java.time.LocalDate
 
+case class Exemption(
+  projectName: String,
+  expiryDate  : Option[LocalDate]
+)
+
+object Exemption {
+
+  implicit val reads: Reads[Exemption] = Reads {
+    case JsString(projectName) =>
+      JsSuccess(
+        Exemption(
+          projectName = projectName,
+          expiryDate  = None
+        )
+      )
+
+    case obj: JsObject =>
+      Json.reads[Exemption].reads(obj)
+
+    case _ =>
+      JsError("Expected project name string or exemption object")
+  }
+}
+
 case class BobbyRule(
   dependency    : Dependency,
   range         : VersionRange,
   reason        : String,
   effectiveDate : LocalDate,
-  exemptProjects: Set[String]
+  exemptProjects: Set[Exemption]
 )
 
 object BobbyRule {
@@ -76,7 +100,7 @@ object BobbyRule {
     ~ (__ \ "range"         ).read[String].map(VersionRange.apply)
     ~ (__ \ "reason"        ).read[String]
     ~ (__ \ "from"          ).read[LocalDate]
-    ~ (__ \ "exemptProjects").readWithDefault(Set.empty[String])
+    ~ (__ \ "exemptProjects").readWithDefault(Set.empty[Exemption])
     )(BobbyRule.apply _)
   }
 }

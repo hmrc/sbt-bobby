@@ -166,7 +166,10 @@ class DependencyCheckerSpec extends AnyWordSpec with Matchers {
           VersionRange("*"),
           "testing",
           LocalDate.now().minusDays(1),
-          Set("test-project-1", "test-project-2")
+          Set(
+            Exemption("test-project-1", None),
+            Exemption("test-project-2", None)
+          )
         )
 
       val rule2 =
@@ -175,7 +178,9 @@ class DependencyCheckerSpec extends AnyWordSpec with Matchers {
           VersionRange("*"),
           "testing",
           LocalDate.now().plusDays(1),
-          Set("test-project-1")
+          Set(
+            Exemption("test-project-1", None)
+          )
         )
 
       val rules =

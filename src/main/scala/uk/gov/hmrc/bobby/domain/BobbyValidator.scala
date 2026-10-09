@@ -75,7 +75,16 @@ object BobbyValidator {
 
       matchingRules
         .map { rule =>
-          if (rule.exemptProjects.contains(repoName))
+          val validExemption =
+            rule.exemptProjects.exists { exemption =>
+              exemption.projectName == repoName &&
+              (
+                exemption.expiryDate.isEmpty ||
+                !exemption.expiryDate.get.isBefore(now)
+              )
+            }
+
+          if (validExemption)
             BobbyResult.Exemption(rule): BobbyResult
           else if (rule.effectiveDate.isBefore(now) || rule.effectiveDate.isEqual(now))
             BobbyResult.Violation(rule)
