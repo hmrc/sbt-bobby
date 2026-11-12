@@ -9,4 +9,4 @@ sys.props.get("plugin.version") match {
 }
 
 // Required to be able to set the env variable to test
-addSbtPlugin("au.com.onegeek" %% "sbt-dotenv" % "2.1.146")
+addSbtPlugin("nl.gn0s1s" % "sbt-dotenv" % "3.4.0")

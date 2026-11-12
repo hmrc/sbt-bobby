@@ -24,6 +24,8 @@ lazy val root = (project in file("."))
       scriptedLaunchOpts.value ++
       Seq(
         "-Xmx1024M",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
         "-Dplugin.version=" + version.value,
         s"-Dsbt.override.build.repos=${sys.props.getOrElse("sbt.override.build.repos", "false")}",
         // s"-Dsbt.global.base=$sbtHome/.sbt",
